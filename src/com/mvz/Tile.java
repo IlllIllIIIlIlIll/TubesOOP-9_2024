@@ -1,15 +1,17 @@
 package com.mvz;
 
+import java.util.ArrayList;
+
 public class Tile {
     private Integer x;
     private Integer y;
-    private String owner;
+    private ArrayList<String> owners; 
     private Boolean isAquatic;
 
     public Tile(Integer x, Integer y, String owner, Boolean isAquatic){
         this.x = x;
         this.y = y;
-        this.owner = owner;
+        owners = new ArrayList<>();
         this.isAquatic = isAquatic;
     }
 
@@ -25,15 +27,32 @@ public class Tile {
         return new int[]{x, y};
     }
 
-    public String getO(){
-        return owner;
-    }
-
     // tile gabisa berubah 
     public boolean getIsA(){
         return isAquatic;
     }
 
+    // akan di iterasi untuk mengidentifikasi tanaman seperti lilypad atau zombie yang akan menerima dmg
+    public ArrayList<String> getOwners(){
+        return owners;
+    }
+
+    // zombie atau tanaman baru
+    public void addOwner(String owner){
+        this.owners.add(owner);
+    }
+
+    // zombie atau tanaman dissapear
+    public void removeOwner(String owner){
+        this.owners.remove(owner);
+    }
+
+    // dipakai jika kesulitan mengiterasi untuk identifikasi ketiadaan akan sesuatu
+    public boolean isOwnersEmpty(){
+        return owners.isEmpty();
+    }
+    
+    // setX dan setY tidak akan berubah (kepakai)
     public void setX(Integer x){
         this.x = x;
     }
@@ -42,15 +61,9 @@ public class Tile {
         this.y = y;
     }
 
-    // alternatif dari dissapear, owner = ""
-    public void setO(String owner){
-        this.owner = owner;
-    }
-
+    // method darurat saja
     public void swap(){
         isAquatic  = !isAquatic;
     }
 
-
-    // buat agar satu tile bisa 
 }

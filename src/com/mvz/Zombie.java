@@ -1,6 +1,6 @@
 package com.mvz;
 
-public abstract class Zombie extends Character implements Attack{
+public abstract class Zombie extends Character{
     private Integer movement_speed;
 
     public Zombie(String name, Integer health, boolean isAquatic, Float attack_speed, Float attack_damage, Integer movement_speed, Tile tile){
@@ -19,11 +19,6 @@ public abstract class Zombie extends Character implements Attack{
 
     // bikin defeat, sudah berada di tile x = 9
     public void attack_home(){
-
-    }
-
-    // mengurangi health tanaman
-    public void attack(){
 
     }
     

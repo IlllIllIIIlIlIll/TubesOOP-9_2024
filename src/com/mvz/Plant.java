@@ -52,4 +52,5 @@ public abstract class Plant extends Character {
             System.out.println(name + " is on cooldown!");
         }
     }
+
 }
