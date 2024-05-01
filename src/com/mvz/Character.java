@@ -1,6 +1,6 @@
 package com.mvz;
 
-public abstract class Character {
+public abstract class Character implements Action{
     // deklarasi variabel
     protected String name;
     protected Integer health;
@@ -59,7 +59,7 @@ public abstract class Character {
     }
 
     // kalkulasi action()
-    public Float getAttack_speed() {
+    public Float getAS() {
         return attack_speed;
     }
 
@@ -69,7 +69,7 @@ public abstract class Character {
     }
 
     // kalkulasi action()
-    public Float getAttack_damage() {
+    public Float getAD() {
         return attack_damage;
     }
 

@@ -5,13 +5,10 @@ import com.mvz.Tile;
 
 public class Peashooter extends Plant {
     public Peashooter(Tile tile) {
-        super("Peashooter", 100, false, 4, 25.0f, 100, -1, 10, tile);
+        super("Peashooter", 100, 100,  25.0f, 4.0f, -1, 10, false, tile);
     }
 
-    public void attack(){
-
-    }
-    
+    // how to attack zombie
     public void action(){
 
     }

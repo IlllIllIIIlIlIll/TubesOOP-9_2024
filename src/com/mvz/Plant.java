@@ -1,12 +1,12 @@
 package com.mvz;
 
-public abstract class Plant extends Character implements Attack {
+public abstract class Plant extends Character {
     private int cost;
     private int range;
     private int cooldown;
     private long lastPlantedTime;
 
-    public Plant(String name, Integer health, boolean isAquatic, Float attack_speed, Float attack_damage, int cost, int range, int cooldown, Tile tile) {
+    public Plant(String name, int cost, Integer health, Float attack_damage, Float attack_speed, int range, int cooldown, boolean isAquatic, Tile tile) {
         super(name, health, isAquatic, attack_speed, attack_damage, tile);
         this.cost = cost;
         this.range = range;
