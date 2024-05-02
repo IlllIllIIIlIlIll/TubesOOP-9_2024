@@ -4,7 +4,7 @@ public class Player {
     private String name;
     private Integer sun;
 
-    Player(String name, Integer sun){
+    public Player(String name, Integer sun){
         this.name = name;
         this.sun = sun;
     }

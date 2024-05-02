@@ -4,14 +4,12 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.mvz.zombies.Conehead;
-import com.mvz.zombies.Normal;
+import com.mvz.zombies.*;
 
 public class Game {
     private Map map;
     private Timer timer;
     private Random random;
-    private Tile[][] tile;
     private Boolean isDaytime;
     private Player player;
     private Thread sunThread;
@@ -24,11 +22,13 @@ public class Game {
     // GAME STARTS
 
     // Generate map
-        public Game(Player player) {
-            this.player = player;
-            this.map = new Map();
-            isDaytime = true;
-        }
+    public Game(Player player) {
+        this.player = player;
+        this.map = new Map();
+        this.timer = new Timer();
+        this.random = new Random();
+        isDaytime = true;
+    }
 
     // new thread for sun generating
     // changing daytime/nighttime for every 100 seconds
@@ -58,11 +58,12 @@ public class Game {
     }
 
 
-    // new thread for zombie spawning
+    // new thread for zombie spawning, after 20 seconds
     // thread below this
     // tiap detik terupdate per masing2 jalur (semangat ya)
     public void startSpawningZombies() {
         zombieThread = new Thread(() -> {
+            map.printMap();
             while (true) {
                 try {
                     Thread.sleep(1000); // Pause for 1 second
@@ -70,35 +71,30 @@ public class Game {
                     // Handle exception
                 }
     
-                setPosition(); // Assuming this method is implemented
+                map.setPosition(); // Assuming this method is implemented
     
-                for (int i = 0; i < tile[0].length; i++) { // assuming tile[0].length gives the number of rows (y-axis)
+                for (int i = 0; i < 6; i++) {
                     if (random.nextFloat() < 0.3) {
                         // Create a new Zombie object here and place it on the map
                         Zombie z;
-                        if (random.nextBoolean()) {
-                            z = new Normal(tile[9][i]); // spawn at x=9
+                        if (i == 2 || i == 3) {
+                            z = new Duckytube(map.getTile(10, i)); // spawn at x=11
                         } else {
-                            z = new Conehead(tile[9][i]); // spawn at x=9
+                            if (random.nextBoolean()) {
+                                z = new Normal(map.getTile(10, i)); // spawn at x=11
+                            } else {
+                                z = new Conehead(map.getTile(10, i)); // spawn at x=11
+                            }
                         }
-                        placeZombie(z);
+                        map.placeZombie(z, i); // Pass the y-coordinate to placeZombie
                     }
                 }
+                map.printMap();
             }
         });
         zombieThread.start();
     }
-    
-    // moves zombies +1 tile
-    public void setPosition(){
 
-    }
-
-    public void placeZombie(Zombie z){
-        // Add the zombie to the list of zombies on the map
-
-        // You would also need to add code here to place the zombie on a specific tile
-    }
 
     public void winGame(){
         // Code to handle winning the game
