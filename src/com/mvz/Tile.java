@@ -5,10 +5,10 @@ import java.util.ArrayList;
 public class Tile {
     private Integer x;
     private Integer y;
-    private ArrayList<String> owners; 
+    private ArrayList<Character> owners; 
     private Boolean isAquatic;
 
-    public Tile(Integer x, Integer y, String owner, Boolean isAquatic){
+    public Tile(Integer x, Integer y, Boolean isAquatic){
         this.x = x;
         this.y = y;
         owners = new ArrayList<>();
@@ -33,17 +33,17 @@ public class Tile {
     }
 
     // akan di iterasi untuk mengidentifikasi tanaman seperti lilypad atau zombie yang akan menerima dmg
-    public ArrayList<String> getOwners(){
+    public ArrayList<Character> getOwners(){
         return owners;
     }
 
     // zombie atau tanaman baru
-    public void addOwner(String owner){
+    public void addOwner(Character owner){
         this.owners.add(owner);
     }
 
     // zombie atau tanaman dissapear
-    public void removeOwner(String owner){
+    public void removeOwner(Character owner){
         this.owners.remove(owner);
     }
 

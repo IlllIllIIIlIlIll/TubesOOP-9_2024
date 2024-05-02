@@ -94,15 +94,4 @@ public class Game {
         });
         zombieThread.start();
     }
-
-
-    public void winGame(){
-        // Code to handle winning the game
-        System.out.println("Congratulations, you've won the game!");
-    }
-
-    public void loseGame(){
-        // Code to handle losing the game
-        System.out.println("Sorry, you've lost the game.");
-    }
 }
