@@ -1,19 +1,19 @@
 package com.mvz;
 
 public abstract class Zombie extends Character{
-    private Integer movement_speed;
+    private Float movement_speed;
 
-    public Zombie(String name, Integer health, boolean isAquatic, Float attack_speed, Float attack_damage, Integer movement_speed, Tile tile){
+    public Zombie(String name, Integer health, Float attack_damage, Float attack_speed, Float movement_speed, boolean isAquatic, Tile tile){
         super(name, health, isAquatic, attack_speed, attack_damage, tile);
         this.movement_speed = movement_speed;
     }
 
-    public Integer getMS(){
+    public Float getMS(){
         return movement_speed;
     }
 
     // untuk snowpea
-    public void setMSD(Integer movement_speed){
+    public void setMSD(Float movement_speed){
         this.movement_speed = movement_speed;
     }
 
