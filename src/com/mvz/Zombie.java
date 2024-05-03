@@ -16,10 +16,5 @@ public abstract class Zombie extends Character{
     public void setMSD(Float movement_speed){
         this.movement_speed = movement_speed;
     }
-
-    // bikin defeat, sudah berada di tile x = 9
-    public void attack_home(){
-
-    }
     
 }
