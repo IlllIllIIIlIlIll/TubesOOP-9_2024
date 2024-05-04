@@ -3,11 +3,11 @@ package com.mvz.zombies;
 import com.mvz.Zombie;
 import com.mvz.Tile;
 
-public class Duckytube extends Zombie {
+public class Jackinthebox extends Zombie {
     private Tile tile;
     
-    public Duckytube(Tile tile) {
-        super("Ducky tube", 125, 100.0f, 1.0f, 5.0f, true, tile);
+    public Jackinthebox(Tile tile) {
+        super("Jack in the box", 150, 1500.0f, 1.0f, 5.0f, false, tile);
     }
 
     public Tile getTile(){

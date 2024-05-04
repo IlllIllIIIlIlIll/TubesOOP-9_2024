@@ -3,11 +3,11 @@ package com.mvz.zombies;
 import com.mvz.Zombie;
 import com.mvz.Tile;
 
-public class Duckytube extends Zombie {
+public class Polevaulting extends Zombie {
     private Tile tile;
     
-    public Duckytube(Tile tile) {
-        super("Ducky tube", 125, 100.0f, 1.0f, 5.0f, true, tile);
+    public Polevaulting(Tile tile) {
+        super("Pole vaulting", 175, 100.0f, 1.0f, 5.0f, false, tile);
     }
 
     public Tile getTile(){
@@ -21,9 +21,9 @@ public class Duckytube extends Zombie {
         int y = currentTile.getY();
 
         if (x > 0) {
-            Tile leftTile = getTile();
-
-            for (com.mvz.Character owner : leftTile.getOwners()) {
+            currentTile.setX(x - 1);
+            Tile nextLeftTile = getTile();
+            for (com.mvz.Character owner : nextLeftTile.getOwners()) {
                 if (owner instanceof com.mvz.Plant) {
                     float damage = this.getAD();
                     owner.decreaseHealth(damage);

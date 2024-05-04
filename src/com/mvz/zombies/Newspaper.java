@@ -3,11 +3,11 @@ package com.mvz.zombies;
 import com.mvz.Zombie;
 import com.mvz.Tile;
 
-public class Duckytube extends Zombie {
+public class Newspaper extends Zombie {
     private Tile tile;
-    
-    public Duckytube(Tile tile) {
-        super("Ducky tube", 125, 100.0f, 1.0f, 5.0f, true, tile);
+
+    public Newspaper(Tile tile) {
+        super("Newspaper", 150, 100.0f, 1.0f, 5.0f, false, tile);
     }
 
     public Tile getTile(){
@@ -27,9 +27,14 @@ public class Duckytube extends Zombie {
                 if (owner instanceof com.mvz.Plant) {
                     float damage = this.getAD();
                     owner.decreaseHealth(damage);
-                    return;
+
+                if (this.getHealth() <= 75) {
+                    this.setAttack_speed(0.5f);
+                }
+                return;
                 }
             }
         }
     }
+    //tambahin getter setter kalo korannya dah abis
 }
