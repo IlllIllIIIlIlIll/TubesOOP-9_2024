@@ -33,8 +33,12 @@ public class StartMenu implements Menu{
                         case 1:
                             startCommand.execute();
                             // After starting the game, assume we're done with the menu for now
-                            System.out.println("Press any key to return to the menu...");
-                            System.in.read(); // Wait for user to press any key
+                            System.out.println("Type 'back to menu' to return to the menu..."); // Modified line
+                            String input = scanner.nextLine(); // Wait for user to type something
+                            while (!input.equalsIgnoreCase("back to menu")) {
+                                System.out.println("Invalid command. Please type 'back to menu' to return to the menu...");
+                                input = scanner.nextLine();
+                            }
                             break;
                         case 2:
                             helpCommand.execute();
@@ -51,18 +55,18 @@ public class StartMenu implements Menu{
                             break;
                         default:
                             System.out.println("Invalid option. Please try again.");
+                        }
+                    } else {
+                        System.out.println("Please enter a valid number.");
+                        scanner.next(); // Consume the invalid input
                     }
-                } else {
-                    System.out.println("Please enter a valid number.");
-                    scanner.next(); // Consume the invalid input
+                } catch (Exception e) {
+                    System.out.println("Error: " + e.getMessage());
+                    scanner.nextLine(); // Clear buffer and handle next input correctly
                 }
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
-                scanner.nextLine(); // Clear buffer and handle next input correctly
             }
+            scanner.close();
         }
-        scanner.close();
-    }
 
     protected void printMenuOptions() {
         System.out.println("\nWelcome to Plants vs Zombies!");

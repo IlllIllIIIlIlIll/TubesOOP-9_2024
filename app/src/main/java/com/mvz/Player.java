@@ -10,7 +10,7 @@ public class Player {
     }
 
     public void customizeDeck() {
-        // Logic for the player to customize their deck
+        deck.deckMenu();
     }
 
     public Deck getDeck(){

@@ -1,69 +1,115 @@
 package com.mvz.thread;
 
 import com.mvz.Game;
+import java.util.Scanner;
 
 public class ThreadManager {
     private Game game;
+    private Scanner scanner;
     private Thread mainThread;
     private Thread zombieSpawningThread;
     private Thread sunGeneratingThread;
+    private Thread positionUpdatingThread;
 
-    public ThreadManager(Game game) {
+    public ThreadManager(Game game, Scanner scanner) {
         this.game = game;
+        this.scanner = scanner;
     }
 
     public void startThreads() {
-        // Main game thread
+        startMainThread();
+        startZombieSpawningThread();
+        startSunGeneratingThread();
+        startPositionUpdatingThread();
+    }
+
+
+
+    private void startMainThread() {
+        game.startGame();
         mainThread = new Thread(() -> {
-            // Placeholder for main game logic
+            while (!Thread.currentThread().isInterrupted()) {
+                String input = scanner.nextLine();  
+                game.getMap().printMap();
+                if (input.equalsIgnoreCase("pause")) {
+                    pauseThreads();
+                    System.out.println("Game paused!");
+                } else if (input.equalsIgnoreCase("resume")) {
+                    resumeThreads();
+                    System.out.println("Game resumed!");
+                }
+            }
         });
         mainThread.start();
+    }
 
-        // Zombie spawning thread
+
+
+    private void startZombieSpawningThread() {
         zombieSpawningThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                if (!game.isPaused()) {
-                    game.startSpawningZombies();
-                }
                 try {
-                    Thread.sleep(1000); // Sleep to reduce CPU usage while paused
+                    if (!game.isPaused()) {
+                        game.startSpawningZombies();
+                    }
+                    Thread.sleep(5000); 
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Ensure the thread's interrupted status is set
+                    Thread.currentThread().interrupt();
                 }
             }
         });
         zombieSpawningThread.start();
+    }
 
-        // Sun generating thread
+
+
+    private void startSunGeneratingThread() {
         sunGeneratingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                if (!game.isPaused()) {
-                    game.generateSun();
-                }
                 try {
-                    Thread.sleep(1000); // Sleep to reduce CPU usage while paused
+                    Thread.sleep(3000);
+                    if (!game.isPaused()) {
+                        game.generateSun(); 
+                    }
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Ensure the thread's interrupted status is set
+                    Thread.currentThread().interrupt(); 
                 }
             }
         });
         sunGeneratingThread.start();
     }
 
+    private void startPositionUpdatingThread() {
+        positionUpdatingThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(1000); 
+                    if (!game.isPaused()) {
+                        game.getMap().setPosition();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+        positionUpdatingThread.start();
+    }
+    
+
+
+    
     public void pauseThreads() {
-        // Set game state to paused, actual thread pausing handled in the threads themselves
         game.pauseGame();
     }
 
     public void resumeThreads() {
-        // Resume game logic
         game.resumeGame();
     }
 
     public void stopThreads() {
-        // Interrupt the threads to stop their execution
         if (mainThread != null) mainThread.interrupt();
         if (zombieSpawningThread != null) zombieSpawningThread.interrupt();
         if (sunGeneratingThread != null) sunGeneratingThread.interrupt();
+        if (positionUpdatingThread != null) positionUpdatingThread.interrupt();
     }
 }

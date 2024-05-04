@@ -7,22 +7,22 @@ public class Map {
     private List<Plant> plantOnTile;
     private List<Zombie> zombieOnTile;
     private Tile[][] tile;
-    private List<List<Zombie>> zombiesByY; // A list of lists of zombies, indexed by y-coordinate
+    private List<List<Zombie>> zombiesByY;
         
     public Map(){
-        tile = new Tile[11][6]; // Initialize the tile matrix
+        tile = new Tile[11][6]; 
         plantOnTile = new ArrayList<>();
         zombieOnTile = new ArrayList<>();
         zombiesByY = new ArrayList<>();
-        for (int i = 0; i < 6; i++) { // Assuming there are 6 y-coordinates
+        for (int i = 0; i < 6; i++) { 
             this.zombiesByY.add(new ArrayList<>());
         }
 
         // Initialize the tiles
         for (int i = 0; i < 11; i++) {
             for (int j = 0; j < 6; j++) {
-                boolean isAquatic = (j == 2 || j == 3); // Set isAquatic to true for y=3 and y=4
-                tile[i][j] = new Tile(i, j, isAquatic); // Replace "owner" with the actual owner
+                boolean isAquatic = (j == 2 || j == 3); 
+                tile[i][j] = new Tile(i, j, isAquatic); 
             }
         }
     }
@@ -42,7 +42,7 @@ public class Map {
     public void printMap() {
         String watercolor = "\033[1;34m";
         String landcolor = "\033[0;32m";
-        String reset = "\033[0m"; // Reset the color
+        String reset = "\033[0m"; 
     
         System.out.println("Sun value: " + Sun.getSun());
         for (int j = 0; j < getNumberOfRows(); j++) {
@@ -77,70 +77,131 @@ public class Map {
     
 
     public void setPosition() {
+        List<Zombie> zombiesToRemove = new ArrayList<>();
+    
+        // Iterate over zombies
         for (Zombie z : zombieOnTile) {
-            if (z.getCH()) {
-                if (z.getCM()) {
-                    z.move(); 
-                    z.setCM(); 
-                } else {
-                    z.setCM(); 
-                    continue; 
-                }
+            if (z.getHealth() <= 0) {
+                zombiesToRemove.add(z);
+                continue;
             }
     
             Tile currentTile = z.getTile();
             int x = currentTile.getX();
             int y = currentTile.getY();
-            if (x - 1 >= 0) { 
+            
+            boolean moved = false;
+            if (x - 1 >= 0) {
                 Tile nextTile = getTile(x - 1, y);
-                for (Character owner : nextTile.getOwners()) {
-                    
-                    if (owner instanceof Plant && ((Plant) owner).getHealth() <= 0) {
-                        
-                        nextTile.removeOwner(owner);
+    
+
+                moved = processTileForZombie(currentTile, z, false) || processTileForZombie(nextTile, z, true);
+            }
+            if (!moved) {
+                if (x - 1 >= 0) {
+                    moveZombie(currentTile, getTile(x - 1, y), z);
+                }
+            }
+        }
+    
+        // Remove all dead zombies
+        zombieOnTile.removeAll(zombiesToRemove);
+    
+        for (Tile[] tiles : tile) {
+            for (Tile t : tiles) {
+                for (Character owner : new ArrayList<>(t.getOwners())) {
+                    if (owner instanceof Plant && owner.getHealth() <= 0) {
+                        t.removeOwner(owner);
                     }
                 }
-                
-                boolean hasPlant = false;
-                for (Character owner : nextTile.getOwners()) {
-                    if (owner instanceof Plant) {
-                        hasPlant = true;
-                        break;
-                    }
-                }
-                if (!hasPlant) { 
-                    currentTile.removeOwner(z);
-                    nextTile.addOwner(z);
-                    z.setTile(nextTile); 
-                }
-            } else {
-                // Panggil fungsi defeated
             }
         }
     }
     
+    private boolean processTileForZombie(Tile tile, Zombie zombie, boolean canMove) {
+        for (Character owner : tile.getOwners()) {
+            if (owner instanceof Plant) {
+                Plant plant = (Plant) owner;
+                if (plant.getHealth() > 0) {
+                    zombie.action();
+                    return true; 
+                }
+            }
+        }
+        return !canMove;
+    }
+    
+    private void moveZombie(Tile currentTile, Tile nextTile, Zombie zombie) {
+        currentTile.removeOwner(zombie);
+        nextTile.addOwner(zombie);
+        zombie.setTile(nextTile);
+    }
+    
+    
+    
+    
+    // public void setPosition() {
+    //     for (Zombie z : zombieOnTile) {
+    //         if (z.getCH()) {
+    //             if (z.getCM()) {
+    //                 z.move(); 
+    //                 z.setCM(); 
+    //             } else {
+    //                 z.setCM(); 
+    //                 continue; 
+    //             }
+    //         }
+    
+    //         Tile currentTile = z.getTile();
+    //         int x = currentTile.getX();
+    //         int y = currentTile.getY();
+    //         if (x - 1 >= 0) { 
+    //             Tile nextTile = getTile(x - 1, y);
+    //             for (Character owner : nextTile.getOwners()) {
+                    
+    //                 if (owner instanceof Plant && ((Plant) owner).getHealth() <= 0) {
+                        
+    //                     nextTile.removeOwner(owner);
+    //                 }
+    //             }
+                
+    //             boolean hasPlant = false;
+    //             for (Character owner : nextTile.getOwners()) {
+    //                 if (owner instanceof Plant) {
+    //                     hasPlant = true;
+    //                     break;
+    //                 }
+    //             }
+    //             if (!hasPlant) { 
+    //                 currentTile.removeOwner(z);
+    //                 nextTile.addOwner(z);
+    //                 z.setTile(nextTile); 
+    //             }
+    //         } else {
+    //             // Panggil fungsi defeated
+    //         }
+    //     }
+    // }
+    
 
     
     public void placeZombie(Zombie z, int y) {
-        // Add zombie to list of current zombies in map
+
         this.zombieOnTile.add(z);
-        // Add zombie to the list of same y coordinate zombies
         this.zombiesByY.get(y).add(z);
-        
-        // Insert zombie to the corresponding tile
         int x = z.getTile().getX(); 
         tile[x][y].addOwner(z); 
     }
     
     public void placePlant(Plant p, int x, int y) {
-        // Lilypad check
+
         Tile targetTile = getTile(x, y);
         boolean containsLilypad = false;
         Plant lilypad = null;
         for (Character owner : targetTile.getOwners()) {
             if (owner.getName().equals("Lilypad")) {
                 containsLilypad = true;
-                lilypad = (Plant) owner; // Cast the Character to a Plant
+                lilypad = (Plant) owner; 
                 break;
             }
         }

@@ -19,7 +19,7 @@ public class Deck {
         return instance;
     }
 
-    public void Menu() {
+    public void deckMenu() {
 
         Scanner sc = new Scanner(System.in);
         Inventory inventory = Inventory.getInstance();
@@ -185,45 +185,11 @@ public class Deck {
         }
     }
 
-    // public void menanam() {
-    //     Scanner sc = new Scanner(System.in);
-    //     boolean validInput = false;
-    
-    //     while (!validInput) {
-    //         printDeck();
-    //         System.out.println("Masukkan indeks tanaman yang ingin ditanam");
-    //         String input = sc.nextLine().trim(); // Dapatkan input dan hilangkan spasi di awal dan akhir
-    
-    //         int x=0;
-    //         // Periksa apakah input hanya terdiri dari digit
-    //         if (input.matches("\\d+")) {
-    //             x = Integer.parseInt(input);
-    //             if (x < plants.size()) {
-
-    //             }
-    //             else System.out.printf("Indeks harus kurang dari %d. Harap masukkan angka antara 0 dan %d.", plants.size(), plants.size()-1);
-    //         } else {
-    //             System.out.println("Format input tidak valid. Harap masukkan hanya satu angka.");
-    //         }
-    //     }
-    //     sc.close(); // Tutup Scanner setelah penggunaan        
-    // }
-
     public void printDeck() {
         System.out.println("Deck:");
         for (int i=0; i<plants.size(); i++) {
             System.out.printf("%d. %s\n", i+1, plants.get(i).name);
         }
-    }
-
-    public static void main(String[] args) {
-        Deck deck = Deck.getInstance();
-        deck.setPlant();
-        deck.setPlant();
-        deck.setPlant();
-        deck.swapPlants();
-        deck.deletePlant();
-        deck.printDeck();
     }
 
 
