@@ -18,7 +18,6 @@ public class Dolphinrider extends Zombie {
     public void action(){
         Tile currentTile = getTile();
         int x = currentTile.getX();
-        int y = currentTile.getY();
 
         if (x > 0) {
             currentTile.setX(x - 1);

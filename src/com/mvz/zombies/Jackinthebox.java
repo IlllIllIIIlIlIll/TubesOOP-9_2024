@@ -5,7 +5,7 @@ import com.mvz.Tile;
 
 public class Jackinthebox extends Zombie {
     private Tile tile;
-    
+
     public Jackinthebox(Tile tile) {
         super("Jack in the box", 150, 1500.0f, 1.0f, 5.0f, false, tile);
     }
@@ -18,7 +18,6 @@ public class Jackinthebox extends Zombie {
     public void action(){
         Tile currentTile = getTile();
         int x = currentTile.getX();
-        int y = currentTile.getY();
 
         if (x > 0) {
             Tile leftTile = getTile();

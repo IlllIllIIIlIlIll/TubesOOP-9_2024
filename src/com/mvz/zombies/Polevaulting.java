@@ -5,7 +5,7 @@ import com.mvz.Tile;
 
 public class Polevaulting extends Zombie {
     private Tile tile;
-    
+
     public Polevaulting(Tile tile) {
         super("Pole vaulting", 175, 100.0f, 1.0f, 5.0f, false, tile);
     }
@@ -18,7 +18,6 @@ public class Polevaulting extends Zombie {
     public void action(){
         Tile currentTile = getTile();
         int x = currentTile.getX();
-        int y = currentTile.getY();
 
         if (x > 0) {
             currentTile.setX(x - 1);

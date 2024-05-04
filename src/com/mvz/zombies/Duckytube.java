@@ -18,7 +18,6 @@ public class Duckytube extends Zombie {
     public void action(){
         Tile currentTile = getTile();
         int x = currentTile.getX();
-        int y = currentTile.getY();
 
         if (x > 0) {
             Tile leftTile = getTile();
