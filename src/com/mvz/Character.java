@@ -3,14 +3,14 @@ package com.mvz;
 public abstract class Character implements Action{
     // deklarasi variabel
     protected String name;
-    protected Integer health;
+    protected Float health;
     protected boolean isAquatic;
     protected Float attack_speed;   // float karena bisa didiskon 50% oleh snowpea
     protected Float attack_damage;
     protected Tile tile;
 
     // konstruktor
-    public Character(String name, Integer health, boolean isAquatic, Float attack_speed, Float attack_damage, Tile tile){
+    public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage, Tile tile){
         this.tile = tile;
         this.health = health;
         this.name = name;
@@ -30,13 +30,18 @@ public abstract class Character implements Action{
     }
 
     // jika health abis, dissapear
-    public Integer getHealth() {
+    public Float getHealth() {
         return health;
     }
 
     // hanya bisa mengurangi health, else exception
-    public void setHealth(Integer health) {
+    public void setHealth(Float health) {
         this.health = health;
+    }
+
+    //mengurangi health jika terkena damage
+    public void decreaseHealth(Float damage){
+        this.health -= damage;
     }
 
     // keperluan print

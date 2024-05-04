@@ -5,7 +5,7 @@ import com.mvz.Tile;
 
 public class Squash extends Plant {
     public Squash(Tile tile) {
-        super("Squash", 50, 9999,  5000.0f, 0.0f, 1, 10, false, tile);
+        super("Squash", 50, 9999.0f,  5000.0f, 0.0f, 1, 10, false, tile);
     }
 
     public void attack(){

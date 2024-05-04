@@ -5,7 +5,7 @@ import com.mvz.Tile;
 
 public class Wallnut extends Plant {
     public Wallnut(Tile tile) {
-        super("Wall nut", 50, 1000,  0.0f, 0.0f, 0, 20, false, tile);
+        super("Wall nut", 50, 1000.0f,  0.0f, 0.0f, 0, 20, false, tile);
     }
 
     // do nothing
