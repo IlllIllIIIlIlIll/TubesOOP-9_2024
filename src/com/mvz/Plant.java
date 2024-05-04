@@ -6,7 +6,7 @@ public abstract class Plant extends Character {
     private int cooldown;
     private long lastPlantedTime;
 
-    public Plant(String name, int cost, Integer health, Float attack_damage, Float attack_speed, int range, int cooldown, boolean isAquatic, Tile tile) {
+    public Plant(String name, int cost, Float health, Float attack_damage, Float attack_speed, int range, int cooldown, boolean isAquatic, Tile tile) {
         super(name, health, isAquatic, attack_speed, attack_damage, tile);
         this.cost = cost;
         this.range = range;
@@ -28,6 +28,8 @@ public abstract class Plant extends Character {
     public int getCD(){
         return cooldown;
     }
+
+    
 
     /*
      cek sun
