@@ -24,7 +24,6 @@ public class Cherrybomb extends Plant {
                 if (owner instanceof Zombie && ((Zombie) owner).getHealth() > 0) {
                     // Attacking the zombie
                     Float damage = this.getAD();
-                    // Float currentHealth = ((Zombie) owner).getHealth();
                     ((Zombie) owner).setHealth(damage);
                 }
             }

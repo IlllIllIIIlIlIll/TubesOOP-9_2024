@@ -2,6 +2,8 @@ package com.mvz.plants;
 
 import com.mvz.Plant;
 import com.mvz.Tile;
+import com.mvz.Zombie;
+import com.mvz.Character;
 
 public class Peashooter extends Plant {
     public Peashooter(Tile tile) {
@@ -10,6 +12,7 @@ public class Peashooter extends Plant {
 
     // how to attack zombie
     public void action(){
+        
 
     }
 }
