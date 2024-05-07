@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Inventory {
     private static Inventory instance;
-    public List<Plant> plants;
+    private List<Plant> plants;
 
     private Inventory() {
         plants = new ArrayList<>();
@@ -18,8 +18,8 @@ public class Inventory {
         return instance;
     }
 
-    public void addPlant(Plant plant) {
-        plants.add(plant);
+    public void setPlants(List<Plant> plants) {
+        this.plants = plants;
     }
 
     public List<Plant> getPlants() {

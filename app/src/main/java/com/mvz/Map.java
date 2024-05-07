@@ -64,6 +64,16 @@ public class Map {
 
     public void setPosition() {
         for (Zombie z : zombieOnTile) {
+            if (z.getCH()) {
+                if (z.getCM()) {
+                    z.move(); // Let the zombie move
+                    z.setCM(); // Change the state of canMove
+                } else {
+                    z.setCM(); // Change the state of canMove
+                    continue; // Skip this iteration if the zombie can't move
+                }
+            }
+    
             Tile currentTile = z.getTile();
             int x = currentTile.getX();
             int y = currentTile.getY();
@@ -95,6 +105,7 @@ public class Map {
             }
         }
     }
+    
 
     
     public void placeZombie(Zombie z, int y) {

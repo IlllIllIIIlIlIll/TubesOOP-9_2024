@@ -71,7 +71,7 @@ public class Game {
                     // Handle exception
                 }
     
-                map.setPosition(); // Assuming this method is implemented
+                map.setPosition(); 
     
                 for (int i = 0; i < 6; i++) {
                     if (random.nextFloat() < 0.3) {
@@ -83,10 +83,42 @@ public class Game {
                             if (random.nextBoolean()) {
                                 z = new Normal(map.getTile(10, i)); // spawn at x=11
                             } else {
-                                z = new Conehead(map.getTile(10, i)); // spawn at x=11
+                                z = new Conehead(map.getTile(10, i)); // spawn at x=11                            
+                        //     if (random.nextBoolean()) {
+                        //         z = new Duckytube(map.getTile(10, i)); // spawn at x=11
+                        //     } else {
+                        //         z = new Dolphinrider(map.getTile(10, i)); // spawn at x=11
+                        //     }
+                        // } else {
+                        //     int type = random.nextInt(8);
+                        //     switch (type) {
+                        //         case 0:
+                        //             z = new Normal(map.getTile(10, i)); // spawn at x=11
+                        //             break;
+                        //         case 1:
+                        //             z = new Conehead(map.getTile(10, i)); // spawn at x=11
+                        //             break;
+                        //         case 2:
+                        //             z = new Buckethead(map.getTile(10, i)); // spawn at x=11
+                        //             break;
+                        //         case 3:
+                        //             z = new Football(map.getTile(10, i)); // spawn at x=11
+                        //             break;
+                        //         case 4:
+                        //             z = new Jackinthebox(map.getTile(10, i)); // spawn at x=11
+                        //             break;
+                        //         case 5:
+                        //             z = new Newspaper(map.getTile(10, i)); // spawn at x=11
+                        //             break;
+                        //         case 6:
+                        //             z = new Polevaulting(map.getTile(10, i)); // spawn at x=11
+                        //             break;
+                        //         default:
+                        //             z = new Screendoor(map.getTile(10, i)); // spawn at x=11
+                        //             break;
                             }
                         }
-                        map.placeZombie(z, i); // Pass the y-coordinate to placeZombie
+                        map.placeZombie(z, i); // Pass the coordinate to placeZombie
                     }
                 }
                 map.printMap();
@@ -94,4 +126,5 @@ public class Game {
         });
         zombieThread.start();
     }
+    
 }
