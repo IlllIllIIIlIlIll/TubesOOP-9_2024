@@ -5,7 +5,7 @@ import com.mvz.*;
 public class Main {
     public static void main(String[] args) {
 
-        Player favian = new Player("Favian", 0);
+        Player favian = new Player("Favian");
         
         Game game = new Game(favian);
 
