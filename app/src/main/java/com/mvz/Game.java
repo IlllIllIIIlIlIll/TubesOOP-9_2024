@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import com.mvz.zombies.*;
 
+
 public class Game {
     private Map map;
     private Timer timer;
@@ -47,7 +48,7 @@ public class Game {
                         new Timer().schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                player.increaseSun(25);
+                                Sun.increaseSun(25);
                             }
                         }, delay);
                     }
@@ -62,6 +63,8 @@ public class Game {
     // thread below this
     // tiap detik terupdate per masing2 jalur (semangat ya)
     public void startSpawningZombies() {
+        ZombieFactory landFactory = new LandZombieFactory();
+        ZombieFactory waterFactory = new WaterZombieFactory();
         zombieThread = new Thread(() -> {
             map.printMap();
             while (true) {
@@ -71,27 +74,34 @@ public class Game {
                     // Handle exception
                 }
     
-                map.setPosition(); // Assuming this method is implemented
+                map.setPosition(); 
     
                 for (int i = 0; i < 6; i++) {
                     if (random.nextFloat() < 0.3) {
                         // Create a new Zombie object here and place it on the map
                         Zombie z;
-                        if (i == 2 || i == 3) {
-                            z = new Duckytube(map.getTile(10, i)); // spawn at x=11
-                        } else {
-                            if (random.nextBoolean()) {
-                                z = new Normal(map.getTile(10, i)); // spawn at x=11
+                        Tile tile = map.getTile(10, i);
+                        if (tile != null) {
+                            ZombieFactory factory;
+                            String[] types;
+                            if (i == 2 || i == 3) {
+                                factory = waterFactory;
+                                types = waterFactory.getTypes();
                             } else {
-                                z = new Conehead(map.getTile(10, i)); // spawn at x=11
+                                factory = landFactory;
+                                types = landFactory.getTypes();
                             }
+                            int typeIndex = random.nextInt(types.length);
+                            z = factory.createZombie(types[typeIndex], tile);
+                            map.placeZombie(z, i);
                         }
-                        map.placeZombie(z, i); // Pass the y-coordinate to placeZombie
                     }
                 }
+                // print 
                 map.printMap();
             }
         });
         zombieThread.start();
     }
+    
 }
