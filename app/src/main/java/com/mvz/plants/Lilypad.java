@@ -8,6 +8,10 @@ public class Lilypad extends Plant {
         super("Lilypad", 25, 100.0f,  0.0f, 0.0f, 0, 10, true, tile);
     }
 
+    public Lilypad() {
+        super("Lilypad", 25, 100.0f,  0.0f, 0.0f, 0, 10, true);
+    }
+    
     // tanaman bisa ditaruh di isAquatic tile jika terdapat lilypad disana    
     public void action(){
 

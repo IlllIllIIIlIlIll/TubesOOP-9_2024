@@ -14,6 +14,14 @@ public abstract class Plant extends Character {
         this.lastPlantedTime = System.currentTimeMillis();
     }
 
+    public Plant(String name, int cost, Float health, Float attack_damage, Float attack_speed, int range, int cooldown, boolean isAquatic) {
+        super(name, health, isAquatic, attack_speed, attack_damage);
+        this.cost = cost;
+        this.range = range;
+        this.cooldown = cooldown;
+        this.lastPlantedTime = System.currentTimeMillis();
+    }
+
     // indikator pertama player untuk dapat membeli tanaman
     public int getCost(){
         return cost;

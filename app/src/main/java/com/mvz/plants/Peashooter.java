@@ -8,6 +8,10 @@ public class Peashooter extends Plant {
         super("Peashooter", 100, 100.0f,  25.0f, 4.0f, -1, 10, false, tile);
     }
 
+    public Peashooter() {
+        super("Peashooter", 100, 100.0f,  25.0f, 4.0f, -1, 10, false);
+    }
+    
     // how to attack zombie
     public void action(){
 

@@ -1,33 +1,74 @@
 package com.mvz;
 
+import java.util.Scanner;
+import com.mvz.menu.*;
+
 public class Menu {
-    private Inventory inventory;
+    private Scanner scanner;
+    private Command startCommand;
+    private Command helpCommand;
+    private Command plantListCommand;
+    private Command zombieListCommand;
 
-    // constructor
-    public Menu(Inventory inventory) {
-        this.inventory = inventory;
+    public Menu(Player player) {
+        this.scanner = new Scanner(System.in);
+        // Initialize commands
+        this.startCommand = new StartGameCommand(player);
+        this.helpCommand = new HelpCommand();
+        this.plantListCommand = new PlantListCommand();
+        this.zombieListCommand = new ZombieListCommand();
+        displayMenu(); // Move initialization of displayMenu out of constructor
     }
 
-    public void start() {
-        System.out.println("Game started!");
-        // Add your game logic here
+    private void displayMenu() {
+        boolean running = true;
+        while (running) {
+            printMenuOptions(); // Method to print menu options
+            try {
+                if (scanner.hasNextInt()) {
+                    int choice = scanner.nextInt();
+                    switch (choice) {
+                        case 1:
+                            startCommand.execute();
+                            // After starting the game, assume we're done with the menu for now
+                            System.out.println("Press any key to return to the menu...");
+                            System.in.read(); // Wait for user to press any key
+                            break;
+                        case 2:
+                            helpCommand.execute();
+                            break;
+                        case 3:
+                            plantListCommand.execute();
+                            break;
+                        case 4:
+                            zombieListCommand.execute();
+                            break;
+                        case 5:
+                            System.out.println("Exiting game...");
+                            running = false; // Exit the loop and end the program
+                            break;
+                        default:
+                            System.out.println("Invalid option. Please try again.");
+                    }
+                } else {
+                    System.out.println("Please enter a valid number.");
+                    scanner.next(); // Consume the invalid input
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                scanner.nextLine(); // Clear buffer and handle next input correctly
+            }
+        }
+        scanner.close();
     }
 
-    public void help() {
-        System.out.println("This is the help menu. Here are some tips...");
-        // Add your help information here
+    private void printMenuOptions() {
+        System.out.println("\nWelcome to Plants vs Zombies!");
+        System.out.println("1. Start Game");
+        System.out.println("2. Help");
+        System.out.println("3. List Plants");
+        System.out.println("4. List Zombies");
+        System.out.println("5. Quit Game");
+        System.out.print("Choose an option: ");
     }
-
-    public void plantList() {
-        System.out.println("Here is a list of plants:");
-
-        inventory.printInventory();
-
-    }
-
-    public void zombieList() {
-        System.out.println("Here is a list of zombies:");
-        // Add your zombie list here
-    }
-
 }

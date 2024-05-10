@@ -8,6 +8,10 @@ public class Jalapeno extends Plant {
         super("Jalapeno", 125, 9999.0f,  1800.0f, 0.0f, -1, 35, false, tile);
     }
 
+    public Jalapeno() {
+        super("Jalapeno", 125, 9999.0f,  1800.0f, 0.0f, -1, 35, false);
+    }
+
     // attacks all zombie in the same y    
     public void action(){
 

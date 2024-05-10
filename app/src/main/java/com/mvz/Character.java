@@ -19,6 +19,15 @@ public abstract class Character implements Action{
         this.attack_damage = attack_damage;
     }
 
+    // konstruktor untuk inventory
+    public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage){      
+        this.health = health;
+        this.name = name;
+        this.isAquatic = isAquatic;
+        this.attack_speed = attack_speed;
+        this.attack_damage = attack_damage;
+    }
+
     // mengetahui koordinat plant maupun zombie
     public Tile getTile() {
         return tile;

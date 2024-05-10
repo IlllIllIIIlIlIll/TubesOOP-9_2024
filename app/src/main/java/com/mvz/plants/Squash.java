@@ -8,6 +8,10 @@ public class Squash extends Plant {
         super("Squash", 50, 9999.0f,  5000.0f, 0.0f, 1, 10, false, tile);
     }
 
+    public Squash() {
+        super("Squash", 50, 9999.0f,  5000.0f, 0.0f, 1, 10, false);
+    }
+
     public void attack(){
 
     }

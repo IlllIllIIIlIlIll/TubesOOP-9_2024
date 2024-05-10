@@ -2,5 +2,6 @@
     "java.project.sourcePaths": [
         "src",
         "app/src/main/java/com"
-    ]
+    ],
+    "java.compile.nullAnalysis.mode": "automatic"
 }
