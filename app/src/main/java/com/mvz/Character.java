@@ -5,7 +5,7 @@ public abstract class Character implements Action{
     protected String name;
     protected Float health;
     protected boolean isAquatic;
-    protected long attack_speed;   // float karena bisa didiskon 50% oleh snowpea
+    protected Float attack_speed;   // float karena bisa didiskon 50% oleh snowpea
     protected Float attack_damage;
     protected Tile tile;
 
