@@ -44,6 +44,7 @@ public class Map {
         String landcolor = "\033[0;32m";
         String reset = "\033[0m"; // Reset the color
     
+        System.out.println("Sun value: " + Sun.getSun());
         for (int j = 0; j < getNumberOfRows(); j++) {
             for (int i = 0; i < getNumberOfColumns(); i++) {
                 Tile currentTile = getTile(i, j);

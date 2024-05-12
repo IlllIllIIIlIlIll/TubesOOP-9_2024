@@ -7,7 +7,7 @@ public class Deck {
     private static Deck instance;
     private static List<Plant> plants;
 
-    private Deck() {
+    public Deck() {
         plants = new ArrayList<>();
     }
 

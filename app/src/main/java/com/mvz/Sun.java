@@ -7,6 +7,10 @@ public class Sun {
         return value;
     }
 
+    public static void setSun(Integer value){
+        Sun.value = value;
+    }
+
     public static void decreaseSun(Integer value){
         Sun.value-=value;
     }

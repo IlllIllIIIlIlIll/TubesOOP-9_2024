@@ -12,19 +12,21 @@ public class Game {
     private Timer timer;
     private Random random;
     private Boolean isDaytime;
-    private Player player;
     private Thread sunThread;
     private Thread zombieThread;
+    private boolean isPaused = false;
 
-    // Displays inventory (plant + cost)
+    public Map getMap(){
+        return map;
+    }
 
-    // Player pick plants in deck
-
+    public void setMap(Map map){
+        this.map = map;
+    }
     // GAME STARTS
 
     // Generate map
-    public Game(Player player) {
-        this.player = player;
+    public Game() {
         this.map = new Map();
         this.timer = new Timer();
         this.random = new Random();
@@ -32,31 +34,42 @@ public class Game {
     }
 
     // new thread for sun generating
-    // changing daytime/nighttime for every 100 seconds
-    // if its daytime, generate sun 25 every (5-10) seconds call increaseSun() method from Player class
+    // Method to start generating sun based on the game's day cycle
     public void generateSun() {
         sunThread = new Thread(() -> {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    // Toggle between daytime and nighttime
-                    isDaytime = !isDaytime;
+                    toggleDayNight();
 
-                    // If it's daytime, generate sun 25 every (5-10) seconds
                     if (isDaytime) {
-                        int delay = 5000 + random.nextInt(5000); // Random delay between 5 and 10 seconds
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                Sun.increaseSun(25);
-                            }
-                        }, delay);
+                        generateSunPeriodically();
                     }
                 }
             }, 0, 100000); // Start immediately and run every 100 seconds
         });
         sunThread.start();
     }
+
+    private void toggleDayNight() {
+        isDaytime = !isDaytime; // Toggle daytime and nighttime
+    }
+
+    private void generateSunPeriodically() {
+        int delay = 5000 + random.nextInt(5000); // Random delay between 5 and 10 seconds
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                increaseSun(25); // Increase sun points by 25
+            }
+        }, delay);
+    }
+
+    public void increaseSun(int amount) {
+        Sun.increaseSun(amount);
+    }
+
+
 
 
     // new thread for zombie spawning, after 20 seconds
@@ -104,4 +117,26 @@ public class Game {
         zombieThread.start();
     }
     
+
+    public synchronized void pauseGame() {
+        isPaused = true;
+        // Handling for stopping threads or pausing their execution
+        // This could be more complex depending on how threads are managed
+    }
+
+    public synchronized void resumeGame() {
+        isPaused = false;
+        // Handling for resuming threads or starting them if not alive
+        if (!sunThread.isAlive()) {
+            generateSun();
+        }
+        if (!zombieThread.isAlive()) {
+            startSpawningZombies();
+        }
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
 }
