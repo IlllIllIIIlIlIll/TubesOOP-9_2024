@@ -8,6 +8,10 @@ public class Wallnut extends Plant {
         super("Wall nut", 50, 1000.0f,  0.0f, 0.0f, 0, 20, false, tile);
     }
 
+    public Wallnut() {
+        super("Wall nut", 50, 1000.0f,  0.0f, 0.0f, 0, 20, false);
+    }
+    
     // do nothing
     public void action(){
 

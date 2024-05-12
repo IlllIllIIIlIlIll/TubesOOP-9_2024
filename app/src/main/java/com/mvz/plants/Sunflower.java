@@ -8,6 +8,10 @@ public class Sunflower extends Plant {
         super("Sunflower", 50, 100.0f,  0.0f, 0.0f, 0, 10, false, tile);
     }
 
+    public Sunflower() {
+        super("Sunflower", 50, 100.0f,  0.0f, 0.0f, 0, 10, false);
+    }
+
     // produce 25 sun per 10 sec
     public void action(){
 

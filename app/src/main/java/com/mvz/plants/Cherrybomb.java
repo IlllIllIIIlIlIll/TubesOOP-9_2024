@@ -13,6 +13,10 @@ public class Cherrybomb extends Plant {
         super("Cherry bomb", 150, 9999.0f,  1800.0f, 0.0f, 9, 30, false, tile);
     }
 
+    public Cherrybomb() {
+        super("Cherry bomb", 150, 9999.0f,  1800.0f, 0.0f, 9, 30, false);
+    }
+
     // immediately attack zombies within the tile and surrounding +1 tile (3x3)
     public void action(){
         Tile currentTile = this.getTile();
