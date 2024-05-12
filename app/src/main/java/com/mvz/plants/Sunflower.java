@@ -14,6 +14,7 @@ public class Sunflower extends Plant {
 
     // produce 25 sun per 10 sec
     public void action(){
+        
 
     }
 }
