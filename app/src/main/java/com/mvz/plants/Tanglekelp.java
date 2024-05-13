@@ -10,10 +10,6 @@ public class Tanglekelp extends Plant {
         super("Tangle kelp", 80, 9999.0f,  9999.0f, 0.0f, 1, 20, true, tile);
     }
 
-    public Tanglekelp() {
-        super("Tangle kelp", 80, 9999.0f,  9999.0f, 0.0f, 1, 20, true);
-    }
-
     // hanya attack zommbie pada tile tsb
     // Aquatic, tidak bisa ditaruh di atas lilypad
     public void action(){
@@ -21,11 +17,12 @@ public class Tanglekelp extends Plant {
 
         for (Character owner : currentTile.getOwners()) {
             // check if the owner is a zombie
-            if (owner instanceof Zombie && ((Zombie) owner).getHealth()>1) {
+            if (owner instanceof Zombie && ((Zombie) owner).getHealth()>0) {
                 // decrease the health of the zombie by the attack damage of the plant 
                 Float damage = this.getAD();
                 owner.decreaseHealth(damage);
-            }
+            }  
         }
+        this.setHealth(0.0f);
     }
 }
