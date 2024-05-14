@@ -85,6 +85,7 @@ public class ThreadManager {
                 try {
                     Thread.sleep(1000); 
                     if (!game.isPaused()) {
+                        System.out.println("ZOMBIE BISA GERAK");
                         game.getMap().setPosition();
                     }
                 } catch (InterruptedException e) {

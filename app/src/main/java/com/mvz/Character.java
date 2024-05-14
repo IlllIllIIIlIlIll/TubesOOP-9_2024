@@ -1,59 +1,70 @@
 package com.mvz;
 
-public abstract class Character implements Action{
-    // deklarasi variabel
+import java.util.concurrent.*;
+
+public abstract class Character implements Action {
     protected String name;
     protected Float health;
     protected boolean isAquatic;
-    protected Float attack_speed;   // float karena bisa didiskon 50% oleh snowpea
+    protected Float attack_speed;
     protected Float attack_damage;
-    protected Tile tile;
+    protected boolean canAction;
+    protected int x;
+    protected int y;
+    private ScheduledExecutorService executorService;
 
-    // konstruktor
-    public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage, Tile tile){
-        this.tile = tile;
+    public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage, Integer x, Integer y) {
+        this.x = x;
+        this.y = y;
         this.health = health;
         this.name = name;
         this.isAquatic = isAquatic;
         this.attack_speed = attack_speed;
         this.attack_damage = attack_damage;
+        this.canAction = true;
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        startActionTimer();
     }
 
-    // konstruktor untuk inventory
-    public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage){      
+    public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage) {
         this.health = health;
         this.name = name;
         this.isAquatic = isAquatic;
         this.attack_speed = attack_speed;
         this.attack_damage = attack_damage;
+        this.canAction = true;
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        startActionTimer();
     }
 
-    // mengetahui koordinat plant maupun zombie
-    public Tile getTile() {
-        return tile;
+    public Integer getXChar() {
+        return x;
     }
 
-    // majuin zombie
-    public void setTile(Tile tile) {
-        this.tile = tile;
+    public Integer getYChar() {
+        return y;
     }
 
-    // jika health abis, dissapear
+    public void setXChar(Integer x) {
+        this.x = x;
+    }
+
+    public void setYChar(Integer y) {
+        this.y = y;
+    }
+
     public Float getHealth() {
         return health;
     }
 
-    // hanya bisa mengurangi health, else exception
     public void setHealth(Float health) {
         this.health = health;
     }
 
-    //mengurangi health jika terkena damage
-    public void decreaseHealth(Float damage){
+    public void decreaseHealth(Float damage) {
         this.health -= damage;
     }
 
-    // keperluan print
     public String getName() {
         return name;
     }
@@ -62,27 +73,22 @@ public abstract class Character implements Action{
         this.name = name;
     }
 
-    // harus sama dengan tile yang diinjak
     public boolean isAquatic() {
         return isAquatic;
     }
-
 
     public void setAquatic(boolean isAquatic) {
         this.isAquatic = isAquatic;
     }
 
-    // kalkulasi action()
     public Float getAS() {
         return attack_speed;
     }
 
-    // snowpea issue
     public void setAttack_speed(Float attack_speed) {
         this.attack_speed = attack_speed;
     }
 
-    // kalkulasi action()
     public Float getAD() {
         return attack_damage;
     }
@@ -91,6 +97,15 @@ public abstract class Character implements Action{
         this.attack_damage = attack_damage;
     }
 
-    // bisa berbeda antar tipe tanaman
+    public boolean canAction() {
+        return canAction;
+    }
+
+    private void startActionTimer() {
+        executorService.scheduleAtFixedRate(() -> {
+            canAction = true;
+        }, 0, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
+    }
+
     public abstract void action();
 }

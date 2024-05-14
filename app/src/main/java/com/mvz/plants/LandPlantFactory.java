@@ -9,23 +9,25 @@ private static final String[] types = {"Cherrybomb", "Jalapeno", "Peashooter", "
     
     @Override
     public Plant createPlant(String type, Tile tile) {
+        int x = tile.getX();
+        int y = tile.getY();
         switch (type) {
             case "Cherrybomb":
-                return new Cherrybomb(tile);
+                return new Cherrybomb(x, y);
             case "Jalapeno":
-                return new Jalapeno(tile);
+                return new Jalapeno(x, y);
             case "Peashooter" :
-                return new Peashooter(tile);
+                return new Peashooter(x, y);
             case "Repeater":
-                return new Repeater(tile);
+                return new Repeater(x, y);
             case "Snowpea" :
-                return new Snowpea(tile);
+                return new Snowpea(x, y);
             case "Squash" :
-                return new Squash(tile);
+                return new Squash(x, y);
             case "Sunflower" :
-                return new Sunflower(tile);
+                return new Sunflower(x, y);
             case "Wallnut" :
-                return new Wallnut(tile);
+                return new Wallnut(x, y);
             default:
                 throw new IllegalArgumentException("Invalid type: " + type);
         }

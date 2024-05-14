@@ -1,7 +1,6 @@
 package com.mvz.plants;
 
 import com.mvz.Plant;
-import com.mvz.Tile;
 import com.mvz.Zombie;
 
 import java.util.concurrent.Executors;
@@ -13,8 +12,8 @@ import com.mvz.Character;
 public class Peashooter extends Plant {
 
     private ScheduledExecutorService executorService;
-    public Peashooter(Tile tile) {
-        super("Peashooter", 100, 100.0f,  25.0f, 4.0f, -1, 10, false, tile);
+    public Peashooter(Integer x, Integer y) {
+        super("Peashooter", 100, 100.0f,  25.0f, 4.0f, -1, 10, false, x, y);
         executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
@@ -25,26 +24,26 @@ public class Peashooter extends Plant {
     
     // how to attack zombie
     public void action(){
-        // get peashooter's position  
-        executorService.scheduleAtFixedRate(() ->{
-            Tile currentTile = getTile();
-            int x = currentTile.getX();
-            int y = currentTile.getY();
+        // // get peashooter's position  
+        // executorService.scheduleAtFixedRate(() ->{
+        //     Tile currentTile = getTile();
+        //     int x = currentTile.getX();
+        //     int y = currentTile.getY();
             
-            // same x and 
-            for (int i = x ; i <= 9; i++) {
-                Tile targetTile = getTile();
+        //     // same x and 
+        //     for (int i = x ; i <= 9; i++) {
+        //         Tile targetTile = getTile();
 
-                for (Character owner : targetTile.getOwners()) {
-                    if (owner instanceof Zombie && ((Zombie) owner).getTile().getY() == y) {
-                    // Attacking the zombie
-                        Float damage = this.getAD();
-                        owner.decreaseHealth(damage);
-                    }
-                    break;
-                    }
-                }
-            }   , 0, 4, TimeUnit.SECONDS); 
+        //         for (Character owner : targetTile.getOwners()) {
+        //             if (owner instanceof Zombie && ((Zombie) owner).getTile().getY() == y) {
+        //             // Attacking the zombie
+        //                 Float damage = this.getAD();
+        //                 owner.decreaseHealth(damage);
+        //             }
+        //             break;
+        //             }
+        //         }
+        //     }   , 0, 4, TimeUnit.SECONDS); 
 
         }
 }

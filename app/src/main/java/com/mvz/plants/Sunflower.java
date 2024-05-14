@@ -5,14 +5,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.mvz.Plant;
-import com.mvz.Tile;
 import com.mvz.Sun; 
 
 public class Sunflower extends Plant {
     private ScheduledExecutorService executorService;
     
-    public Sunflower(Tile tile) {
-        super("Sunflower", 50, 100.0f,  0.0f, 0.0f, 0, 10, false, tile);
+    public Sunflower(Integer x, Integer y) {
+        super("Sunflower", 50, 100.0f,  0.0f, 0.0f, 0, 10, false, x, y);
         executorService = Executors.newSingleThreadScheduledExecutor();
     }
 

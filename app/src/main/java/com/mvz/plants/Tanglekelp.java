@@ -6,23 +6,27 @@ import com.mvz.Character;
 import com.mvz.Zombie;
 
 public class Tanglekelp extends Plant {
-    public Tanglekelp(Tile tile) {
-        super("Tangle kelp", 80, 9999.0f,  9999.0f, 0.0f, 1, 20, true, tile);
+    public Tanglekelp(Integer x, Integer y) {
+        super("Tangle kelp", 80, 9999.0f,  9999.0f, 0.0f, 1, 20, true, x, y);
+    }
+
+    public Tanglekelp() {
+        super("Tangle kelp", 80, 9999.0f,  9999.0f, 0.0f, 1, 20, true);
     }
 
     // hanya attack zommbie pada tile tsb
     // Aquatic, tidak bisa ditaruh di atas lilypad
     public void action(){
-        Tile currentTile = this.getTile();
+        // Tile currentTile = this.getTile();
 
-        for (Character owner : currentTile.getOwners()) {
-            // check if the owner is a zombie
-            if (owner instanceof Zombie && ((Zombie) owner).getHealth()>0) {
-                // decrease the health of the zombie by the attack damage of the plant 
-                Float damage = this.getAD();
-                owner.decreaseHealth(damage);
-            }  
-        }
-        this.setHealth(0.0f);
+        // for (Character owner : currentTile.getOwners()) {
+        //     // check if the owner is a zombie
+        //     if (owner instanceof Zombie && ((Zombie) owner).getHealth()>0) {
+        //         // decrease the health of the zombie by the attack damage of the plant 
+        //         Float damage = this.getAD();
+        //         owner.decreaseHealth(damage);
+        //     }  
+        // }
+        // this.setHealth(0.0f);
     }
 }

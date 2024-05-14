@@ -9,11 +9,13 @@ private static final String[] types = {"Duckytube" /* , "Dolphinrider"*/};
 
     @Override
     public Zombie createZombie (String type, Tile tile) {
+        int x = tile.getX();
+        int y = tile.getY();
         switch (type) {
             case "Duckytube":
-                return new Duckytube(tile);
+                return new Duckytube(x, y);
             // case "Dolphinrider":
-            //     return new Dolphinrider(tile);
+            //     return new Dolphinrider(x, y);
             // ... tambahkan water zombie lain jika ada
             default:
                 throw new IllegalArgumentException("Invalid type: " + type);

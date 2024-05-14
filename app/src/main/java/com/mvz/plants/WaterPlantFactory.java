@@ -9,11 +9,13 @@ private static final String[] types = {"Lilypad", "Tanglekelp"};
     
     @Override
     public Plant createPlant(String type, Tile tile) {
+        int x = tile.getX();
+        int y = tile.getY();
         switch (type) {
             case "Lilypad":
-                return new Lilypad(tile);
+                return new Lilypad(x, y);
             case "Tanglekelp":
-                return new Tanglekelp(tile);
+                return new Tanglekelp(x, y);
             default:
                 throw new IllegalArgumentException("Invalid type: " + type);
         }

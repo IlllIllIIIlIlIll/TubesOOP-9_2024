@@ -9,11 +9,13 @@ private static final String[] types = {"Normal", "Conehead" /*, "Buckethead", "F
     
     @Override
     public Zombie createZombie(String type, Tile tile) {
+        int x = tile.getX();
+        int y = tile.getY();
         switch (type) {
             case "Normal":
-                return new Normal(tile);
+                return new Normal(x, y);
             case "Conehead":
-                return new Conehead(tile);
+                return new Conehead(x, y);
             // ... tambahkan land zombie lain jika ada
             default:
                 throw new IllegalArgumentException("Invalid type: " + type);
