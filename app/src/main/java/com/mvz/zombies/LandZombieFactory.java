@@ -9,7 +9,7 @@ private static final String[] types = {"Normal", "Conehead" /*, "Buckethead", "F
     
     @Override
     public Zombie createZombie(String type, Tile tile) {
-        int x = tile.getX();
+        int x = 10;
         int y = tile.getY();
         switch (type) {
             case "Normal":

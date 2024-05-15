@@ -33,8 +33,6 @@ public abstract class Character implements Action {
         this.attack_speed = attack_speed;
         this.attack_damage = attack_damage;
         this.canAction = true;
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
-        startActionTimer();
     }
 
     public Integer getXChar() {
@@ -97,8 +95,12 @@ public abstract class Character implements Action {
         this.attack_damage = attack_damage;
     }
 
-    public boolean canAction() {
+    public boolean getCanAction() {
         return canAction;
+    }
+
+    public void setCanAction(boolean canAction) {
+        this.canAction = canAction;
     }
 
     private void startActionTimer() {

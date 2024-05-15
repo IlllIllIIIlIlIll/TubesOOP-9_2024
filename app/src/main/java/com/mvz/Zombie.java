@@ -45,23 +45,6 @@ public abstract class Zombie extends Character {
         this.attack_speed = attack_speed;
     }
 
-    public void applySnowPeaEffect() {
-        if (!isChilled) {
-            isChilled = true;
-            setMSD(getMS() * 2);
-            setATS(getAS() * 2);
-            executorService.schedule(this::resetSnowPeaEffect, 3, TimeUnit.SECONDS);
-        }
-    }
-
-    private void resetSnowPeaEffect() {
-        if (isChilled) {
-            isChilled = false;
-            setMSD(getMS() / 2);
-            setATS(getAS() / 2);
-        }
-    }
-
     private void startMovementTimer() {
         executorService.scheduleAtFixedRate(() -> {
             canMove = true;

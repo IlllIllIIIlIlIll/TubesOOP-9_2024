@@ -2,6 +2,8 @@ package com.mvz;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class Map {
     private List<Plant> plantOnTile;
@@ -24,6 +26,7 @@ public class Map {
                 tile[i][j] = new Tile(i, j, isAquatic);
             }
         }
+
     }
 
     public Tile getTile(int x, int y) {
@@ -103,7 +106,7 @@ public class Map {
                     moveZombie(currentTile, nextTile, z);
                     moved = true;
                 }
-                z.setCM(); // Reset the canMove state
+                z.setCM();
             }
 
             if (!moved) {
@@ -131,7 +134,7 @@ public class Map {
         for (Character owner : tile.getOwners()) {
             if (owner instanceof Plant) {
                 Plant plant = (Plant) owner;
-                if (plant.getHealth() > 0 && zombie.canAction()) {
+                if (plant.getHealth() > 0 && zombie.getCanAction()) {
                     zombie.action();
                     return true;
                 }
@@ -154,29 +157,88 @@ public class Map {
         tile[x][y].addOwner(z);
     }
 
-    public void placePlant(Plant p, int x, int y) {
-        Tile targetTile = getTile(x, y);
-        boolean containsLilypad = false;
-        Plant lilypad = null;
-        for (Character owner : targetTile.getOwners()) {
-            if (owner.getName().equals("Lilypad")) {
-                containsLilypad = true;
-                lilypad = (Plant) owner;
-                break;
+
+        public void attackZombies() {
+        HashMap<Tile, Float> damageMap = new HashMap<>();
+
+        for (Plant plant : plantOnTile) {
+            if (!plant.getCanAction()) {
+                continue;
             }
+
+            int plantX = plant.getXChar();
+            int plantY = plant.getYChar();
+            int range = plant.getRange();
+            float attackDamage = plant.getAD();
+
+            switch (range) {
+                case 0:
+                    // Do nothing
+                    break;
+                case 1:
+                    attackTile(damageMap, plantX, plantY, attackDamage);
+                    attackTile(damageMap, plantX - 1, plantY, attackDamage);
+                    attackTile(damageMap, plantX + 1, plantY, attackDamage);
+                    break;
+                case -1:
+                    for (int x = plantX; x < 11; x++) {
+                        if (attackTile(damageMap, x, plantY, attackDamage)) {
+                            break;
+                        }
+                    }
+                    break;
+                case 9:
+                    for (int x = 0; x < 11; x++) {
+                        attackTile(damageMap, x, plantY, attackDamage);
+                    }
+                    break;
+                case 3:
+                    attackTile(damageMap, plantX, plantY, attackDamage);
+                    attackTile(damageMap, plantX - 1, plantY - 1, attackDamage);
+                    attackTile(damageMap, plantX - 1, plantY, attackDamage);
+                    attackTile(damageMap, plantX - 1, plantY + 1, attackDamage);
+                    attackTile(damageMap, plantX, plantY - 1, attackDamage);
+                    attackTile(damageMap, plantX, plantY + 1, attackDamage);
+                    attackTile(damageMap, plantX + 1, plantY - 1, attackDamage);
+                    attackTile(damageMap, plantX + 1, plantY, attackDamage);
+                    attackTile(damageMap, plantX + 1, plantY + 1, attackDamage);
+                    break;
+                default:
+                    // Jika ada tipe range lain
+                    break;
+            }
+
+            plant.setCanAction(false); // Tanaman cooldown lagi untuk melakukan atk
         }
 
-        if (targetTile.getOwners().isEmpty() || containsLilypad) {
-            if (containsLilypad) {
-                p.setHealth(p.getHealth() + lilypad.getHealth());
-            }
+        applyDamageToZombies(damageMap);
+    }
 
-            targetTile.addOwner(p);
-            p.setXChar(x);
-            p.setYChar(y);
-            this.plantOnTile.add(p);
-        } else {
-            System.out.println("Cannot place the plant on a tile that already contains a plant.");
+    private boolean attackTile(HashMap<Tile, Float> damageMap, int x, int y, float damage) {
+        if (x < 0 || x >= 11 || y < 0 || y >= 6) {
+            return false;
+        }
+
+        Tile targetTile = getTile(x, y);
+        if (targetTile.getOwners().stream().anyMatch(owner -> owner instanceof Zombie)) {
+            damageMap.put(targetTile, damageMap.getOrDefault(targetTile, 0f) + damage);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void applyDamageToZombies(HashMap<Tile, Float> damageMap) {
+        for (Entry<Tile, Float> entry : damageMap.entrySet()) {
+            Tile tile = entry.getKey();
+            float damage = entry.getValue();
+
+            for (Character owner : new ArrayList<>(tile.getOwners())) {
+                if (owner instanceof Zombie) {
+                    Zombie zombie = (Zombie) owner;
+                    zombie.decreaseHealth(damage);
+                }
+            }
         }
     }
 }

@@ -32,13 +32,6 @@ public class StartMenu implements Menu{
                     switch (choice) {
                         case 1:
                             startCommand.execute();
-                            // After starting the game, assume we're done with the menu for now
-                            System.out.println("Type 'back to menu' to return to the menu..."); // Modified line
-                            String input = scanner.nextLine(); // Wait for user to type something
-                            while (!input.equalsIgnoreCase("back to menu")) {
-                                System.out.println("Invalid command. Please type 'back to menu' to return to the menu...");
-                                input = scanner.nextLine();
-                            }
                             break;
                         case 2:
                             helpCommand.execute();

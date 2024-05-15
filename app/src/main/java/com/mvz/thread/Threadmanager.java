@@ -30,6 +30,11 @@ public class ThreadManager {
         mainThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 String input = scanner.nextLine();  
+
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                
                 game.getMap().printMap();
                 if (input.equalsIgnoreCase("pause")) {
                     pauseThreads();
@@ -85,7 +90,7 @@ public class ThreadManager {
                 try {
                     Thread.sleep(1000); 
                     if (!game.isPaused()) {
-                        System.out.println("ZOMBIE BISA GERAK");
+                        game.getMap().attackZombies();
                         game.getMap().setPosition();
                     }
                 } catch (InterruptedException e) {
