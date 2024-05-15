@@ -22,6 +22,6 @@ public class Sunflower extends Plant {
 
     // produce 25 sun per 10 sec
     public void action(){
-        executorService.scheduleAtFixedRate(() -> Sun.increaseSun(25), 0, 10, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(() -> Sun.increaseSun(25), 0, 3, TimeUnit.SECONDS);
     }
 }
