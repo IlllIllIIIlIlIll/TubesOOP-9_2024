@@ -4,22 +4,21 @@ import com.mvz.Zombie;
 
 public class Polevaulting extends Zombie {
 
+    private boolean isJumping = false;
+
     public Polevaulting(Integer x, Integer y) {
         super("Pole vaulting", 175.0f, 100.0f, 1.0f, 5.0f, false, x, y);
     }
 
-    // how to attack plant within x - 1
     public void action(){
-        // if (x > 0) {
-        //     currentTile.setX(x - 1);
-        //     Tile nextLeftTile = getTile();
-        //     for (com.mvz.Character owner : nextLeftTile.getOwners()) {
-        //         if (owner instanceof com.mvz.Plant) {
-        //             float damage = this.getAD();
-        //             owner.decreaseHealth(damage);
-        //             return;
-        //         }
-        //     }
-        // }
+        // kalau udah lompat
+        int newX = x - 1;
+        if (isJumping) {
+            return;
+        }
+        else {
+            x = newX;
+            isJumping = true;
+        }
     }
 }
