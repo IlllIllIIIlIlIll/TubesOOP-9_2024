@@ -36,7 +36,7 @@ public class StartGameCommand implements Command {
                 System.out.println("Game loaded successfully.");
                 validChoice = true;  
             } else if (response.equals("no")) {
-                game = new Game();
+                game = new Game(player);
                 System.out.println("New game started.");
                 validChoice = true; 
             } else {

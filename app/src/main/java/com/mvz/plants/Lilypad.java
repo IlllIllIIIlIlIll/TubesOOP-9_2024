@@ -15,4 +15,7 @@ public class Lilypad extends Plant {
     public void action(){
 
     }
+    public void test(){
+        
+    }
 }

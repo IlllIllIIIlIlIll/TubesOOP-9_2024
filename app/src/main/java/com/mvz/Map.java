@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.mvz.plants.Lilypad;
 import com.mvz.plants.Peashooter;
 
 public class Map {
@@ -133,7 +134,12 @@ public class Map {
             for (Tile t : tiles) {
                 for (Character owner : new ArrayList<>(t.getOwners())) {
                     if (owner instanceof Plant && owner.getHealth() <= 0) {
-                        t.removeOwner(owner);
+                        if (owner.getName() == "Lilypad"){
+                            ((Lilypad) owner).test();
+                        }
+                        else{
+                            t.removeOwner(owner);
+                        }
                     }
                 }
             }

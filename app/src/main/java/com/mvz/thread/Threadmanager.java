@@ -1,6 +1,8 @@
 package com.mvz.thread;
 
 import com.mvz.Game;
+import com.mvz.menu.PauseMenu;
+
 import java.util.Scanner;
 
 public class ThreadManager {
@@ -23,22 +25,16 @@ public class ThreadManager {
         startPositionUpdatingThread();
     }
 
-
-
     private void startMainThread() {
         game.startGame();
         mainThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                String input = scanner.nextLine();  
+                String input = scanner.nextLine();
 
-                // // better user experience
-                // System.out.print("\033[H\033[2J");
-                // System.out.flush();
-                
                 game.getMap().printMap();
                 if (input.equalsIgnoreCase("pause")) {
                     pauseThreads();
-                    System.out.println("Game paused!");
+                    new PauseMenu(game).displayMenu();
                 } else if (input.equalsIgnoreCase("resume")) {
                     resumeThreads();
                     System.out.println("Game resumed!");
@@ -48,16 +44,23 @@ public class ThreadManager {
         mainThread.start();
     }
 
-
-
     private void startZombieSpawningThread() {
         zombieSpawningThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
+                synchronized (game) {
+                    while (game.isPaused()) {
+                        try {
+                            game.wait();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
                 try {
+                    Thread.sleep(5000);
                     if (!game.isPaused()) {
                         game.startSpawningZombies();
                     }
-                    Thread.sleep(5000); 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -66,18 +69,25 @@ public class ThreadManager {
         zombieSpawningThread.start();
     }
 
-
-
     private void startSunGeneratingThread() {
         sunGeneratingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
+                synchronized (game) {
+                    while (game.isPaused()) {
+                        try {
+                            game.wait();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
                 try {
                     Thread.sleep(3000);
                     if (!game.isPaused()) {
-                        game.generateSun(); 
+                        game.generateSun();
                     }
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); 
+                    Thread.currentThread().interrupt();
                 }
             }
         });
@@ -87,8 +97,17 @@ public class ThreadManager {
     private void startPositionUpdatingThread() {
         positionUpdatingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
+                synchronized (game) {
+                    while (game.isPaused()) {
+                        try {
+                            game.wait();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
                 try {
-                    Thread.sleep(1000); 
+                    Thread.sleep(1000);
                     if (!game.isPaused()) {
                         game.getMap().attackZombies();
                         game.getMap().setPosition();
@@ -100,10 +119,7 @@ public class ThreadManager {
         });
         positionUpdatingThread.start();
     }
-    
 
-
-    
     public void pauseThreads() {
         game.pauseGame();
     }

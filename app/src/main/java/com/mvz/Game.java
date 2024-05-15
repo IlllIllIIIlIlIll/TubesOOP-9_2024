@@ -6,8 +6,8 @@ import java.util.TimerTask;
 
 import com.mvz.zombies.*;
 
-
 public class Game {
+    private Player player;
     private Map map;
     private Timer timer;
     private Random random;
@@ -18,16 +18,17 @@ public class Game {
     private long elapsedTime = 0;
     private long startTime = 0;
 
-    public Map getMap(){
+    public Map getMap() {
         return map;
     }
 
-    public void setMap(Map map){
+    public void setMap(Map map) {
         this.map = map;
     }
 
     // Generate map
-    public Game() {
+    public Game(Player player) {
+        this.player = player;
         this.map = new Map();
         this.timer = new Timer();
         this.random = new Random();
@@ -45,13 +46,13 @@ public class Game {
                         generateSunPeriodically();
                     }
                 }
-            }, 0, 100000); 
+            }, 0, 100000);
         });
         sunThread.start();
     }
 
     private void toggleDayNight() {
-        isDaytime = !isDaytime; 
+        isDaytime = !isDaytime;
     }
 
     private void generateSunPeriodically() {
@@ -59,8 +60,8 @@ public class Game {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (getElapsedTime() < 100000) { 
-                    increaseSun(25); 
+                if (getElapsedTime() < 100000) {
+                    increaseSun(25);
                 }
             }
         }, delay);
@@ -70,24 +71,28 @@ public class Game {
         Sun.increaseSun(amount);
     }
 
-
-
-
-
     public void startSpawningZombies() {
         ZombieFactory landFactory = new LandZombieFactory();
         ZombieFactory waterFactory = new WaterZombieFactory();
         zombieThread = new Thread(() -> {
             while (true) {
-                try {
-                    Thread.sleep(5000); 
-                } catch (InterruptedException e) {
-                    // Handle exception
+                synchronized (Game.this) {
+                    while (isPaused) {
+                        try {
+                            Game.this.wait();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
                 }
-    
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
                 for (int i = 0; i < 6; i++) {
                     if (random.nextFloat() < 0.3) {
-
                         Zombie z;
                         Tile tile = map.getTile(10, i);
                         if (tile != null) {
@@ -110,11 +115,7 @@ public class Game {
         });
         zombieThread.start();
     }
-    
 
-
-
-    
     public void startGame() {
         startTime = System.currentTimeMillis();
     }
@@ -127,12 +128,7 @@ public class Game {
     public synchronized void resumeGame() {
         isPaused = false;
         startTime = System.currentTimeMillis();
-        if (!sunThread.isAlive()) {
-            generateSun();
-        }
-        if (!zombieThread.isAlive()) {
-            startSpawningZombies();
-        }
+        notifyAll();
     }
 
     public long getElapsedTime() {
@@ -143,8 +139,7 @@ public class Game {
         }
     }
 
-    public boolean isPaused() {
+    public synchronized boolean isPaused() {
         return isPaused;
     }
-
 }
