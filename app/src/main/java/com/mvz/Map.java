@@ -1,9 +1,14 @@
 package com.mvz;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import com.mvz.plants.Peashooter;
 
 public class Map {
     private List<Plant> plantOnTile;
@@ -26,7 +31,9 @@ public class Map {
                 tile[i][j] = new Tile(i, j, isAquatic);
             }
         }
-
+        Peashooter a = new Peashooter(1,1);
+        tile[1][1].addOwner(a);
+        plantOnTile.add(a);
     }
 
     public Tile getTile(int x, int y) {
@@ -104,7 +111,10 @@ public class Map {
 
                 if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
                     moveZombie(currentTile, nextTile, z);
+                    z.resetAttackTimer();
                     moved = true;
+                } else {
+                    z.initiateAttack();
                 }
                 z.setCM();
             }
@@ -135,7 +145,8 @@ public class Map {
             if (owner instanceof Plant) {
                 Plant plant = (Plant) owner;
                 if (plant.getHealth() > 0 && zombie.getCanAction()) {
-                    zombie.action();
+                    zombie.setCanAction(false);
+                    plant.decreaseHealth(zombie.getAD());
                     return true;
                 }
             }
@@ -157,8 +168,7 @@ public class Map {
         tile[x][y].addOwner(z);
     }
 
-
-        public void attackZombies() {
+    public void attackZombies() {
         HashMap<Tile, Float> damageMap = new HashMap<>();
 
         for (Plant plant : plantOnTile) {
@@ -176,45 +186,45 @@ public class Map {
                     // Do nothing
                     break;
                 case 1:
-                    attackTile(damageMap, plantX, plantY, attackDamage);
-                    attackTile(damageMap, plantX - 1, plantY, attackDamage);
-                    attackTile(damageMap, plantX + 1, plantY, attackDamage);
+                    attackTile(damageMap, plantX, plantY, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
                     break;
                 case -1:
                     for (int x = plantX; x < 11; x++) {
-                        if (attackTile(damageMap, x, plantY, attackDamage)) {
+                        if (attackTile(damageMap, x, plantY, attackDamage, plant.getName())) {
                             break;
                         }
                     }
                     break;
                 case 9:
                     for (int x = 0; x < 11; x++) {
-                        attackTile(damageMap, x, plantY, attackDamage);
+                        attackTile(damageMap, x, plantY, attackDamage, plant.getName());
                     }
                     break;
                 case 3:
-                    attackTile(damageMap, plantX, plantY, attackDamage);
-                    attackTile(damageMap, plantX - 1, plantY - 1, attackDamage);
-                    attackTile(damageMap, plantX - 1, plantY, attackDamage);
-                    attackTile(damageMap, plantX - 1, plantY + 1, attackDamage);
-                    attackTile(damageMap, plantX, plantY - 1, attackDamage);
-                    attackTile(damageMap, plantX, plantY + 1, attackDamage);
-                    attackTile(damageMap, plantX + 1, plantY - 1, attackDamage);
-                    attackTile(damageMap, plantX + 1, plantY, attackDamage);
-                    attackTile(damageMap, plantX + 1, plantY + 1, attackDamage);
+                    attackTile(damageMap, plantX, plantY, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX - 1, plantY - 1, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX - 1, plantY + 1, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX, plantY - 1, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX, plantY + 1, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX + 1, plantY - 1, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
+                    attackTile(damageMap, plantX + 1, plantY + 1, attackDamage, plant.getName());
                     break;
                 default:
-                    // Jika ada tipe range lain
+                    // If there are other range types
                     break;
             }
 
-            plant.setCanAction(false); // Tanaman cooldown lagi untuk melakukan atk
+            plant.setCanAction(false); // Reset plant cooldown after attacking
         }
 
         applyDamageToZombies(damageMap);
     }
 
-    private boolean attackTile(HashMap<Tile, Float> damageMap, int x, int y, float damage) {
+    private boolean attackTile(HashMap<Tile, Float> damageMap, int x, int y, float damage, String plantName) {
         if (x < 0 || x >= 11 || y < 0 || y >= 6) {
             return false;
         }
@@ -222,10 +232,39 @@ public class Map {
         Tile targetTile = getTile(x, y);
         if (targetTile.getOwners().stream().anyMatch(owner -> owner instanceof Zombie)) {
             damageMap.put(targetTile, damageMap.getOrDefault(targetTile, 0f) + damage);
+
+            if (plantName.equals("Snow pea")) {
+                applyChillingEffectToZombies(targetTile);
+            }
+
             return true;
         }
 
         return false;
+    }
+
+    private void applyChillingEffectToZombies(Tile targetTile) {
+        for (Character owner : targetTile.getOwners()) {
+            if (owner instanceof Zombie) {
+                Zombie zombie = (Zombie) owner;
+                if (!zombie.getCH()) {
+                    float originalSpeed = zombie.getMS();
+                    float originalAttackSpeed = zombie.getAS();
+                    zombie.setMSD(originalSpeed / 2);
+                    zombie.setAttack_speed(originalAttackSpeed / 2);
+                    zombie.setCH();
+
+                    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+                    executorService.schedule(() -> {
+                        if (zombie.getCH()) {
+                            zombie.setMSD(originalSpeed);
+                            zombie.setAttack_speed(originalAttackSpeed);
+                            zombie.setCH();
+                        }
+                    }, 3, TimeUnit.SECONDS);
+                }
+            }
+        }
     }
 
     private void applyDamageToZombies(HashMap<Tile, Float> damageMap) {
@@ -237,6 +276,7 @@ public class Map {
                 if (owner instanceof Zombie) {
                     Zombie zombie = (Zombie) owner;
                     zombie.decreaseHealth(damage);
+                    System.out.println("BOOM! "+ zombie.getName() + "terkena damage " + damage + ", sisa darah " + zombie.getHealth() + "!");
                 }
             }
         }

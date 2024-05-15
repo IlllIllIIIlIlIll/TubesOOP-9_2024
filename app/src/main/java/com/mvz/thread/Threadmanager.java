@@ -31,9 +31,9 @@ public class ThreadManager {
             while (!Thread.currentThread().isInterrupted()) {
                 String input = scanner.nextLine();  
 
-                // better user experience
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
+                // // better user experience
+                // System.out.print("\033[H\033[2J");
+                // System.out.flush();
                 
                 game.getMap().printMap();
                 if (input.equalsIgnoreCase("pause")) {

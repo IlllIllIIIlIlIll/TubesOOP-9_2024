@@ -12,12 +12,10 @@ public class Snowpea extends Plant {
      private ScheduledExecutorService executorService;
     public Snowpea(Integer x, Integer y) {
         super("Snow pea", 175, 100.0f,  25.0f, 4.0f, -1, 10, false, x, y);
-        executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
     public Snowpea() {
         super("Snow pea", 175, 100.0f,  25.0f, 4.0f, -1, 10, false);
-        executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
     // reduce 50% of nearest zombie attackspd and movementspd that has greater x

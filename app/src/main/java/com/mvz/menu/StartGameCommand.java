@@ -52,6 +52,10 @@ public class StartGameCommand implements Command {
             player.customizeDeck();
             // long previousElapsedTime = loadElapsedTime();
 
+            // better user experience
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            
             threadManager = new ThreadManager(game, scanner);
             // Start the threads
             threadManager.startThreads();
