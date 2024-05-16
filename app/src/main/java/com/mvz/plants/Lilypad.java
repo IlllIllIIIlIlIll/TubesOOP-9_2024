@@ -33,42 +33,43 @@ public class Lilypad extends Plant implements PlantComponent{
     public void removeOnLilypad(PlantComponent plant){
         children.remove(plant);
     }
-    // tanaman bisa ditaruh di isAquatic tile jika terdapat lilypad disana  
-    public void action(){
-        
-        /*for (PlantComponent plant : children) {
-            ((Character) plant).action();
+
+    private float getTotalHealth() {
+        float totalHealth = this.health;
+        for (PlantComponent plant : children) {
+            totalHealth += ((Plant) plant).getHealth();
         }
-        */
+        return totalHealth;
     }
 
     @Override
     public void decreaseHealth(Float damage) {
-        for(PlantComponent plant : children) {
-            if(((Plant) plant).getHealth() > 0){
-                ((Plant) plant).decreaseHealth(damage); 
+        float totalHealth = getTotalHealth() - damage;
+
+        if (totalHealth <= 0) {
+            this.health = 0f;
+            for (PlantComponent plant : children) {
+                ((Plant) plant).setHealth(0f);
             }
-            else{    
-                this.health -= damage;
-                break;
+        } else {
+            float remainingDamage = damage;
+            for (PlantComponent plant : children) {
+                float plantHealth = ((Plant) plant).getHealth();
+                if (remainingDamage >= plantHealth) {
+                    remainingDamage -= plantHealth;
+                    ((Plant) plant).setHealth(0f);
+                } else {
+                    ((Plant) plant).decreaseHealth(remainingDamage);
+                    remainingDamage = 0f;
+                }
             }
+            this.health -= remainingDamage;
         }
     }
 
    @Override 
     public boolean canBePlacedOnLilyPad(){
         return children.isEmpty();
-        /*for(PlantComponent plant : children) {
-            boolean canAction;
-            if(((Plant) plant)()){
-                canAction = false; 
-            }
-            else{
-                canAction = true;
-            }
-        }
-        return canAction;
-        */
     }
     
 
@@ -111,6 +112,10 @@ public class Lilypad extends Plant implements PlantComponent{
             }
         }
         return plants;
+    }
+
+    public void action(){
+
     }
 
 }

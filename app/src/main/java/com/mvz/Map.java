@@ -15,6 +15,7 @@ public class Map {
     private List<Zombie> zombieOnTile;
     private Tile[][] tile;
     private List<List<Zombie>> zombiesByY;
+    private static final int MAX_ZOMBIES = 10;
 
     public Map() {
         tile = new Tile[11][6];
@@ -30,6 +31,8 @@ public class Map {
                 tile[i][j] = new Tile(i, j, isAquatic);
             }
         }
+
+        // tanaman testing aja
         Snowpea a = new Snowpea(5, 1);
         tile[5][1].addOwner(a);
     }
@@ -47,12 +50,14 @@ public class Map {
     }
 
     public void printMap() {
-        String watercolor = "\033[1;34m";
-        String landcolor = "\033[0;32m";
+        String darkWatercolor = "\033[0;34m"; 
+        String darkLandcolor = "\033[0;32m";
         String housecolor = "\033[1;35m";
         String spawncolor = "\033[0;33m";
+        String zombiecolor = "\033[1;31m"; 
+        String plantcolor = "\033[1;92m"; 
         String reset = "\033[0m";
-
+    
         System.out.println("Sun value: " + Sun.getSun());
         for (int j = 0; j < getNumberOfRows(); j++) {
             for (int i = 0; i < getNumberOfColumns(); i++) {
@@ -63,15 +68,22 @@ public class Map {
                 } else if (i == 10) {
                     color = spawncolor;
                 } else if (j == 2 || j == 3) {
-                    color = watercolor;
+                    color = darkWatercolor;
                 } else {
-                    color = landcolor;
+                    color = darkLandcolor;
                 }
                 System.out.print(color + "[");
                 if (currentTile.getOwners().size() > 0) {
                     for (int k = 0; k < 5; k++) {
                         if (k < currentTile.getOwners().size()) {
-                            System.out.print(currentTile.getOwners().get(k).getName().charAt(0));
+                            Character owner = currentTile.getOwners().get(k);
+                            if (owner instanceof Zombie) {
+                                System.out.print(zombiecolor + owner.getName().charAt(0) + reset + color);
+                            } else if (owner instanceof Plant) {
+                                System.out.print(plantcolor + owner.getName().charAt(0) + reset + color);
+                            } else {
+                                System.out.print(" ");
+                            }
                         } else {
                             System.out.print(" ");
                         }
@@ -86,11 +98,11 @@ public class Map {
         System.out.println();
         System.out.println();
     }
+    
 
     public void setPosition() {
         List<Zombie> zombiesToRemove = new ArrayList<>();
-    
-        // Use an iterator to safely remove elements during iteration
+
         Iterator<Zombie> iterator = zombieOnTile.iterator();
         while (iterator.hasNext()) {
             Zombie z = iterator.next();
@@ -98,17 +110,17 @@ public class Map {
                 zombiesToRemove.add(z);
                 continue;
             }
-    
+
             int x = z.getXChar();
             int y = z.getYChar();
-    
+
             boolean moved = false;
             if (x - 1 >= 0 && z.getCM()) {
                 Tile currentTile = getTile(x, y);
                 Tile nextTile = getTile(x - 1, y);
                 boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
                 boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
-    
+
                 if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
                     moveZombie(currentTile, nextTile, z);
                     z.resetAttackTimer();
@@ -118,16 +130,16 @@ public class Map {
                 }
                 z.setCM();
             }
-    
+
             if (!moved) {
                 // Additional logic if the zombie cannot move
                 // e.g., call a defeated function if it reaches the end
             }
         }
-    
+
         // Remove all dead zombies
         zombieOnTile.removeAll(zombiesToRemove);
-    
+
         // Remove all dead plants
         for (Tile[] tiles : tile) {
             for (Tile t : tiles) {
@@ -162,10 +174,12 @@ public class Map {
     }
 
     public void placeZombie(Zombie z, int y) {
-        this.zombieOnTile.add(z);
-        this.zombiesByY.get(y).add(z);
-        int x = z.getXChar();
-        tile[x][y].addOwner(z);
+        if (zombieOnTile.size() < MAX_ZOMBIES) {
+            this.zombieOnTile.add(z);
+            this.zombiesByY.get(y).add(z);
+            int x = z.getXChar();
+            tile[x][y].addOwner(z);
+        }
     }
 
     public void attackZombies() {
@@ -222,7 +236,7 @@ public class Map {
                                 break;
                         }
 
-                        plant.setCanAction(false); // Reset plant cooldown after attacking
+                        plant.setCanAction(false); 
                     }
                 }
             }
@@ -273,9 +287,9 @@ public class Map {
                     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
                     executorService.schedule(() -> {
                         if (zombie.getCH()) {
-                            long timePassed = 3000; // 3 seconds in milliseconds
-                            long remainingMoveTime = (newMoveTime - timePassed + 999) / 2; // Ceil operation
-                            long remainingAttackTime = (newAttackTime - timePassed + 999) / 2; // Ceil operation
+                            long timePassed = 3000; 
+                            long remainingMoveTime = (newMoveTime - timePassed + 999) / 2; 
+                            long remainingAttackTime = (newAttackTime - timePassed + 999) / 2; 
                             zombie.setMSD(originalSpeed);
                             zombie.setATS(originalAttackSpeed);
                             zombie.setTimeRemainingToMove(remainingMoveTime);
@@ -304,7 +318,6 @@ public class Map {
         }
     }
 
-
     public void initExecutors() {
         for (Tile[] row : tile) {
             for (Tile t : row) {
@@ -319,5 +332,4 @@ public class Map {
             }
         }
     }
-    
 }

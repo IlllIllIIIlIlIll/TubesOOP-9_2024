@@ -22,7 +22,7 @@ public class Load {
             return null;
         }
 
-        String directoryPath = "saves"; // Relative path to the 'saves' folder
+        String directoryPath = "saves"; 
         File file = new File(directoryPath, filename + ".json");
 
         if (!file.exists()) {

@@ -23,15 +23,15 @@ public class StartMenu implements Menu {
     public void displayMenu() {
         boolean running = true;
         while (running) {
-            printMenuOptions(); // Method to print menu options
+            printMenuOptions(); 
             try {
                 if (scanner.hasNextInt()) {
                     int choice = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine(); 
                     switch (choice) {
                         case 1:
                             startCommand.execute();
-                            running = false; // Exit the loop after starting the game
+                            running = false; 
                             break;
                         case 2:
                             helpCommand.execute();
@@ -44,21 +44,20 @@ public class StartMenu implements Menu {
                             break;
                         case 5:
                             System.out.println("Exiting game...");
-                            running = false; // Exit the loop and end the program
+                            running = false; 
                             break;
                         default:
                             System.out.println("Invalid option. Please try again.");
                     }
                 } else {
                     System.out.println("Please enter a valid number.");
-                    scanner.next(); // Consume the invalid input
+                    scanner.next(); 
                 }
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
-                scanner.nextLine(); // Clear buffer and handle next input correctly
+                scanner.nextLine(); 
             }
         }
-        // Do not close the scanner here to avoid IllegalStateException in other threads
     }
 
     protected void printMenuOptions() {

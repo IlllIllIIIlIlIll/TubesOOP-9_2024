@@ -14,7 +14,6 @@ public class PlantInstanceCreator implements InstanceCreator<Plant> {
 
     @Override
     public Plant createInstance(Type type) {
-        // Use a default type and tile for creating an instance
         return createPlantInstance("Peashooter", new Tile(0, 0, false));
     }
 

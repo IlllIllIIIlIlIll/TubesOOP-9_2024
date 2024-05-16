@@ -14,7 +14,6 @@ public class ZombieInstanceCreator implements InstanceCreator<Zombie> {
 
     @Override
     public Zombie createInstance(Type type) {
-        // Use a default type and tile for creating an instance
         return createZombieInstance("Normal", new Tile(0, 0, false));
     }
 

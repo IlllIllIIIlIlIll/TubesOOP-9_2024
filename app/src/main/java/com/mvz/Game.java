@@ -7,10 +7,10 @@ import java.util.TimerTask;
 import com.mvz.zombies.*;
 
 public class Game {
-    private Player player;
+    private Player player; // Reserved buat deck
     private Map map;
     // private Timer timer;
-    private transient Random random; // Marking random as transient
+    private transient Random random; 
     private boolean isPaused = false;
     private long elapsedTime = 0;
     private long startTime = 0;
@@ -27,10 +27,10 @@ public class Game {
         this.player = player;
         this.map = new Map();
         // this.timer = new Timer();
-        this.random = new Random(); // Initialize random in constructor
+        this.random = new Random(); 
     }
 
-    // Default constructor needed for Gson deserialization
+    
     public Game() {
         this.random = new Random();
     }
@@ -44,7 +44,7 @@ public class Game {
                     Sun.increaseSun(25);
                 }
             }
-        }, 0, 5000 + random.nextInt(5000)); // schedules the task to run every 5-10 seconds
+        }, 0, 5000 + random.nextInt(5000)); 
     }
 
     public void startSpawningZombies() {

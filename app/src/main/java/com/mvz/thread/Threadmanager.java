@@ -61,7 +61,7 @@ public class ThreadManager {
 
     private void startSunGeneratingThread() {
         sunGeneratingThread = new Thread(() -> {
-            game.generateSun(); // Only call generateSun() once to start the periodic sun generation
+            game.generateSun(); 
         });
         sunGeneratingThread.start();
     }
@@ -92,7 +92,7 @@ public class ThreadManager {
     public void resumeThreads() {
         game.resumeGame();
         synchronized (game) {
-            game.notifyAll(); // Ensure that the game's wait method is interrupted.
+            game.notifyAll(); // stop game biar ga nunggu lagi (wait)
         }
     }
 
