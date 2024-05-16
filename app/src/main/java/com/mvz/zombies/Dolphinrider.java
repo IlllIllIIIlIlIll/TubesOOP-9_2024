@@ -10,6 +10,10 @@ public class Dolphinrider extends Zombie {
         super("Dolphin rider", 175.0f, 100.0f, 1.0f, 5.0f, true, x, y);
     }
 
+    public Dolphinrider() {
+        this(0, 0); // Parameter default untuk load
+    }
+
     public void action(){
         // kalau udah lompat
         int newX = x - 1;

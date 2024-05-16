@@ -1,10 +1,9 @@
 package com.mvz.menu;
 
 import java.util.Scanner;
-
 import com.mvz.*;
 
-public class StartMenu implements Menu{
+public class StartMenu implements Menu {
     private Scanner scanner;
     private Command startCommand;
     private Command helpCommand;
@@ -14,11 +13,10 @@ public class StartMenu implements Menu{
     public StartMenu(Player player) {
         this.scanner = new Scanner(System.in);
         // Initialize commands
-        this.startCommand = new StartGameCommand(player);
+        this.startCommand = new StartGameCommand(player, scanner);
         this.helpCommand = new HelpCommand();
         this.plantListCommand = new PlantListCommand();
         this.zombieListCommand = new ZombieListCommand();
-        
     }
 
     @Override
@@ -29,9 +27,11 @@ public class StartMenu implements Menu{
             try {
                 if (scanner.hasNextInt()) {
                     int choice = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
                     switch (choice) {
                         case 1:
                             startCommand.execute();
+                            running = false; // Exit the loop after starting the game
                             break;
                         case 2:
                             helpCommand.execute();
@@ -48,18 +48,18 @@ public class StartMenu implements Menu{
                             break;
                         default:
                             System.out.println("Invalid option. Please try again.");
-                        }
-                    } else {
-                        System.out.println("Please enter a valid number.");
-                        scanner.next(); // Consume the invalid input
                     }
-                } catch (Exception e) {
-                    System.out.println("Error: " + e.getMessage());
-                    scanner.nextLine(); // Clear buffer and handle next input correctly
+                } else {
+                    System.out.println("Please enter a valid number.");
+                    scanner.next(); // Consume the invalid input
                 }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                scanner.nextLine(); // Clear buffer and handle next input correctly
             }
-            scanner.close();
         }
+        // Do not close the scanner here to avoid IllegalStateException in other threads
+    }
 
     protected void printMenuOptions() {
         System.out.println("\nWelcome to Plants vs Zombies!");
@@ -70,5 +70,4 @@ public class StartMenu implements Menu{
         System.out.println("5. Close Game");
         System.out.print("Choose an option: ");
     }
-
 }

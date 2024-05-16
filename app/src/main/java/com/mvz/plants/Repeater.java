@@ -1,23 +1,14 @@
 package com.mvz.plants;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import com.mvz.Plant;
-import com.mvz.Zombie;
-import com.mvz.Character;
 
 public class Repeater extends Plant {
-    private ScheduledExecutorService executorService;
     public Repeater(Integer x, Integer y) {
         super("Repeater", 200, 100.0f,  25.0f, 2.0f, -1, 10, false, x, y);
-        executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
     public Repeater() {
         super("Repeater", 200, 100.0f,  25.0f, 2.0f, -1, 10, false);
-        executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
     // same as peashooter (just 2x atkspd)

@@ -4,7 +4,7 @@ import com.mvz.*;
 
 import java.util.Scanner;
 
-public class PauseMenu implements Menu{
+public class PauseMenu implements Menu {
     private Game game;
 
     public PauseMenu(Game game) {
@@ -20,7 +20,6 @@ public class PauseMenu implements Menu{
             System.out.println("\nGame is paused.");
             System.out.println("1. Continue Game");
             System.out.println("2. Exit Game");
-            System.out.println("5. Return to Game Menu");
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
@@ -34,13 +33,9 @@ public class PauseMenu implements Menu{
                     new ExitMenu(game).displayMenu();
                     running = false;
                     break;
-                case 5:
-                    running = false;
-                    break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
         }
-        scanner.close();
     }
 }

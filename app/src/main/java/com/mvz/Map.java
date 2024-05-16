@@ -4,22 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.mvz.plants.Lilypad;
-import com.mvz.plants.Peashooter;
+import com.mvz.plants.*;
 
 public class Map {
-    private List<Plant> plantOnTile;
     private List<Zombie> zombieOnTile;
     private Tile[][] tile;
     private List<List<Zombie>> zombiesByY;
 
     public Map() {
         tile = new Tile[11][6];
-        plantOnTile = new ArrayList<>();
         zombieOnTile = new ArrayList<>();
         zombiesByY = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
@@ -32,9 +30,8 @@ public class Map {
                 tile[i][j] = new Tile(i, j, isAquatic);
             }
         }
-        Peashooter a = new Peashooter(1,1);
-        tile[1][1].addOwner(a);
-        plantOnTile.add(a);
+        Snowpea a = new Snowpea(5, 1);
+        tile[5][1].addOwner(a);
     }
 
     public Tile getTile(int x, int y) {
@@ -92,24 +89,26 @@ public class Map {
 
     public void setPosition() {
         List<Zombie> zombiesToRemove = new ArrayList<>();
-
-        // Iterate over zombies
-        for (Zombie z : zombieOnTile) {
+    
+        // Use an iterator to safely remove elements during iteration
+        Iterator<Zombie> iterator = zombieOnTile.iterator();
+        while (iterator.hasNext()) {
+            Zombie z = iterator.next();
             if (z.getHealth() <= 0) {
                 zombiesToRemove.add(z);
                 continue;
             }
-
+    
             int x = z.getXChar();
             int y = z.getYChar();
-
+    
             boolean moved = false;
             if (x - 1 >= 0 && z.getCM()) {
                 Tile currentTile = getTile(x, y);
                 Tile nextTile = getTile(x - 1, y);
                 boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
                 boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
-
+    
                 if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
                     moveZombie(currentTile, nextTile, z);
                     z.resetAttackTimer();
@@ -119,27 +118,22 @@ public class Map {
                 }
                 z.setCM();
             }
-
+    
             if (!moved) {
                 // Additional logic if the zombie cannot move
                 // e.g., call a defeated function if it reaches the end
             }
         }
-
+    
         // Remove all dead zombies
         zombieOnTile.removeAll(zombiesToRemove);
-
+    
         // Remove all dead plants
         for (Tile[] tiles : tile) {
             for (Tile t : tiles) {
                 for (Character owner : new ArrayList<>(t.getOwners())) {
                     if (owner instanceof Plant && owner.getHealth() <= 0) {
-                        if (owner.getName() == "Lilypad"){
-                            ((Lilypad) owner).test();
-                        }
-                        else{
-                            t.removeOwner(owner);
-                        }
+                        t.removeOwner(owner);
                     }
                 }
             }
@@ -177,54 +171,61 @@ public class Map {
     public void attackZombies() {
         HashMap<Tile, Float> damageMap = new HashMap<>();
 
-        for (Plant plant : plantOnTile) {
-            if (!plant.getCanAction()) {
-                continue;
-            }
-
-            int plantX = plant.getXChar();
-            int plantY = plant.getYChar();
-            int range = plant.getRange();
-            float attackDamage = plant.getAD();
-
-            switch (range) {
-                case 0:
-                    // Do nothing
-                    break;
-                case 1:
-                    attackTile(damageMap, plantX, plantY, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
-                    break;
-                case -1:
-                    for (int x = plantX; x < 11; x++) {
-                        if (attackTile(damageMap, x, plantY, attackDamage, plant.getName())) {
-                            break;
+        for (Tile[] row : tile) {
+            for (Tile t : row) {
+                for (Character owner : t.getOwners()) {
+                    if (owner instanceof Plant) {
+                        Plant plant = (Plant) owner;
+                        if (!plant.getCanAction()) {
+                            continue;
                         }
-                    }
-                    break;
-                case 9:
-                    for (int x = 0; x < 11; x++) {
-                        attackTile(damageMap, x, plantY, attackDamage, plant.getName());
-                    }
-                    break;
-                case 3:
-                    attackTile(damageMap, plantX, plantY, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX - 1, plantY - 1, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX - 1, plantY + 1, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX, plantY - 1, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX, plantY + 1, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX + 1, plantY - 1, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
-                    attackTile(damageMap, plantX + 1, plantY + 1, attackDamage, plant.getName());
-                    break;
-                default:
-                    // If there are other range types
-                    break;
-            }
 
-            plant.setCanAction(false); // Reset plant cooldown after attacking
+                        int plantX = plant.getXChar();
+                        int plantY = plant.getYChar();
+                        int range = plant.getRange();
+                        float attackDamage = plant.getAD();
+
+                        switch (range) {
+                            case 0:
+                                // Do nothing
+                                break;
+                            case 1:
+                                attackTile(damageMap, plantX, plantY, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
+                                break;
+                            case -1:
+                                for (int x = plantX; x < 11; x++) {
+                                    if (attackTile(damageMap, x, plantY, attackDamage, plant.getName())) {
+                                        break;
+                                    }
+                                }
+                                break;
+                            case 9:
+                                for (int x = 0; x < 11; x++) {
+                                    attackTile(damageMap, x, plantY, attackDamage, plant.getName());
+                                }
+                                break;
+                            case 3:
+                                attackTile(damageMap, plantX, plantY, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX - 1, plantY - 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX - 1, plantY + 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX, plantY - 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX, plantY + 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX + 1, plantY - 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX + 1, plantY + 1, attackDamage, plant.getName());
+                                break;
+                            default:
+                                // If there are other range types
+                                break;
+                        }
+
+                        plant.setCanAction(false); // Reset plant cooldown after attacking
+                    }
+                }
+            }
         }
 
         applyDamageToZombies(damageMap);
@@ -256,16 +257,31 @@ public class Map {
                 if (!zombie.getCH()) {
                     float originalSpeed = zombie.getMS();
                     float originalAttackSpeed = zombie.getAS();
+                    long timeRemainingToMove = zombie.getTimeRemainingToMove();
+                    long timeRemainingToAttack = zombie.getTimeRemainingToAttack();
+
+                    long newMoveTime = timeRemainingToMove * 2;
+                    long newAttackTime = timeRemainingToAttack * 2;
+
                     zombie.setMSD(originalSpeed / 2);
-                    zombie.setAttack_speed(originalAttackSpeed / 2);
+                    zombie.setATS(originalAttackSpeed / 2);
+                    zombie.setTimeRemainingToMove(newMoveTime);
+                    zombie.setTimeRemainingToAttack(newAttackTime);
                     zombie.setCH();
+                    System.out.println("Aduhh " + zombie.getName() + " dingin bang");
 
                     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
                     executorService.schedule(() -> {
                         if (zombie.getCH()) {
+                            long timePassed = 3000; // 3 seconds in milliseconds
+                            long remainingMoveTime = (newMoveTime - timePassed + 999) / 2; // Ceil operation
+                            long remainingAttackTime = (newAttackTime - timePassed + 999) / 2; // Ceil operation
                             zombie.setMSD(originalSpeed);
-                            zombie.setAttack_speed(originalAttackSpeed);
+                            zombie.setATS(originalAttackSpeed);
+                            zombie.setTimeRemainingToMove(remainingMoveTime);
+                            zombie.setTimeRemainingToAttack(remainingAttackTime);
                             zombie.setCH();
+                            System.out.println("Udah ga dingin bang, kata zombie " + zombie.getName());
                         }
                     }, 3, TimeUnit.SECONDS);
                 }
@@ -282,9 +298,26 @@ public class Map {
                 if (owner instanceof Zombie) {
                     Zombie zombie = (Zombie) owner;
                     zombie.decreaseHealth(damage);
-                    System.out.println("BOOM! "+ zombie.getName() + "terkena damage " + damage + ", sisa darah " + zombie.getHealth() + "!");
+                    // System.out.println("BOOM! " + zombie.getName() + " terkena damage " + damage + ", sisa darah " + zombie.getHealth() + "!");
                 }
             }
         }
     }
+
+
+    public void initExecutors() {
+        for (Tile[] row : tile) {
+            for (Tile t : row) {
+                for (Character owner : t.getOwners()) {
+                    if (owner instanceof Zombie) {
+                        ((Zombie) owner).initZombieScheduledExecutors();
+                    } else if (owner instanceof Sunflower) {
+                        ((Sunflower) owner).initSunflowerExecutorService();
+                    }
+                    // Jika ada ScheduledExecutorService yang ingin diinstansiasi ulang, buat load
+                }
+            }
+        }
+    }
+    
 }

@@ -10,15 +10,16 @@ public class StartGameCommand implements Command {
     private GameStateManager gameStateManager;
     private Player player;
     private Game game;
+    private Scanner scanner;
 
-    public StartGameCommand(Player player) {
+    public StartGameCommand(Player player, Scanner scanner) {
         this.player = player;
+        this.scanner = scanner;
         this.gameStateManager = new GameStateManager();
     }
 
     @Override
     public void execute() {
-        Scanner scanner = new Scanner(System.in);
         boolean validChoice = false;
         ThreadManager threadManager;
 
@@ -28,17 +29,18 @@ public class StartGameCommand implements Command {
             String response = scanner.nextLine().trim().toLowerCase();
 
             if (response.equals("yes")) {
-                game = gameStateManager.loadGameState("savegame.json");
+                Load load = new Load();
+                game = load.performLoad();
                 if (game == null) {
                     System.out.println("Failed to load the game. Please check the file path or ensure the file is correct.");
-                    continue;  
+                    continue;
                 }
                 System.out.println("Game loaded successfully.");
-                validChoice = true;  
+                validChoice = true;
             } else if (response.equals("no")) {
                 game = new Game(player);
                 System.out.println("New game started.");
-                validChoice = true; 
+                validChoice = true;
             } else {
                 System.out.println("Invalid input. Please type 'yes' or 'no'.");
             }
@@ -47,11 +49,9 @@ public class StartGameCommand implements Command {
             System.out.flush();
         }
 
-        // Memulai game
+        // Start the game
         if (game != null) {
             player.customizeDeck();
-            // long previousElapsedTime = loadElapsedTime();
-
             // better user experience
             System.out.print("\033[H\033[2J");
             System.out.flush();
@@ -60,22 +60,18 @@ public class StartGameCommand implements Command {
             // Start the threads
             threadManager.startThreads();
             System.out.println("Game processes started!");
-            
         }
-        // scanner ini jangan ditutup thx
-        // scanner.close();
     }
-    
 
-        // Getters for game state
-        public Map getMap() { return game.getMap(); }
-        public int getGameSun() { return Sun.getSun(); }
-        public long getGameTime() { return System.currentTimeMillis(); } 
-        public Player getPlayer() { return player; } 
-    
-        // Setters for game state
-        public void setMap(Map map) { this.game.setMap(map); }
-        public void setGameSun(int sun) { Sun.setSun(sun); } 
-        public void setGameTime(long time) { /* Dipikirkan nanti */ }
-        public void setPlayer(Player player) { this.player = player; }
+    // Getters for game state
+    public Map getMap() { return game.getMap(); }
+    public int getGameSun() { return Sun.getSun(); }
+    public long getGameTime() { return System.currentTimeMillis(); }
+    public Player getPlayer() { return player; }
+
+    // Setters for game state
+    public void setMap(Map map) { this.game.setMap(map); }
+    public void setGameSun(int sun) { Sun.setSun(sun); }
+    public void setGameTime(long time) { /* Dipikirkan nanti */ }
+    public void setPlayer(Player player) { this.player = player; }
 }

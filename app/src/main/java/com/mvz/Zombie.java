@@ -1,14 +1,18 @@
 package com.mvz;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Zombie extends Character {
     private Float movement_speed;
     private boolean isChilled;
     private boolean canMove;
     private boolean attackStarted;
-    private ScheduledExecutorService movementExecutorService;
-    private ScheduledExecutorService attackExecutorService;
+    private transient ScheduledExecutorService movementExecutorService; 
+    private transient ScheduledExecutorService attackExecutorService; 
+    private long timeRemainingToMove;
+    private long timeRemainingToAttack;
 
     public Zombie(String name, Float health, Float attack_damage, Float attack_speed, Float movement_speed, boolean isAquatic, Integer x, Integer y) {
         super(name, health, isAquatic, attack_speed, attack_damage, x, y);
@@ -16,6 +20,16 @@ public abstract class Zombie extends Character {
         isChilled = false;
         canMove = true;
         attackStarted = false;
+        timeRemainingToMove = Math.round(movement_speed * 1000);
+        timeRemainingToAttack = Math.round(attack_speed * 1000);
+        initScheduledExecutors();
+    }
+
+    public Zombie() {
+        // Default constructor for deserialization
+    }
+
+    private void initScheduledExecutors() {
         movementExecutorService = Executors.newSingleThreadScheduledExecutor();
         attackExecutorService = Executors.newSingleThreadScheduledExecutor();
         startMovementTimer();
@@ -49,16 +63,32 @@ public abstract class Zombie extends Character {
         this.attack_speed = attack_speed;
     }
 
+    public long getTimeRemainingToMove() {
+        return timeRemainingToMove;
+    }
+
+    public void setTimeRemainingToMove(long timeRemainingToMove) {
+        this.timeRemainingToMove = timeRemainingToMove;
+    }
+
+    public long getTimeRemainingToAttack() {
+        return timeRemainingToAttack;
+    }
+
+    public void setTimeRemainingToAttack(long timeRemainingToAttack) {
+        this.timeRemainingToAttack = timeRemainingToAttack;
+    }
+
     private void startMovementTimer() {
         movementExecutorService.scheduleAtFixedRate(() -> {
             canMove = true;
-        }, 0, Math.round(movement_speed * 1000), TimeUnit.MILLISECONDS);
+        }, timeRemainingToMove, Math.round(movement_speed * 1000), TimeUnit.MILLISECONDS);
     }
 
     public void startAttackTimer() {
         attackExecutorService.scheduleAtFixedRate(() -> {
             canAction = true;
-        }, 0, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
+        }, timeRemainingToAttack, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
     }
 
     public void resetAttackTimer() {
@@ -72,5 +102,9 @@ public abstract class Zombie extends Character {
             startAttackTimer();
             attackStarted = true;
         }
+    }
+
+    public void initZombieScheduledExecutors() {
+        initScheduledExecutors();
     }
 }

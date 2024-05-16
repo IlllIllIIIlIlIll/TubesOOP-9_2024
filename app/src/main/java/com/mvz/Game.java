@@ -9,11 +9,8 @@ import com.mvz.zombies.*;
 public class Game {
     private Player player;
     private Map map;
-    private Timer timer;
-    private Random random;
-    private Boolean isDaytime;
-    private Thread sunThread;
-    private Thread zombieThread;
+    // private Timer timer;
+    private transient Random random; // Marking random as transient
     private boolean isPaused = false;
     private long elapsedTime = 0;
     private long startTime = 0;
@@ -26,55 +23,34 @@ public class Game {
         this.map = map;
     }
 
-    // Generate map
     public Game(Player player) {
         this.player = player;
         this.map = new Map();
-        this.timer = new Timer();
+        // this.timer = new Timer();
+        this.random = new Random(); // Initialize random in constructor
+    }
+
+    // Default constructor needed for Gson deserialization
+    public Game() {
         this.random = new Random();
-        isDaytime = true;
     }
 
     public void generateSun() {
-        sunThread = new Thread(() -> {
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    toggleDayNight();
-
-                    if (isDaytime) {
-                        generateSunPeriodically();
-                    }
-                }
-            }, 0, 100000);
-        });
-        sunThread.start();
-    }
-
-    private void toggleDayNight() {
-        isDaytime = !isDaytime;
-    }
-
-    private void generateSunPeriodically() {
-        int delay = 5000 + random.nextInt(5000);
-        new Timer().schedule(new TimerTask() {
+        Timer sunTimer = new Timer();
+        sunTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (getElapsedTime() < 100000) {
-                    increaseSun(25);
+                if (!isPaused) {
+                    Sun.increaseSun(25);
                 }
             }
-        }, delay);
-    }
-
-    public void increaseSun(int amount) {
-        Sun.increaseSun(amount);
+        }, 0, 5000 + random.nextInt(5000)); // schedules the task to run every 5-10 seconds
     }
 
     public void startSpawningZombies() {
         ZombieFactory landFactory = new LandZombieFactory();
         ZombieFactory waterFactory = new WaterZombieFactory();
-        zombieThread = new Thread(() -> {
+        new Thread(() -> {
             while (true) {
                 synchronized (Game.this) {
                     while (isPaused) {
@@ -112,8 +88,7 @@ public class Game {
                     }
                 }
             }
-        });
-        zombieThread.start();
+        }).start();
     }
 
     public void startGame() {
@@ -128,7 +103,7 @@ public class Game {
     public synchronized void resumeGame() {
         isPaused = false;
         startTime = System.currentTimeMillis();
-        notifyAll();
+        notifyAll(); // Notify all threads that are waiting.
     }
 
     public long getElapsedTime() {

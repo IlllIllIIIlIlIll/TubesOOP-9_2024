@@ -1,6 +1,8 @@
 package com.mvz;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Character implements Action {
     protected String name;
@@ -11,7 +13,7 @@ public abstract class Character implements Action {
     protected boolean canAction;
     protected int x;
     protected int y;
-    private ScheduledExecutorService executorService;
+    private transient ScheduledExecutorService executorService; 
 
     public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage, Integer x, Integer y) {
         this.x = x;
@@ -33,6 +35,10 @@ public abstract class Character implements Action {
         this.attack_speed = attack_speed;
         this.attack_damage = attack_damage;
         this.canAction = true;
+    }
+
+    public Character() {
+        // Default constructor for deserialization
     }
 
     public Integer getXChar() {
@@ -110,4 +116,9 @@ public abstract class Character implements Action {
     }
 
     public abstract void action();
+
+    public void initScheduledExecutorService() {
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        startActionTimer();
+    }
 }

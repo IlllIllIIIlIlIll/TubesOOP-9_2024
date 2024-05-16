@@ -22,6 +22,10 @@ public abstract class Plant extends Character {
         this.lastPlantedTime = System.currentTimeMillis();
     }
 
+    public Plant() {
+        // Default constructor for deserialization
+    }
+
     // indikator pertama player untuk dapat membeli tanaman
     public int getCost(){
         return cost;

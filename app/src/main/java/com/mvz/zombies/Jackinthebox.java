@@ -7,6 +7,10 @@ public class Jackinthebox extends Zombie {
         super("Jack in the box", 150.0f, 1500.0f, 1.0f, 5.0f, false, x, y);
     }
 
+    public Jackinthebox() {
+        this(0, 0); // Parameter default untuk load
+    }
+
     public void action(){
         //decrease health until 0
         decreaseHealth(health);

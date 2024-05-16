@@ -8,6 +8,10 @@ public class Screendoor extends Zombie {
         super("Screen door", 300.0f, 100.0f, 1.0f, 5.0f, false, x, y);
     }
 
+    public Screendoor() {
+        this(0, 0); // Parameter default untuk load
+    }
+
     public void action(){
 
     }

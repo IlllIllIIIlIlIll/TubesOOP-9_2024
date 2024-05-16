@@ -29,12 +29,11 @@ public class ThreadManager {
         game.startGame();
         mainThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                String input = scanner.nextLine();
+                String input = scanner.nextLine();  
 
                 game.getMap().printMap();
                 if (input.equalsIgnoreCase("pause")) {
                     pauseThreads();
-                    new PauseMenu(game).displayMenu();
                 } else if (input.equalsIgnoreCase("resume")) {
                     resumeThreads();
                     System.out.println("Game resumed!");
@@ -47,20 +46,11 @@ public class ThreadManager {
     private void startZombieSpawningThread() {
         zombieSpawningThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                synchronized (game) {
-                    while (game.isPaused()) {
-                        try {
-                            game.wait();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                }
                 try {
-                    Thread.sleep(5000);
                     if (!game.isPaused()) {
                         game.startSpawningZombies();
                     }
+                    Thread.sleep(5000); 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -71,43 +61,17 @@ public class ThreadManager {
 
     private void startSunGeneratingThread() {
         sunGeneratingThread = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                synchronized (game) {
-                    while (game.isPaused()) {
-                        try {
-                            game.wait();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                }
-                try {
-                    Thread.sleep(3000);
-                    if (!game.isPaused()) {
-                        game.generateSun();
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
+            game.generateSun(); // Only call generateSun() once to start the periodic sun generation
         });
         sunGeneratingThread.start();
     }
+    
 
     private void startPositionUpdatingThread() {
         positionUpdatingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                synchronized (game) {
-                    while (game.isPaused()) {
-                        try {
-                            game.wait();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(1000); 
                     if (!game.isPaused()) {
                         game.getMap().attackZombies();
                         game.getMap().setPosition();
@@ -122,10 +86,14 @@ public class ThreadManager {
 
     public void pauseThreads() {
         game.pauseGame();
+        new PauseMenu(game).displayMenu();
     }
 
     public void resumeThreads() {
         game.resumeGame();
+        synchronized (game) {
+            game.notifyAll(); // Ensure that the game's wait method is interrupted.
+        }
     }
 
     public void stopThreads() {

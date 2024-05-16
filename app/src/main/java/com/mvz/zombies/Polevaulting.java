@@ -10,6 +10,10 @@ public class Polevaulting extends Zombie {
         super("Pole vaulting", 175.0f, 100.0f, 1.0f, 5.0f, false, x, y);
     }
 
+    public Polevaulting() {
+        this(0, 0); // Parameter default untuk load
+    }
+
     public void action(){
         // kalau udah lompat
         int newX = x - 1;

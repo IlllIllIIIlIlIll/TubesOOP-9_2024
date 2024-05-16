@@ -7,6 +7,10 @@ public class Duckytube extends Zombie {
         super("Ducky tube", 125.0f, 100.0f, 1.0f, 5.0f, true, x, y);
     }
 
+    public Duckytube() {
+        this(0, 0); // Parameter default untuk load
+    }
+
     public void action(){
 
     }
