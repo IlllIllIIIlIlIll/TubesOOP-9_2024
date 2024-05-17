@@ -14,15 +14,16 @@ public class Polevaulting extends Zombie {
         this(0, 0); // Parameter default untuk load
     }
 
+    public boolean isJumping(){
+        return isJumping;
+    }
+
     public void action(){
-        // kalau udah lompat
-        int newX = x - 1;
         if (isJumping) {
             return;
-        }
-        else {
-            x = newX;
+        } else {
             isJumping = true;
         }
+        System.out.println("Dikolongin tongkat awoawkwk");
     }
 }

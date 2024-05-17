@@ -24,8 +24,10 @@ public abstract class Character implements Action {
         this.attack_speed = attack_speed;
         this.attack_damage = attack_damage;
         this.canAction = true;
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
-        startActionTimer();
+        if (attack_speed > 0) {
+            this.executorService = Executors.newSingleThreadScheduledExecutor();
+            startActionTimer();
+        }
     }
 
     public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage) {
@@ -110,15 +112,19 @@ public abstract class Character implements Action {
     }
 
     private void startActionTimer() {
-        executorService.scheduleAtFixedRate(() -> {
-            canAction = true;
-        }, 0, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
+        if (attack_speed > 0) {
+            executorService.scheduleAtFixedRate(() -> {
+                canAction = true;
+            }, 0, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
+        }
+    }
+
+    public void initScheduledExecutorService() {
+        if (attack_speed > 0) {
+            this.executorService = Executors.newSingleThreadScheduledExecutor();
+            startActionTimer();
+        }
     }
 
     public abstract void action();
-
-    public void initScheduledExecutorService() {
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
-        startActionTimer();
-    }
 }
