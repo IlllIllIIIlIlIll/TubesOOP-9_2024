@@ -67,12 +67,12 @@ public abstract class Zombie extends Character {
         return timeRemainingToMove;
     }
 
-    public void setTimeRemainingToMove(long timeRemainingToMove) {
-        this.timeRemainingToMove = timeRemainingToMove;
-    }
-
     public long getTimeRemainingToAttack() {
         return timeRemainingToAttack;
+    }
+
+    public void setTimeRemainingToMove(long timeRemainingToMove) {
+        this.timeRemainingToMove = timeRemainingToMove;
     }
 
     public void setTimeRemainingToAttack(long timeRemainingToAttack) {
@@ -90,6 +90,12 @@ public abstract class Zombie extends Character {
             canAction = true;
         }, timeRemainingToAttack, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
     }
+
+    public void resetMovementTimer() {
+        movementExecutorService.shutdownNow();
+        movementExecutorService = Executors.newSingleThreadScheduledExecutor();
+        startMovementTimer();
+    }    
 
     public void resetAttackTimer() {
         attackExecutorService.shutdownNow();

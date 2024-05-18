@@ -5,7 +5,7 @@ import com.mvz.Tile;
 
 // Abstract factory design pattern
 public class LandZombieFactory implements ZombieFactory {
-private static final String[] types = {"Normal", "Conehead", "Buckethead", "Football", "Jackinthebox", "Newspaper", "Polevaulting", "Screendoor"};
+private static final String[] types = {"Normal", "Conehead", "Buckethead", "Football", "Jackinthebox", "Ra", "Polevaulting", "Fanny"};
     
     @Override
     public Zombie createZombie(String type, Tile tile) {
@@ -22,12 +22,12 @@ private static final String[] types = {"Normal", "Conehead", "Buckethead", "Foot
                 return new Football(x, y);
             case "Jackinthebox":
                 return new Jackinthebox(x, y);
-            case "Newspaper":
-                return new Newspaper(x, y);
+            case "Ra":
+                return new Ra(x, y);
             case "Polevaulting":
                 return new Polevaulting(x, y);
-            case "Screendoor":
-                return new Screendoor(x, y);
+            case "Fanny":
+                return new Fanny(x, y);
             // ... tambahkan land zombie lain jika ada
             default:
                 throw new IllegalArgumentException("Invalid type: " + type);

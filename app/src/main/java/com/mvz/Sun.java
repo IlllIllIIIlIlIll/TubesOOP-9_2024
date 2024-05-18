@@ -3,19 +3,19 @@ package com.mvz;
 public class Sun {
     private static Integer value = 25;
 
-    public static Integer getSun(){
+    public static synchronized Integer getSun() {
         return value;
     }
 
-    public static void setSun(Integer value){
+    public static synchronized void setSun(Integer value) {
         Sun.value = value;
     }
 
-    public static void decreaseSun(Integer value){
-        Sun.value-=value;
+    public static synchronized void decreaseSun(Integer value) {
+        Sun.value = Math.max(0, Sun.value - value); // min sun value = 0
     }
 
-    public static void increaseSun(Integer value){
-        Sun.value+=value;
+    public static synchronized void increaseSun(Integer value) {
+        Sun.value += value;
     }
 }
