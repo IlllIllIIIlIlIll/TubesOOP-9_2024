@@ -5,7 +5,8 @@ import java.util.List;
 import com.mvz.Plant;
 
 public class Lilypad extends Plant implements PlantComponent{
-    private List<PlantComponent> children;
+    public static long lastPlantedTime;
+    private List<Plant> children;
 
     public Lilypad(Integer x, Integer y) {
         super("Lilypad", 25, 100.0f,  0.0f, 0.0f, 0, 10, true, x, y);
@@ -19,9 +20,9 @@ public class Lilypad extends Plant implements PlantComponent{
     }
 
     @Override
-    public boolean addOnLilypad(PlantComponent plant){
+    public boolean addOnLilypad(Plant plant){
         if(children.isEmpty()){
-            if(plant.canBePlacedOnLilyPad()){
+            if(canBePlacedOnLilyPad()){
                 children.add(plant);
                 return true;
             }
@@ -30,14 +31,14 @@ public class Lilypad extends Plant implements PlantComponent{
     }
     
     @Override
-    public void removeOnLilypad(PlantComponent plant){
+    public void removeOnLilypad(Plant plant){
         children.remove(plant);
     }
 
     private float getTotalHealth() {
         float totalHealth = this.health;
-        for (PlantComponent plant : children) {
-            totalHealth += ((Plant) plant).getHealth();
+        for (Plant plant : children) {
+            totalHealth += plant.getHealth();
         }
         return totalHealth;
     }
@@ -48,18 +49,18 @@ public class Lilypad extends Plant implements PlantComponent{
 
         if (totalHealth <= 0) {
             this.health = 0f;
-            for (PlantComponent plant : children) {
-                ((Plant) plant).setHealth(0f);
+            for (Plant plant : children) {
+                plant.setHealth(0f);
             }
         } else {
             float remainingDamage = damage;
-            for (PlantComponent plant : children) {
-                float plantHealth = ((Plant) plant).getHealth();
+            for (Plant plant : children) {
+                float plantHealth = plant.getHealth();
                 if (remainingDamage >= plantHealth) {
                     remainingDamage -= plantHealth;
-                    ((Plant) plant).setHealth(0f);
+                    plant.setHealth(0f);
                 } else {
-                    ((Plant) plant).decreaseHealth(remainingDamage);
+                    plant.decreaseHealth(remainingDamage);
                     remainingDamage = 0f;
                 }
             }
@@ -76,9 +77,9 @@ public class Lilypad extends Plant implements PlantComponent{
     @Override
     public Float getAD() {
         Float ad = 0.0f;
-        for(PlantComponent plant : children) {
-            if(((Plant) plant).getHealth() > 0){
-               ad =  ((Plant) plant).getAD(); 
+        for(Plant plant : children) {
+            if(plant.getHealth() > 0){
+               ad =  plant.getAD(); 
             }
             else{    
                 ad = this.getAD();
@@ -91,9 +92,9 @@ public class Lilypad extends Plant implements PlantComponent{
     @Override
     public int getRange(){
         int range=0;
-        for(PlantComponent plant : children) {
-            if(((Plant) plant).getHealth() > 0){
-                range = ((Plant) plant).getRange(); 
+        for(Plant plant : children) {
+            if(plant.getHealth() > 0){
+                range = plant.getRange(); 
             }
             else{    
                 range = this.getRange();
@@ -105,15 +106,25 @@ public class Lilypad extends Plant implements PlantComponent{
 
     public List<Plant> getPlants() {
         List<Plant> plants = new ArrayList<>();
-        for (PlantComponent component : children) {
+        for (Plant component : children) {
             if (component instanceof Plant) {
-                Plant plant = (Plant) component;
+                Plant plant = component;
                 plants.add(plant);
             }
         }
         return plants;
     }
 
+    public boolean isReadyToBePlanted() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastPlantedTime;
+        return elapsedTime >= getCD();
+    }
+
+    public void setLastPlantedTime(long time) {
+        if (time > lastPlantedTime) lastPlantedTime = time;
+    }
+    
     public void action(){
 
     }

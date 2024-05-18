@@ -64,11 +64,10 @@ public class Inventory {
             }
         }
     
-        sc.close(); // Tutup Scanner setelah penggunaan
-    
-        Plant temp = plants.get(y);
-        plants.set(y, plants.get(x));
-        plants.set(x, temp);
+        Plant temp = plants.get(y-1);
+        plants.set(y-1, plants.get(x-1));
+        plants.set(x-1, temp);
+        System.out.println("Tanaman berhasil di-swap");
     }
 
     public void printInventory() {

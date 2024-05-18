@@ -35,8 +35,8 @@ public class Map {
         }
 
         // tanaman testing aja
-        // Wallnut a = new Wallnut(5, 0);
-        // tile[5][0].addOwner(a);
+        Wallnut a = new Wallnut(5, 0);
+        tile[5][0].addOwner(a);
         // Wallnut b = new Wallnut(5, 1);
         // tile[5][1].addOwner(b);
         // Wallnut c = new Wallnut(5, 2);
@@ -76,7 +76,7 @@ public class Map {
         String reset = "\033[0m";
     
         System.out.println("Sun value: " + Sun.getSun());
-        for (int j = 0; j < getNumberOfRows(); j++) {
+        for (int j = getNumberOfRows() - 1; j >= 0; j--) {  // Start from y = 5 and go down to y = 0
             for (int i = 0; i < getNumberOfColumns(); i++) {
                 Tile currentTile = getTile(i, j);
                 String color;
@@ -115,6 +115,7 @@ public class Map {
         System.out.println();
         System.out.println();
     }
+    
     
 
     public void setPosition() {
@@ -247,7 +248,7 @@ public class Map {
                                 }
                                 break;
                             case 9:
-                                for (int x = 0; x < 11; x++) {
+                                for (int x = 1; x < 10; x++) {
                                     attackTile(damageMap, x, plantY, attackDamage, plant.getName());
                                 }
                                 owner.action();

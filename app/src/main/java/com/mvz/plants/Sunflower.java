@@ -8,6 +8,8 @@ import com.mvz.Plant;
 import com.mvz.Sun;
 
 public class Sunflower extends Plant {
+    public static long lastPlantedTime;
+
     private transient ScheduledExecutorService executorService;
     private boolean readyToGenerateSun = true;
 
@@ -33,6 +35,16 @@ public class Sunflower extends Plant {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
+    public boolean isReadyToBePlanted() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastPlantedTime;
+        return elapsedTime >= getCD();
+    }
+
+    public void setLastPlantedTime(long time) {
+        if (time > lastPlantedTime) lastPlantedTime = time;
+    }
+    
     public void action() {
         
     }

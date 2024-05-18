@@ -4,14 +4,12 @@ public abstract class Plant extends Character {
     private int cost;
     private int range;
     private int cooldown;
-    private long lastPlantedTime;
 
     public Plant(String name, int cost, Float health, Float attack_damage, Float attack_speed, int range, int cooldown, boolean isAquatic, Integer x, Integer y) {
         super(name, health, isAquatic, attack_speed, attack_damage, x, y);
         this.cost = cost;
         this.range = range;
         this.cooldown = cooldown;
-        this.lastPlantedTime = System.currentTimeMillis();
     }
 
     public Plant(String name, int cost, Float health, Float attack_damage, Float attack_speed, int range, int cooldown, boolean isAquatic) {
@@ -19,7 +17,6 @@ public abstract class Plant extends Character {
         this.cost = cost;
         this.range = range;
         this.cooldown = cooldown;
-        this.lastPlantedTime = System.currentTimeMillis();
     }
 
     public Plant() {
@@ -40,31 +37,16 @@ public abstract class Plant extends Character {
     public int getCD(){
         return cooldown;
     }
-
     
-
-    /*
-     cek sun
-     cek cooldown
-     */
-    public boolean canPlant() {
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastPlantedTime;
-        return elapsedTime >= cooldown;
+    //liat sun si player cukup ga buat beli
+    public boolean canBuyThePlant() {
+        return Sun.getSun() >= cost;
     }
 
-    // user menaruh tanaman, masukan lokasi x dan y
-    /*
-     throw exception jika sun kurang, masih cooldown, tile sudah punya owner (occupied), koordinat input tile invalid (melebihi 9x6 atau isAquatic)
+    // cek berdasarkan cooldown
+    public abstract boolean isReadyToBePlanted();
 
-     */
-    public void scatter() {
-        if (canPlant()) {
-            lastPlantedTime = System.currentTimeMillis();
-            System.out.println(name + " has been planted!");
-        } else {
-            System.out.println(name + " is on cooldown!");
-        }
-    }
+    // set lastPlantedTime jadi time terbaru setelah plant berhasil ditanam
+    public abstract void setLastPlantedTime(long time);
 
 }
