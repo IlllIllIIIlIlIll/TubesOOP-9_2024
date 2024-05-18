@@ -9,7 +9,9 @@ import com.mvz.Zombie;
 import com.mvz.Character;
 
 public class Snowpea extends Plant {
-     private ScheduledExecutorService executorService;
+    public static long lastPlantedTime;
+    private ScheduledExecutorService executorService;
+
     public Snowpea(Integer x, Integer y) {
         super("Snow pea", 175, 100.0f,  25.0f, 4.0f, -1, 10, false, x, y);
         executorService = Executors.newSingleThreadScheduledExecutor();
@@ -20,6 +22,16 @@ public class Snowpea extends Plant {
         executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
+    public boolean isReadyToBePlanted() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastPlantedTime;
+        return elapsedTime >= getCD();
+    }
+
+    public void setLastPlantedTime(long time) {
+        if (time > lastPlantedTime) lastPlantedTime = time;
+    }
+    
     // reduce 50% of nearest zombie attackspd and movementspd that has greater x
     // lasting for 3 secs after latest hit
     public void action(){

@@ -8,47 +8,29 @@ import com.mvz.Zombie;
 import com.mvz.Character;
 
 public class Cherrybomb extends Plant {
+    public static long lastPlantedTime;
+
     public Cherrybomb(Integer x, Integer y) {
-        super("Cherry bomb", 150, 9999.0f,  1800.0f, 0.0f, 9, 30, false, x, y);
+        super("Cherry bomb", 150, 9999.0f,  1800.0f, 0.0f, 3, 30, false, x, y);
     }
 
     public Cherrybomb() {
-        super("Cherry bomb", 150, 9999.0f,  1800.0f, 0.0f, 9, 30, false);
+        super("Cherry bomb", 150, 9999.0f,  1800.0f, 0.0f, 3, 30, false);
     }
 
+    public boolean isReadyToBePlanted() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastPlantedTime;
+        return elapsedTime >= getCD();
+    }
+
+    public void setLastPlantedTime(long time) {
+        if (time > lastPlantedTime) lastPlantedTime = time;
+    }
+    
     // immediately attack zombies within the tile and surrounding +1 tile (3x3)
     public void action(){
-        // Tile currentTile = this.getTile();
-
-        // List<Tile> affectedTiles = getSurroundingTiles(currentTile);
-
-        // for(Tile tile : affectedTiles){
-        //     for (Character owner : tile.getOwners()) {
-        //         if (owner instanceof Zombie && ((Zombie) owner).getHealth() > 0) {
-        //             // Attacking the zombie
-        //             Float damage = this.getAD();
-        //             ((Zombie) owner).setHealth(damage);
-        //         }
-        //     }
-        // }
+        decreaseHealth(health);
+        System.out.println("Bang aku udah meledak karena kegendutan");
     }
-
-    // // helper method to get surrounding tiles
-    // private List<Tile> getSurroundingTiles(Tile center){
-    //     List<Tile> surroundingTiles = new ArrayList<>();
-    //     int centerX = center.getX();
-    //     int centerY = center.getY();
-
-    //     for(int xChange = -1; xChange <= 1; xChange++ ){
-    //         for(int yChange = -1; yChange <= 1; yChange++){
-    //             int x = centerX + xChange;
-    //             int y = centerY + yChange;
-    //             if (x >= 0 && y >= 0) { 
-    //                  Tile tile = new Tile(x, y, isAquatic); 
-    //                  surroundingTiles.add(tile);
-    //            }
-    //         }
-    //     }
-    //     return surroundingTiles;
-    // }
 }

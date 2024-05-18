@@ -9,7 +9,9 @@ import com.mvz.Zombie;
 import com.mvz.Character;
 
 public class Repeater extends Plant {
+    public static long lastPlantedTime;
     private ScheduledExecutorService executorService;
+
     public Repeater(Integer x, Integer y) {
         super("Repeater", 200, 100.0f,  25.0f, 2.0f, -1, 10, false, x, y);
         executorService = Executors.newSingleThreadScheduledExecutor();
@@ -20,6 +22,16 @@ public class Repeater extends Plant {
         executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
+    public boolean isReadyToBePlanted() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastPlantedTime;
+        return elapsedTime >= getCD();
+    }
+
+    public void setLastPlantedTime(long time) {
+        if (time > lastPlantedTime) lastPlantedTime = time;
+    }
+    
     // same as peashooter (just 2x atkspd)
     public void action(){
         // executorService.scheduleAtFixedRate(() ->{
@@ -43,5 +55,7 @@ public class Repeater extends Plant {
         //     }   , 0, 2, TimeUnit.SECONDS); 
 
         }
+    
+
     }
 

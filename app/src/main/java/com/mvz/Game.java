@@ -92,8 +92,8 @@ public class Game {
                     Tile tile = map.getTile(x, y);
                     if (player.getDeck().createThePlant(kata[1], tile) != null) {
                         Plant plant = player.getDeck().createThePlant(kata[1], tile);
-                        if (Sun.getSun() >= plant.getCost()) {
-                            if (plant.canPlant()) {
+                        if (plant.canBuyThePlant()) {
+                            if (plant.isReadyToBePlanted()) {
                                 placePlant(plant, x, y);
                             } else {
                                 throw new InvalidInputException(plant.getName() + " is on cooldown!");
@@ -153,7 +153,7 @@ public class Game {
                 System.out.println("Tanaman berhasil ditanam 1");
             }
             else if (!p.isAquatic() && containsLilypad) {
-                if (lilypad.addOnLilypad()) {
+                if (lilypad.addOnLilypad(p)) {
                     Sun.decreaseSun(p.getCost());
                     System.out.println("Tanaman berhasil ditanam 2");
                 } else {

@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Iterator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import com.mvz.plants.*;
+import com.mvz.zombies.Dolphinrider;
+import com.mvz.zombies.Polevaulting;
 
 public class Map {
     private List<Plant> plantOnTile;
@@ -27,6 +35,24 @@ public class Map {
             }
         }
 
+        // tanaman testing aja
+        // Wallnut a = new Wallnut(5, 0);
+        // tile[5][0].addOwner(a);
+        // Wallnut b = new Wallnut(5, 1);
+        // tile[5][1].addOwner(b);
+        // Wallnut c = new Wallnut(5, 2);
+        // tile[5][2].addOwner(c);
+        // Wallnut d = new Wallnut(5, 3);
+        // tile[5][3].addOwner(d);
+        // Wallnut e = new Wallnut(5, 4);
+        // tile[5][4].addOwner(e);
+        // Wallnut f = new Wallnut(5, 5);
+        // tile[5][5].addOwner(f);
+
+        // Wallnut g = new Wallnut(3, 4);
+        // tile[3][4].addOwner(g);
+        // Wallnut h = new Wallnut(3, 5);
+        // tile[3][5].addOwner(h);
     }
 
     public Tile getTile(int x, int y) {
@@ -135,7 +161,18 @@ public class Map {
             if (owner instanceof Plant) {
                 Plant plant = (Plant) owner;
                 if (plant.getHealth() > 0 && zombie.getCanAction()) {
-                    zombie.action();
+                    if ((zombie instanceof Polevaulting && !((Polevaulting) zombie).isJumping())
+                        || (zombie instanceof Dolphinrider && !((Dolphinrider) zombie).isJumping())) {
+                        
+                        plant.decreaseHealth(9999.0f); 
+                        zombie.action();
+                        
+                        Tile nextTile = getTile(zombie.getXChar() - 2, zombie.getYChar());
+                        moveZombie(tile, nextTile, zombie);
+                    } else {
+                        zombie.setCanAction(false);
+                        plant.decreaseHealth(zombie.getAD());
+                    }
                     return true;
                 }
             }
@@ -171,42 +208,48 @@ public class Map {
             int range = plant.getRange();
             float attackDamage = plant.getAD();
 
-            switch (range) {
-                case 0:
-                    // Do nothing
-                    break;
-                case 1:
-                    attackTile(damageMap, plantX, plantY, attackDamage);
-                    attackTile(damageMap, plantX - 1, plantY, attackDamage);
-                    attackTile(damageMap, plantX + 1, plantY, attackDamage);
-                    break;
-                case -1:
-                    for (int x = plantX; x < 11; x++) {
-                        if (attackTile(damageMap, x, plantY, attackDamage)) {
-                            break;
+                        switch (range) {
+                            case 0:
+                                // Do nothing
+                                break;
+                            case 1:
+                                // cek tile x-1, x, x+1
+                                if (!attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName())) {
+                                    if (!attackTile(damageMap, plantX, plantY, attackDamage, plant.getName())) {
+                                        attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
+                                    }
+                                }
+                                owner.action();
+                                break;
+                            case -1:
+                                for (int x = plantX; x < 11; x++) {
+                                    if (attackTile(damageMap, x, plantY, attackDamage, plant.getName())) {
+                                        break;
+                                    }
+                                }
+                                break;
+                            case 9:
+                                for (int x = 0; x < 11; x++) {
+                                    attackTile(damageMap, x, plantY, attackDamage, plant.getName());
+                                }
+                                owner.action();
+                                break;
+                            case 3:
+                                attackTile(damageMap, plantX, plantY, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX - 1, plantY - 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX - 1, plantY + 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX, plantY - 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX, plantY + 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX + 1, plantY - 1, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
+                                attackTile(damageMap, plantX + 1, plantY + 1, attackDamage, plant.getName());
+                                owner.action();
+                                break;
+                            default:
+                                // If there are other range types
+                                break;
                         }
-                    }
-                    break;
-                case 9:
-                    for (int x = 0; x < 11; x++) {
-                        attackTile(damageMap, x, plantY, attackDamage);
-                    }
-                    break;
-                case 3:
-                    attackTile(damageMap, plantX, plantY, attackDamage);
-                    attackTile(damageMap, plantX - 1, plantY - 1, attackDamage);
-                    attackTile(damageMap, plantX - 1, plantY, attackDamage);
-                    attackTile(damageMap, plantX - 1, plantY + 1, attackDamage);
-                    attackTile(damageMap, plantX, plantY - 1, attackDamage);
-                    attackTile(damageMap, plantX, plantY + 1, attackDamage);
-                    attackTile(damageMap, plantX + 1, plantY - 1, attackDamage);
-                    attackTile(damageMap, plantX + 1, plantY, attackDamage);
-                    attackTile(damageMap, plantX + 1, plantY + 1, attackDamage);
-                    break;
-                default:
-                    // Jika ada tipe range lain
-                    break;
-            }
 
             plant.setCanAction(false); // Tanaman cooldown lagi untuk melakukan atk
         }

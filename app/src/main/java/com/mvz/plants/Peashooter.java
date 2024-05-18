@@ -10,8 +10,9 @@ import java.util.concurrent.TimeUnit;
 import com.mvz.Character;
 
 public class Peashooter extends Plant {
-
+    public static long lastPlantedTime;
     private ScheduledExecutorService executorService;
+
     public Peashooter(Integer x, Integer y) {
         super("Peashooter", 100, 100.0f,  25.0f, 4.0f, -1, 10, false, x, y);
         executorService = Executors.newSingleThreadScheduledExecutor();
@@ -20,6 +21,16 @@ public class Peashooter extends Plant {
     public Peashooter() {
         super("Peashooter", 100, 100.0f,  25.0f, 4.0f, -1, 10, false);
         executorService = Executors.newSingleThreadScheduledExecutor();
+    }
+    
+    public boolean isReadyToBePlanted() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastPlantedTime;
+        return elapsedTime >= getCD();
+    }
+
+    public void setLastPlantedTime(long time) {
+        if (time > lastPlantedTime) lastPlantedTime = time;
     }
     
     // how to attack zombie

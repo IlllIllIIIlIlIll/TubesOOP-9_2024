@@ -8,18 +8,20 @@ public class Polevaulting extends Zombie {
         super("Pole vaulting", 175.0f, 100.0f, 1.0f, 5.0f, false, x, y);
     }
 
-    // how to attack plant within x - 1
+    public Polevaulting() {
+        this(0, 0); // Parameter default untuk load
+    }
+
+    public boolean isJumping(){
+        return isJumping;
+    }
+
     public void action(){
-        // if (x > 0) {
-        //     currentTile.setX(x - 1);
-        //     Tile nextLeftTile = getTile();
-        //     for (com.mvz.Character owner : nextLeftTile.getOwners()) {
-        //         if (owner instanceof com.mvz.Plant) {
-        //             float damage = this.getAD();
-        //             owner.decreaseHealth(damage);
-        //             return;
-        //         }
-        //     }
-        // }
+        if (isJumping) {
+            return;
+        } else {
+            isJumping = true;
+        }
+        System.out.println("Dikolongin tongkat awoawkwk");
     }
 }
