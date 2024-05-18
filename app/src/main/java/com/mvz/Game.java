@@ -200,7 +200,7 @@ public class Game {
                     Thread.currentThread().interrupt();
                 }
 
-                for (int i = 0; i < 6; i++) {
+                for (int i = 0; i < 1; i++) {
                     if (random.nextFloat() < 0.3) {
                         Zombie z;
                         Tile tile = map.getTile(10, i);

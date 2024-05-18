@@ -1,5 +1,7 @@
 package com.mvz;
 
+import java.util.Scanner;
+
 public class Player {
     private String name;
     private Deck deck;
@@ -7,10 +9,11 @@ public class Player {
     public Player(String name){
         this.name = name;
         this.deck = new Deck();
+        
     }
 
-    public void customizeDeck() {
-        deck.deckMenu();
+    public void customizeDeck(Scanner scanner) {
+        deck.deckMenu(scanner);
     }
 
     public Deck getDeck(){

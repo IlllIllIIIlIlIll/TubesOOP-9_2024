@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.mvz.plants.*;
 import com.mvz.zombies.Dolphinrider;
+import com.mvz.zombies.Jackinthebox;
 import com.mvz.zombies.Polevaulting;
 
 public class Map {
@@ -132,13 +133,15 @@ public class Map {
             int x = z.getXChar();
             int y = z.getYChar();
 
+            Tile currentTile = getTile(x, y);
+            Tile nextTile = getTile(x - 1, y);
+            boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
+            boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
+            
             boolean moved = false;
             if (x - 1 >= 0 && z.getCM()) {
-                Tile currentTile = getTile(x, y);
-                Tile nextTile = getTile(x - 1, y);
-                boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
-                boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
 
+                // System.out.println(z.getName() + " ada tanaman disekitarnya? " + hasAlivePlantInCurrentTile + " " + hasAlivePlantInNextTile);
                 if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
                     moveZombie(currentTile, nextTile, z);
                     z.resetAttackTimer();
@@ -170,23 +173,28 @@ public class Map {
         }
     }
 
-    private boolean processTileForZombie(Tile tile, Zombie zombie) {
+    private boolean processTileForZombie(Tile tile, Zombie z) {
         for (Character owner : tile.getOwners()) {
             if (owner instanceof Plant) {
                 Plant plant = (Plant) owner;
-                if (plant.getHealth() > 0 && zombie.getCanAction()) {
-                    if ((zombie instanceof Polevaulting && !((Polevaulting) zombie).isJumping())
-                        || (zombie instanceof Dolphinrider && !((Dolphinrider) zombie).isJumping())) {
+                if (plant.getHealth() > 0 && z.getCanAction()) {
+                    if ((z instanceof Polevaulting && !((Polevaulting) z).isJumping())
+                        || (z instanceof Dolphinrider && !((Dolphinrider) z).isJumping())) {
                         
                         plant.decreaseHealth(9999.0f); 
-                        zombie.action();
+                        z.action();
                         
-                        Tile nextTile = getTile(zombie.getXChar() - 2, zombie.getYChar());
-                        moveZombie(tile, nextTile, zombie);
-                    } else {
-                        zombie.setCanAction(false);
-                        plant.decreaseHealth(zombie.getAD());
+                        Tile nextTile = getTile(z.getXChar() - 2, z.getYChar());
+                        moveZombie(tile, nextTile, z);
+                    } else if (z instanceof Jackinthebox){
+                        plant.decreaseHealth(z.getAD());
+                        z.action();
                     }
+                    else {
+                        plant.decreaseHealth(z.getAD());
+                    }
+                    z.setCanAction(false);
+                    System.out.println(plant.getHealth());
                     return true;
                 }
             }
@@ -210,6 +218,12 @@ public class Map {
         }
     }
 
+
+
+
+
+
+
     public void attackZombies() {
         HashMap<Tile, Float> damageMap = new HashMap<>();
 
@@ -232,14 +246,20 @@ public class Map {
                                 // Do nothing
                                 break;
                             case 1:
-                                // cek tile x-1, x, x+1
-                                if (!attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName())) {
-                                    if (!attackTile(damageMap, plantX, plantY, attackDamage, plant.getName())) {
-                                        attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName());
-                                    }
+                                boolean actionPerformed = false;
+                                if (attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName())) {
+                                    actionPerformed = true;
+                                } else if (attackTile(damageMap, plantX, plantY, attackDamage, plant.getName())) {
+                                    actionPerformed = true;
+                                } else if (attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName())) {
+                                    actionPerformed = true;
                                 }
-                                owner.action();
+                                if (actionPerformed) {
+                                    owner.action();
+                                    System.out.println(owner.getHealth());
+                                }
                                 break;
+                            
                             case -1:
                                 for (int x = plantX; x < 11; x++) {
                                     if (attackTile(damageMap, x, plantY, attackDamage, plant.getName())) {
@@ -312,7 +332,7 @@ public class Map {
                     long newAttackTime = timeRemainingToAttack * 2;
 
                     zombie.setMSD(originalSpeed / 2);
-                    zombie.setATS(originalAttackSpeed / 2);
+                    zombie.setAS(originalAttackSpeed / 2);
                     zombie.setTimeRemainingToMove(newMoveTime);
                     zombie.setTimeRemainingToAttack(newAttackTime);
                     zombie.setCH();
@@ -325,7 +345,7 @@ public class Map {
                             long remainingMoveTime = (newMoveTime - timePassed + 999) / 2; 
                             long remainingAttackTime = (newAttackTime - timePassed + 999) / 2; 
                             zombie.setMSD(originalSpeed);
-                            zombie.setATS(originalAttackSpeed);
+                            zombie.setAS(originalAttackSpeed);
                             zombie.setTimeRemainingToMove(remainingMoveTime);
                             zombie.setTimeRemainingToAttack(remainingAttackTime);
                             zombie.setCH();

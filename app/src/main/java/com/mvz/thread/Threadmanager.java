@@ -34,6 +34,12 @@ public class ThreadManager {
                 // // better user experience
                 // System.out.print("\033[H\033[2J");
                 // System.out.flush();
+
+                // Calculate the elapsed time in seconds
+                long elapsedTimeMillis = game.getElapsedTime();
+                long elapsedTimeSeconds = elapsedTimeMillis / 1000;
+                System.out.println("Game second: " + elapsedTimeSeconds + " seconds");
+
                 game.userInput(input);
                 game.getMap().printMap();
     

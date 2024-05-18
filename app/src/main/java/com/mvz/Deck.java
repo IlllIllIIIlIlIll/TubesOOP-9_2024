@@ -4,16 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.mvz.plants.Cherrybomb;
-import com.mvz.plants.Jalapeno;
-import com.mvz.plants.LandPlantFactory;
-import com.mvz.plants.Lilypad;
-import com.mvz.plants.Peashooter;
-import com.mvz.plants.Repeater;
-import com.mvz.plants.Snowpea;
-import com.mvz.plants.Sunflower;
-import com.mvz.plants.Tanglekelp;
-import com.mvz.plants.WaterPlantFactory;
+import com.mvz.plants.*;
 
 public class Deck {
     private List<Plant> plants;
@@ -23,13 +14,12 @@ public class Deck {
         plants.add(new Sunflower());
         plants.add(new Jalapeno());
         plants.add(new Lilypad());
-        plants.add(new Peashooter());
+        plants.add(new Squash());
         plants.add(new Repeater());
         plants.add(new Tanglekelp());
     }
 
-    public void deckMenu() {
-        Scanner sc = new Scanner(System.in);
+    public void deckMenu(Scanner sc) {
         Inventory inventory = Inventory.getInstance();
         boolean validInput = false;
     
@@ -50,16 +40,19 @@ public class Deck {
             if (input.matches("\\d+")) {
                 int x = Integer.parseInt(input);
                 if (x==1) inventory.printInventory();
-                else if (x==2) inventory.swapPlants();
+                else if (x==2) inventory.swapPlants(sc);
                 else if (x==3) printDeck();
-                else if (x==4) addPlant();
-                else if (x==5) deletePlant();
-                else if (x==6) swapPlants();
+                else if (x==4) addPlant(sc);
+                else if (x==5) deletePlant(sc);
+                else if (x==6) swapPlants(sc);
                 else if (x==0) validInput = continueToTheGame();
             }   else {
                 System.out.println("Format input tidak valid. Harap masukkan hanya sebuah angka sesuai opsi yang tersedia.");
             }
         }
+        // better user experience
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
     public List<Plant> getPlants() {
@@ -90,8 +83,7 @@ public class Deck {
     }
 
     // minimal ada 2 plant
-    public void swapPlants() {
-        Scanner sc = new Scanner(System.in);
+    public void swapPlants(Scanner sc) {
         boolean validInput = false;
     
         int x = 0;
@@ -136,10 +128,9 @@ public class Deck {
     }
 
     // pastiin deck belum full
-    public void addPlant() {
+    public void addPlant(Scanner sc) {
         Inventory inventory = Inventory.getInstance();
 
-        Scanner sc = new Scanner(System.in);
         boolean validInput = false;
     
         if (plants.size() == 6) {
@@ -181,8 +172,7 @@ public class Deck {
     }
 
     // sebelum masuk ke method, pastikan dulu kl decknya ga kosong
-    public void deletePlant() {
-        Scanner sc = new Scanner(System.in);
+    public void deletePlant(Scanner sc) {
         boolean validInput = false;
     
         while (!validInput) {

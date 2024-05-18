@@ -13,7 +13,9 @@ public abstract class Character implements Action {
     protected boolean canAction;
     protected int x;
     protected int y;
-    private transient ScheduledExecutorService executorService; 
+    private transient ScheduledExecutorService attackExecutorService; 
+    private long timeRemainingToAttack;
+    private boolean attackStarted;
 
     public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage, Integer x, Integer y) {
         this.x = x;
@@ -24,8 +26,10 @@ public abstract class Character implements Action {
         this.attack_speed = attack_speed;
         this.attack_damage = attack_damage;
         this.canAction = true;
+        this.timeRemainingToAttack = Math.round(attack_speed * 1000);
+        this.attackStarted = false;
         if (attack_speed > 0) {
-            this.executorService = Executors.newSingleThreadScheduledExecutor();
+            this.attackExecutorService = Executors.newSingleThreadScheduledExecutor();
             startActionTimer();
         }
     }
@@ -91,7 +95,7 @@ public abstract class Character implements Action {
         return attack_speed;
     }
 
-    public void setAttack_speed(Float attack_speed) {
+    public void setAS(Float attack_speed) {
         this.attack_speed = attack_speed;
     }
 
@@ -113,15 +117,57 @@ public abstract class Character implements Action {
 
     private void startActionTimer() {
         if (attack_speed > 0) {
-            executorService.scheduleAtFixedRate(() -> {
+            attackExecutorService.scheduleAtFixedRate(() -> {
                 canAction = true;
             }, 0, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
         }
     }
 
+    public void startAttackTimer() {
+        attackExecutorService.scheduleAtFixedRate(() -> {
+            canAction = true;
+        }, timeRemainingToAttack, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
+        long currTime = System.currentTimeMillis();
+        System.out.println("Waktu startAttackTimer dipanggil: "+currTime);
+    }
+
+    public void resetAttackTimer() {
+        attackExecutorService.shutdownNow();
+        attackExecutorService = Executors.newSingleThreadScheduledExecutor();
+        attackStarted = false;
+    }
+
+    public void initiateAttack() {
+        if (!attackStarted) {
+            startAttackTimer();
+            long currTime = System.currentTimeMillis();
+            System.out.println("Waktu initateAttack dipanggil: "+currTime);
+            attackStarted = true;
+        }
+    }
+
+    public void scheduleFirstAttack(Plant plant) {
+        attackExecutorService.schedule(() -> {
+            canAction = true;
+            initiateAttack();
+            long currTime = System.currentTimeMillis();
+            System.out.println("Waktu scheduleFirst dipanggil: "+currTime);
+            plant.decreaseHealth(getAD()); 
+        }, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
+    }    
+
+    // Getter and setter for timeRemainingToAttack
+    public long getTimeRemainingToAttack() {
+        return timeRemainingToAttack;
+    }
+
+    public void setTimeRemainingToAttack(long timeRemainingToAttack) {
+        this.timeRemainingToAttack = timeRemainingToAttack;
+    }
+
     public void initScheduledExecutorService() {
         if (attack_speed > 0) {
-            this.executorService = Executors.newSingleThreadScheduledExecutor();
+            this.attackExecutorService = Executors.newSingleThreadScheduledExecutor();
             startActionTimer();
         }
     }

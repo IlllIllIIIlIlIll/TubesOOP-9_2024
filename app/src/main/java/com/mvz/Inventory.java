@@ -39,8 +39,7 @@ public class Inventory {
         return plants;
     }
     
-    public void swapPlants() {
-        Scanner sc = new Scanner(System.in);
+    public void swapPlants(Scanner sc) {
         boolean validInput = false;
     
         int x = 0;
@@ -75,5 +74,6 @@ public class Inventory {
         for (int i=0; i<plants.size(); i++) {
             System.out.printf("%d. %s\n", i+1, plants.get(i).name);
         }
+        System.out.println();
     }
 }
