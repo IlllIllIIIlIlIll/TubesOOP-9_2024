@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
 import com.mvz.exceptionhandling.InvalidInputException;
 import com.mvz.exceptionhandling.InvalidTileException;
 import com.mvz.plants.LandPlantFactory;
@@ -81,7 +82,7 @@ public class Game {
         Sun.increaseSun(amount);
     }
 
-    public void checkInput(String input) throws InvalidInputException {
+    public void checkInput(String input) throws InvalidInputException, InvalidTileException {
         String[] kata = input.split(" ");
         if (kata.length == 4 && kata[0].equals("tanam")) {
             try {
@@ -123,6 +124,7 @@ public class Game {
         } else {
             throw new InvalidInputException("Masukkan input dengan format \"tanam <nama plant> x y\" atau \"gali x y\"\nx dan y adalah koordinat tile di map yang valid");
         }
+    }
 
     public void placePlant(Plant p, int x, int y) throws InvalidTileException {
         Tile targetTile = map.getTile(x, y);
