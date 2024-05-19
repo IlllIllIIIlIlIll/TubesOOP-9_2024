@@ -6,6 +6,7 @@ import com.mvz.menu.PauseMenu;
 import java.util.Scanner;
 
 public class ThreadManager {
+    private static ThreadManager instance;
     private Game game;
     private Scanner scanner;
     private Thread mainThread;
@@ -13,12 +14,20 @@ public class ThreadManager {
     private Thread sunGeneratingThread;
     private Thread positionUpdatingThread;
 
-    public ThreadManager(Game game, Scanner scanner) {
-        this.game = game;
-        this.scanner = scanner;
+    private ThreadManager() {
+
     }
 
-    public void startThreads() {
+    public static synchronized ThreadManager getInstance() {
+        if (instance == null) {
+            instance = new ThreadManager();
+        }
+        return instance;
+    }
+
+    public void startThreads(Game game, Scanner scanner) {
+        this.game = game;
+        this.scanner = scanner;
         startMainThread();
         startZombieSpawningThread();
         startSunGeneratingThread();
@@ -42,7 +51,19 @@ public class ThreadManager {
 
                 game.userInput(input);
                 game.getMap().printMap();
-    
+
+                if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
+                    if (game.getMap().getIsDefeated()) {
+                        System.out.println("\nYou have been defeated!");
+                    } else {
+                        System.out.println("\nYou have won the game!");
+                    }
+                    game.setPaused(false);
+                    game.endGame(scanner);
+                    break;
+                }
+                
+                
                 if (input.equalsIgnoreCase("pause")) {
                     pauseThreads();
                 } else if (input.equalsIgnoreCase("resume")) {
@@ -56,12 +77,48 @@ public class ThreadManager {
 
     private void startZombieSpawningThread() {
         zombieSpawningThread = new Thread(() -> {
+            boolean isSpawningActive = false;
+            boolean isFlagActive = false;
+            long spawnStartTime = 0 * 1000;
+            long spawnEndTime = 160 * 1000;
+        
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     if (!game.isPaused()) {
-                        game.startSpawningZombies();
+                        long elapsedTime = game.getElapsedTime();
+        
+                        // Zombie spawning
+                        if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime) {
+                            if (!isSpawningActive) {
+                                System.out.println("The zombies are coming!");
+                                isSpawningActive = true;
+                            }
+                            game.startSpawningZombies(isFlagActive);
+                        } else if (elapsedTime > spawnEndTime) {
+                            if (isSpawningActive) {
+                                System.out.println("The zombies are out of army!");
+                                isSpawningActive = false;
+                            }
+                        }
+        
+                        if (elapsedTime >= 80 * 1000) {
+                            long flagCycleTime = (elapsedTime - 80 * 1000) % 80000;
+                            if (flagCycleTime >= 0 && flagCycleTime < 5000) {
+                                if (!isFlagActive) {
+                                    System.out.println("A Huge Wave of Zombies is Approaching!");
+                                    game.getMap().setMaxZombies(27);
+                                    isFlagActive = true;
+                                }
+                            } else {
+                                if (isFlagActive) {
+                                    System.out.println("Flag wave ended!");
+                                    game.getMap().setMaxZombies(2);
+                                    isFlagActive = false;
+                                }
+                            }
+                        }
                     }
-                    Thread.sleep(5000); 
+                    Thread.sleep(1000); // Check every second
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -69,21 +126,33 @@ public class ThreadManager {
         });
         zombieSpawningThread.start();
     }
+    
+    
 
     private void startSunGeneratingThread() {
         sunGeneratingThread = new Thread(() -> {
-            game.generateSun(); 
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(5000 + game.getRandom().nextInt(5000));
+                    if (!game.isPaused() && game.getMap() != null) {
+                        game.generateSun();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         });
         sunGeneratingThread.start();
     }
+
     
 
     private void startPositionUpdatingThread() {
         positionUpdatingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Thread.sleep(1000); 
-                    if (!game.isPaused()) {
+                    Thread.sleep(1000);
+                    if (!game.isPaused() && game.getMap() != null) { 
                         game.getMap().attackZombies();
                         game.getMap().setPosition();
                     }
@@ -93,7 +162,7 @@ public class ThreadManager {
             }
         });
         positionUpdatingThread.start();
-    }
+    }    
 
     public void pauseThreads() {
         game.pauseGame();

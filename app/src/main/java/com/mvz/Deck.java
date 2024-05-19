@@ -11,8 +11,8 @@ public class Deck {
 
     public Deck() {
         plants = new ArrayList<>();
-        plants.add(new Sunflower());
-        plants.add(new Jalapeno());
+        plants.add(new Snowpea());
+        plants.add(new Cherrybomb());
         plants.add(new Lilypad());
         plants.add(new Squash());
         plants.add(new Repeater());
@@ -220,7 +220,7 @@ public class Deck {
     public Plant createThePlant(String input, Tile tile) {
         Plant plantToPlant = null;
         for (Plant tumbuhan : getPlants()) {
-            if (tumbuhan.getName().equals(input)) {
+            if (tumbuhan.getName().equalsIgnoreCase(input)) { 
                 plantToPlant = tumbuhan;
                 break;
             }

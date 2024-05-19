@@ -130,4 +130,3 @@ public class Lilypad extends Plant implements PlantComponent{
     }
 
 }
-// attack damage n getrange

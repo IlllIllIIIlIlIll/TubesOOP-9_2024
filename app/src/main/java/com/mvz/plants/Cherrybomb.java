@@ -6,11 +6,11 @@ public class Cherrybomb extends Plant {
     public static long lastPlantedTime;
     
     public Cherrybomb(Integer x, Integer y) {
-        super("Cherry bomb", 150, 9999.0f,  1800.0f, 0.0f, 3, 30, false, x, y);
+        super("Cherrybomb", 150, 100.0f,  5000.0f, 0.0f, 3, 30, false, x, y);
     }
 
     public Cherrybomb() {
-        super("Cherry bomb", 150, 9999.0f,  1800.0f, 0.0f, 3, 30, false);
+        super("Cherrybomb", 150, 100.0f,  5000.0f, 0.0f, 3, 30, false);
     }
 
     public boolean isReadyToBePlanted() {

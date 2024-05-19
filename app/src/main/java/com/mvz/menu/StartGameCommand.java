@@ -7,21 +7,23 @@ import com.mvz.thread.ThreadManager;
 import java.util.Scanner;
 
 public class StartGameCommand implements Command {
-    private GameStateManager gameStateManager;
     private Player player;
     private Game game;
     private Scanner scanner;
+    private ThreadManager threadManager;
+    private final int STARTING_SUN = 100000;
+
 
     public StartGameCommand(Player player, Scanner scanner) {
         this.player = player;
         this.scanner = scanner;
-        this.gameStateManager = new GameStateManager();
+        this.threadManager = ThreadManager.getInstance();
     }
 
     @Override
     public void execute() {
         boolean validChoice = false;
-        ThreadManager threadManager;
+        threadManager.stopThreads();
 
         while (!validChoice) {
             System.out.println("");
@@ -56,9 +58,8 @@ public class StartGameCommand implements Command {
             System.out.print("\033[H\033[2J");
             System.out.flush();
             
-            threadManager = new ThreadManager(game, scanner);
-            // Start the threads
-            threadManager.startThreads();
+            Sun.setSun(STARTING_SUN);
+            threadManager.startThreads(game, scanner);
             System.out.println("Game processes started!");
         }
     }

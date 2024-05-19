@@ -17,16 +17,14 @@ import com.mvz.zombies.Polevaulting;
 public class Map {
     private List<Zombie> zombieOnTile;
     private Tile[][] tile;
-    private List<List<Zombie>> zombiesByY;
-    private static final int MAX_ZOMBIES = 10;
+    private boolean isDefeated = false;
+    private boolean isVictory = false;
+    private int MAX_ZOMBIES = 2;
+
 
     public Map() {
         tile = new Tile[11][6];
         zombieOnTile = new ArrayList<>();
-        zombiesByY = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            this.zombiesByY.add(new ArrayList<>());
-        }
 
         for (int i = 0; i < 11; i++) {
             for (int j = 0; j < 6; j++) {
@@ -36,14 +34,14 @@ public class Map {
         }
 
         // tanaman testing aja
-        Wallnut a = new Wallnut(5, 0);
-        tile[5][0].addOwner(a);
+        // Wallnut a = new Wallnut(5, 0);
+        // tile[5][0].addOwner(a);
         // Wallnut b = new Wallnut(5, 1);
         // tile[5][1].addOwner(b);
-        // Wallnut c = new Wallnut(5, 2);
-        // tile[5][2].addOwner(c);
-        // Wallnut d = new Wallnut(5, 3);
-        // tile[5][3].addOwner(d);
+        Lilypad c = new Lilypad(5, 2);
+        tile[5][2].addOwner(c);
+        Lilypad d = new Lilypad(5, 3);
+        tile[5][3].addOwner(d);
         // Wallnut e = new Wallnut(5, 4);
         // tile[5][4].addOwner(e);
         // Wallnut f = new Wallnut(5, 5);
@@ -53,6 +51,10 @@ public class Map {
         // tile[3][4].addOwner(g);
         // Wallnut h = new Wallnut(3, 5);
         // tile[3][5].addOwner(h);
+        // Wallnut i = new Wallnut(3, 0);
+        // tile[3][0].addOwner(i);
+        // Wallnut j = new Wallnut(3, 1);
+        // tile[3][1].addOwner(j);
     }
 
     public Tile getTile(int x, int y) {
@@ -66,6 +68,30 @@ public class Map {
     public int getNumberOfColumns() {
         return this.tile.length;
     }
+
+    public boolean getIsDefeated() {
+        return isDefeated;
+    }
+
+    public void setIsDefeated(boolean isDefeated){
+        this.isDefeated = isDefeated;
+    }
+
+    public boolean getIsVictory() {
+        return isVictory;
+    }
+
+    public void setIsVictory(boolean isVictory){
+        this.isVictory = isVictory;
+    }
+
+    public int getMaxZombies(){
+        return MAX_ZOMBIES;
+    }
+
+    public void setMaxZombies(int maxZombies) {
+        this.MAX_ZOMBIES = maxZombies;
+    }    
 
     public void printMap() {
         String darkWatercolor = "\033[0;34m"; 
@@ -133,51 +159,73 @@ public class Map {
             int x = z.getXChar();
             int y = z.getYChar();
 
-            Tile currentTile = getTile(x, y);
-            Tile nextTile = getTile(x - 1, y);
-            boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
-            boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
-            
-            boolean moved = false;
-            if (x - 1 >= 0 && z.getCM()) {
+            // mencegah akses di luar batasan
+            if (x > 0){
+                Tile currentTile = getTile(x, y);
+                Tile nextTile = getTile(x - 1, y);
+                boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
+                boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
+        
+                // zombie belum paling ujung dan bisa gerak (mov.spd tidak cooldown)
+                if (x - 1 >= 0 && z.getCM()) {
+                    // System.out.println(z.getName() + " ada tanaman disekitarnya? " + hasAlivePlantInCurrentTile + " " + hasAlivePlantInNextTile);
+                    
+                    // jika ada tidak ada tanaman (hidup) di tile x dan x-1 
+                    if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
+                        // zombie bergerak
+                        moveZombie(currentTile, nextTile, z);
+                        // cooldown atk.spd reset
+                        z.resetAttackTimer();
+                        z.setCM();
 
-                // System.out.println(z.getName() + " ada tanaman disekitarnya? " + hasAlivePlantInCurrentTile + " " + hasAlivePlantInNextTile);
-                if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
-                    moveZombie(currentTile, nextTile, z);
-                    z.resetAttackTimer();
-                    moved = true;
+                        if (nextTile.getX() == 0){
+                            setIsDefeated(true);
+                            return;
+                        }
+
+                    } else {
+                        // masuk ke method penyerangan tanaman
+                        z.initiateAttack();
+                        z.setCM(false);
+                    }
+
                 } else {
-                    z.initiateAttack();
+                    z.setCM(false);
                 }
-                z.setCM();
-            }
-
-            if (!moved) {
-                // Additional logic if the zombie cannot move
-                // e.g., call a defeated function if it reaches the end
             }
         }
 
-        // Remove all dead zombies
+        // Remove the deads!
         zombieOnTile.removeAll(zombiesToRemove);
+        removeDeadOwners();
+    }
 
-        // Remove all dead plants
+    private void removeDeadOwners() {
+        boolean hasZombies = false;
+    
         for (Tile[] tiles : tile) {
             for (Tile t : tiles) {
                 for (Character owner : new ArrayList<>(t.getOwners())) {
-                    if (owner instanceof Plant && owner.getHealth() <= 0) {
+                    if (owner.getHealth() <= 0) {
                         t.removeOwner(owner);
+                    } else if (owner instanceof Zombie) {
+                        hasZombies = true;
                     }
                 }
             }
         }
+    
+        if (!hasZombies) {
+            setIsVictory(true);
+        }
     }
-
+    
+    
     private boolean processTileForZombie(Tile tile, Zombie z) {
         for (Character owner : tile.getOwners()) {
             if (owner instanceof Plant) {
                 Plant plant = (Plant) owner;
-                if (plant.getHealth() > 0 && z.getCanAction()) {
+                if (plant.getHealth() > 0 && z.getcanAttack()) {
                     if ((z instanceof Polevaulting && !((Polevaulting) z).isJumping())
                         || (z instanceof Dolphinrider && !((Dolphinrider) z).isJumping())) {
                         
@@ -193,8 +241,6 @@ public class Map {
                     else {
                         plant.decreaseHealth(z.getAD());
                     }
-                    z.setCanAction(false);
-                    System.out.println(plant.getHealth());
                     return true;
                 }
             }
@@ -207,12 +253,15 @@ public class Map {
         nextTile.addOwner(zombie);
         zombie.setXChar(nextTile.getX());
         zombie.setYChar(nextTile.getY());
+    
+        if (nextTile.getX() == 0) {
+            isDefeated = true;
+        }
     }
 
     public void placeZombie(Zombie z, int y) {
         if (zombieOnTile.size() < MAX_ZOMBIES) {
             this.zombieOnTile.add(z);
-            this.zombiesByY.get(y).add(z);
             int x = z.getXChar();
             tile[x][y].addOwner(z);
         }
@@ -232,7 +281,7 @@ public class Map {
                 for (Character owner : t.getOwners()) {
                     if (owner instanceof Plant) {
                         Plant plant = (Plant) owner;
-                        if (!plant.getCanAction()) {
+                        if (!plant.getcanAttack()) {
                             continue;
                         }
 
@@ -290,7 +339,7 @@ public class Map {
                                 break;
                         }
 
-                        plant.setCanAction(false); 
+                        plant.setcanAttack(false); 
                     }
                 }
             }
@@ -366,7 +415,7 @@ public class Map {
                 if (owner instanceof Zombie) {
                     Zombie zombie = (Zombie) owner;
                     zombie.decreaseHealth(damage);
-                    // System.out.println("BOOM! " + zombie.getName() + " terkena damage " + damage + ", sisa darah " + zombie.getHealth() + "!");
+                    System.out.println("BOOM! " + zombie.getName() + " terkena damage " + damage + ", sisa darah " + zombie.getHealth() + "!");
                 }
             }
         }

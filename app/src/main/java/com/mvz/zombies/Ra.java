@@ -20,9 +20,15 @@ public class Ra extends Zombie {
     }
 
     private void initScheduledExecutors() {
+        // buat timer baru
         executorService = Executors.newSingleThreadScheduledExecutor();
+
+        // eksekusi kode di dalam dalam interval 11 detik
         executorService.scheduleAtFixedRate(() -> {
+            // memastikan hanya Ra zombie yang di spawn saja dapat mengurangi Sun
             if (getXChar() < 10) {
+
+                // agar tidak ada concurrent modification
                 synchronized (Sun.class) {
                     Sun.decreaseSun(25);
                 }
@@ -32,7 +38,7 @@ public class Ra extends Zombie {
 
     @Override
     public void action() {
-        // Custom action for Ra
+
     }
 
     @Override

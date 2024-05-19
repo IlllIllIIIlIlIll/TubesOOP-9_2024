@@ -1,7 +1,7 @@
 package com.mvz;
 
 public class Sun {
-    private static Integer value = 10000000;
+    private static Integer value;
 
     public static synchronized Integer getSun() {
         return value;

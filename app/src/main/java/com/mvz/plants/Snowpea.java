@@ -26,5 +26,5 @@ public class Snowpea extends Plant {
     public void action(){
     
 
-        }
+    }
 }

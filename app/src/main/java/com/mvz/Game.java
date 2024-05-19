@@ -1,21 +1,17 @@
 package com.mvz;
 
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Scanner;
 
 import com.mvz.exceptionhandling.InvalidInputException;
 import com.mvz.exceptionhandling.InvalidTileException;
-import com.mvz.plants.Lilypad;
-import com.mvz.plants.Peashooter;
-import com.mvz.plants.Snowpea;
-import com.mvz.plants.Tanglekelp;
+import com.mvz.plants.*;
 import com.mvz.zombies.*;
+import com.mvz.menu.EndGameMenu;
 
 public class Game {
-    private Player player; // Reserved buat deck
+    private Player player; 
     private Map map;
-    // private Timer timer;
     private transient Random random; 
     private boolean isPaused = false;
     private long elapsedTime = 0;
@@ -29,10 +25,13 @@ public class Game {
         this.map = map;
     }
 
+    public Random getRandom() {
+        return random;
+    }    
+
     public Game(Player player) {
         this.player = player;
         this.map = new Map();
-        // this.timer = new Timer();
         this.random = new Random(); 
     }
 
@@ -42,16 +41,10 @@ public class Game {
     }
 
     public void generateSun() {
-        Timer sunTimer = new Timer();
-        sunTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (!isPaused) {
-                    Sun.increaseSun(25);
-                }
-            }
-        }, 0, 5000 + random.nextInt(5000)); 
-    }
+        if (!isPaused) {
+            Sun.increaseSun(25);
+        }
+    }    
 
     public void userInput(String input) {
         try {
@@ -64,7 +57,7 @@ public class Game {
     }
 
     public void checkInput(String input) throws InvalidInputException, InvalidTileException {
-        String[] kata = input.split(" ");
+        String[] kata = input.toLowerCase().split(" ");
         if (kata.length == 4 && kata[0].equals("tanam")) {
             try {
                 int x = Integer.parseInt(kata[2]);
@@ -178,13 +171,15 @@ public class Game {
         else {
             throw new InvalidTileException("Penggalian gagal. Tidak ada plant di tile ("+ x + "," + y + ").");
         }        
-   }
+    }
 
-    public void startSpawningZombies() {
+
+   
+    public void startSpawningZombies(boolean isFlagActive) {
         ZombieFactory landFactory = new LandZombieFactory();
         ZombieFactory waterFactory = new WaterZombieFactory();
         new Thread(() -> {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 synchronized (Game.this) {
                     while (isPaused) {
                         try {
@@ -193,6 +188,9 @@ public class Game {
                             Thread.currentThread().interrupt();
                         }
                     }
+                    if (map == null) { // end game
+                        return;
+                    }
                 }
                 try {
                     Thread.sleep(5000);
@@ -200,8 +198,9 @@ public class Game {
                     Thread.currentThread().interrupt();
                 }
 
-                for (int i = 0; i < 1; i++) {
-                    if (random.nextFloat() < 0.3) {
+                for (int i = 0; i < 0; i++) {
+                    float spawnRate = isFlagActive ? 0.5f : 0.3f;
+                    if (random.nextFloat() < spawnRate) {
                         Zombie z;
                         Tile tile = map.getTile(10, i);
                         if (tile != null) {
@@ -224,6 +223,8 @@ public class Game {
         }).start();
     }
 
+
+
     public void startGame() {
         startTime = System.currentTimeMillis();
     }
@@ -236,7 +237,7 @@ public class Game {
     public synchronized void resumeGame() {
         isPaused = false;
         startTime = System.currentTimeMillis();
-        notifyAll(); // Notify all threads that are waiting.
+        notifyAll(); 
     }
 
     public long getElapsedTime() {
@@ -251,19 +252,11 @@ public class Game {
         return isPaused;
     }
 
-    public static void main(String[] args) {
-            Plant plant1 = new Lilypad();
-            Plant plant2 = new Tanglekelp();
-            Plant plant3 = new Peashooter();
-            Plant plant4 = new Snowpea();
-            Game game = new Game(new Player("fish"));
-            
-            game.userInput("tanam Peashooter 2 2");
-            game.userInput("tanam Peashooter 1 2");
-            game.userInput("tanam Peashooter 1 2");
-            game.userInput("tanam Peashooter 1 2");
-            game.userInput("tanam Peashooter 1 2");
-            game.userInput("tanam Peashooter 1 2");
-            game.userInput("tanam Peashooter 1 2");
+    public synchronized void setPaused(boolean isPaused){
+        this.isPaused = isPaused;
+    }
+    
+    public void endGame(Scanner scanner) {
+        new EndGameMenu(player, scanner).displayMenu();
     }
 }
