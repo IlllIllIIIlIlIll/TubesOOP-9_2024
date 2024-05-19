@@ -86,9 +86,9 @@ public class ThreadManager {
                 try {
                     if (!game.isPaused()) {
                         long elapsedTime = game.getElapsedTime();
-        
+
                         // Zombie spawning
-                        if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime) {
+                        if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime && ((int) Math.ceil(elapsedTime/1000) % 3) == 0) {
                             if (!isSpawningActive) {
                                 System.out.println("The zombies are coming!");
                                 isSpawningActive = true;
@@ -101,9 +101,10 @@ public class ThreadManager {
                             }
                         }
         
+                        // Zombie flag
                         if (elapsedTime >= 80 * 1000) {
                             long flagCycleTime = (elapsedTime - 80 * 1000) % 80000;
-                            if (flagCycleTime >= 0 && flagCycleTime < 5000) {
+                            if (flagCycleTime >= 0 && flagCycleTime < 6000) {
                                 if (!isFlagActive) {
                                     System.out.println("A Huge Wave of Zombies is Approaching!");
                                     game.getMap().setMaxZombies(27);

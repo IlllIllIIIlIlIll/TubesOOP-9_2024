@@ -7,7 +7,7 @@ public class Polevaulting extends Zombie {
     private boolean isJumping = false;
 
     public Polevaulting(Integer x, Integer y) {
-        super("Pole vaulting", 175.0f, 100.0f, 1.0f, 5.0f, false, x, y);
+        super("Pole vaulting", 175.0f, 100.0f, 1.0f, 10.0f, false, x, y);
     }
 
     public Polevaulting() {

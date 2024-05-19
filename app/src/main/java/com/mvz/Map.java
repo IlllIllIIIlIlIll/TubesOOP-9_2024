@@ -281,7 +281,7 @@ public class Map {
                 for (Character owner : t.getOwners()) {
                     if (owner instanceof Plant) {
                         Plant plant = (Plant) owner;
-                        if (!plant.getcanAttack()) {
+                        if (!plant.getcanAttack() && !plant.getName().equals("Lilypad")) {
                             continue;
                         }
 
@@ -289,6 +289,7 @@ public class Map {
                         int plantY = plant.getYChar();
                         int range = plant.getRange();
                         float attackDamage = plant.getAD();
+                        System.out.println("attack damage: " + attackDamage);
 
                         switch (range) {
                             case 0:

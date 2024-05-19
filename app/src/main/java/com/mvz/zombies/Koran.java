@@ -5,7 +5,7 @@ import com.mvz.Zombie;
 public class Koran extends Zombie {
 
     public Koran(Integer x, Integer y) {
-        super("Koran", 150.0f, 10.0f, 5.0f, 5.0f, false, x, y);
+        super("Koran", 150.0f, 10.0f, 5.0f, 10.0f, false, x, y);
     }
 
     public Koran() {
