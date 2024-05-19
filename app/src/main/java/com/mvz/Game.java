@@ -198,7 +198,7 @@ public class Game {
                     Thread.currentThread().interrupt();
                 }
 
-                for (int i = 2; i < 4; i++) {
+                for (int i = 0; i < 6; i++) {
                     float spawnRate = isFlagActive ? 0.5f : 0.3f;
                     if (random.nextFloat() < spawnRate) {
                         Zombie z;

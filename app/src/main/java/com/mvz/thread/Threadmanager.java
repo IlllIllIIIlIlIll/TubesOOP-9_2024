@@ -79,7 +79,7 @@ public class ThreadManager {
         zombieSpawningThread = new Thread(() -> {
             boolean isSpawningActive = false;
             boolean isFlagActive = false;
-            long spawnStartTime = 0 * 1000;
+            long spawnStartTime = 20 * 1000;
             long spawnEndTime = 160 * 1000;
         
             while (!Thread.currentThread().isInterrupted()) {

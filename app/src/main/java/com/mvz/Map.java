@@ -19,7 +19,7 @@ public class Map {
     private Tile[][] tile;
     private boolean isDefeated = false;
     private boolean isVictory = false;
-    private int MAX_ZOMBIES = 2;
+    private int MAX_ZOMBIES = 10;
 
 
     public Map() {
@@ -38,10 +38,10 @@ public class Map {
         // tile[5][0].addOwner(a);
         // Wallnut b = new Wallnut(5, 1);
         // tile[5][1].addOwner(b);
-        Lilypad c = new Lilypad(5, 2);
-        tile[5][2].addOwner(c);
-        Lilypad d = new Lilypad(5, 3);
-        tile[5][3].addOwner(d);
+        // Lilypad c = new Lilypad(5, 2);
+        // tile[5][2].addOwner(c);
+        // Lilypad d = new Lilypad(5, 3);
+        // tile[5][3].addOwner(d);
         // Wallnut e = new Wallnut(5, 4);
         // tile[5][4].addOwner(e);
         // Wallnut f = new Wallnut(5, 5);
@@ -289,7 +289,6 @@ public class Map {
                         int plantY = plant.getYChar();
                         int range = plant.getRange();
                         float attackDamage = plant.getAD();
-                        System.out.println("attack damage: " + attackDamage);
 
                         switch (range) {
                             case 0:
