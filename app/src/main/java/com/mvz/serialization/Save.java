@@ -24,10 +24,10 @@ public class Save {
             return;
         }
 
-        String directoryPath = "saves"; // Relative path to the 'saves' folder
+        String directoryPath = "saves"; 
         File directory = new File(directoryPath);
         if (!directory.exists()) {
-            directory.mkdirs(); // Create the saves directory if it doesn't exist
+            directory.mkdirs(); 
         }
 
         File file = new File(directory, filename + ".json");

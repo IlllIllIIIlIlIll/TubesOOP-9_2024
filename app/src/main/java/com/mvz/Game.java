@@ -1,93 +1,219 @@
 package com.mvz;
 
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Scanner;
 
+import com.mvz.exceptionhandling.InvalidInputException;
+import com.mvz.exceptionhandling.InvalidTileException;
+import com.mvz.plants.*;
 import com.mvz.zombies.*;
-
+import com.mvz.menu.EndGameMenu;
 
 public class Game {
+    private Player player; 
     private Map map;
-    private Timer timer;
-    private Random random;
-    private Boolean isDaytime;
-    private Thread sunThread;
-    private Thread zombieThread;
+    private transient Random random; 
     private boolean isPaused = false;
     private long elapsedTime = 0;
     private long startTime = 0;
 
-    public Map getMap(){
+    public Player getPlayer() {
+        return player;
+    }
+    
+    public Map getMap() {
         return map;
     }
 
-    public void setMap(Map map){
+    public void setMap(Map map) {
         this.map = map;
     }
 
-    // Generate map
-    public Game() {
+    public Random getRandom() {
+        return random;
+    }    
+
+    public Game(Player player) {
+        this.player = player;
         this.map = new Map();
-        this.timer = new Timer();
+        this.random = new Random(); 
+    }
+
+    
+    public Game() {
         this.random = new Random();
-        isDaytime = true;
     }
 
     public void generateSun() {
-        sunThread = new Thread(() -> {
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    toggleDayNight();
+        if (!isPaused) {
+            Sun.increaseSun(25);
+        }
+    }    
 
-                    if (isDaytime) {
-                        generateSunPeriodically();
+    public void userInput(String input) {
+        try {
+            checkInput(input);
+        } catch (InvalidTileException e) {
+            System.out.println("INVALID TILE: " + e.getMessage());
+        } catch (InvalidInputException e) {
+            System.out.println("INVALID INPUT: " + e.getMessage());
+        }
+    }
+
+    public void checkInput(String input) throws InvalidInputException, InvalidTileException, NumberFormatException {
+        String[] kata = input.split(" ");
+        if (kata.length >= 4 && kata[0].equals("tanam")) {
+            try {
+                int x = Integer.parseInt(kata[kata.length-2]);
+                int y = Integer.parseInt(kata[kata.length-1]);
+
+                StringBuilder plantNameBuilder = new StringBuilder();
+                for (int i = 1; i < kata.length - 2; i++) {
+                    plantNameBuilder.append(kata[i]);
+                    if (i < kata.length - 3) {
+                        plantNameBuilder.append(" ");
                     }
                 }
-            }, 0, 100000); 
-        });
-        sunThread.start();
+                String plantName = plantNameBuilder.toString();
+                
+                if (x > 0 && x < 10 && y > 0 && y < 7) {
+                    Tile tile = map.getTile(x, y-1);
+                    if (player.getDeck().createThePlant(plantName, tile) != null) {
+                        Plant plant = player.getDeck().createThePlant(plantName, tile);
+                        if (plant.canBuyThePlant()) {
+                            if (plant.isReadyToBePlanted()) {
+                                placePlant(plant, x, y-1);
+                                plant.setLastPlantedTime(System.currentTimeMillis());
+                            } else {
+                                throw new InvalidInputException(plant.getName() + " is on cooldown!");
+                            }
+                        } else {
+                            throw new InvalidInputException("Sun yang kamu miliki tidak cukup untuk menanam " + plantName + ":(");
+                        }
+                    } else {
+                        throw new InvalidInputException("Tidak ada plant yang bernama "+ plantName + " di deck kamu!");
+                    }
+                } else {
+                    throw new InvalidInputException("Masukkan koordinat tile yang valid (1<x<11 dan 0<y<7)!");
+                }
+            } catch (NumberFormatException e) {
+                throw new InvalidInputException("Masukkan input dengan format \"tanam <nama plant> x y\"\nx dan y adalah koordinat tile di map yang valid (integer)");
+            }
+        } else if (kata.length == 3 && kata[0].equals("gali")) {
+            try {
+                int x = Integer.parseInt(kata[1]);
+                int y = Integer.parseInt(kata[2]);
+                if (x > 0 && x < 10 && y > 0 && y < 7) {
+                    removePlant(x, y-1);
+                }
+            } catch (NumberFormatException e) {
+                throw new InvalidInputException("Masukkan input dengan format \"gali x y\"\nx dan y adalah koordinat tile di map yang valid (integer)");
+            }
+        } else if (kata[0] == "") {
+            // do nothing
+        } else {
+            throw new InvalidInputException("Masukkan input dengan format \"tanam <nama plant> x y\" atau \"gali x y\"\nx dan y adalah koordinat tile di map yang valid\n");
+        }
     }
 
-    private void toggleDayNight() {
-        isDaytime = !isDaytime; 
-    }
+    public void placePlant(Plant p, int x, int y) throws InvalidTileException {
+        Tile targetTile = map.getTile(x, y);
 
-    private void generateSunPeriodically() {
-        int delay = 5000 + random.nextInt(5000);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (getElapsedTime() < 100000) { 
-                    increaseSun(25); 
+        boolean containsPlant = false;
+        boolean containsLilypad = false;
+
+        Lilypad lilypad = new Lilypad();
+
+        for (Character owner : targetTile.getOwners()) {
+            if (owner instanceof Plant) {
+                containsPlant = true;
+                if (owner instanceof Lilypad) {
+                    containsLilypad = true;
+                    lilypad = (Lilypad) owner;
+                }
+                break;
+            }            
+        }
+
+        // kalo udah berhasil ditesting, bakal digabungin semua conditional enih
+        if (targetTile.getIsA()) {  
+            if ((!containsPlant && (p.isAquatic()))) {
+                targetTile.addOwner(p);
+                Sun.decreaseSun(p.getCost());
+                System.out.println("Tanaman berhasil ditanam 1");
+            }
+            else if (!p.isAquatic() && containsLilypad) {
+                if (lilypad.addOnLilypad(p)) {
+                    Sun.decreaseSun(p.getCost());
+                    System.out.println("Tanaman berhasil ditanam 2");
+                } else {
+                    throw new InvalidTileException("Plant ga bisa ditanam di tile ini 1");
                 }
             }
-        }, delay);
+            else {
+                throw new InvalidTileException("Plant ga bisa ditanam di tile ini 2");
+            }
+        }
+        else { // kalo tile daratan
+            if (!p.isAquatic() && !containsPlant) {
+                targetTile.addOwner(p);
+                Sun.decreaseSun(p.getCost());
+                System.out.println("Tanaman berhasil ditanam 3");
+            }
+            else {  
+                throw new InvalidTileException("Plant ga bisa ditanam di tile ini 3");
+            }
+        }
+    }    
+
+    public void removePlant(int x, int y) throws InvalidTileException {
+        Tile targetTile = map.getTile(x, y);
+
+        Plant plantToRemove = null;
+        for (Character owner : targetTile.getOwners()) {
+            if (owner instanceof Plant) {
+                plantToRemove = (Plant) owner;
+                break;
+            }            
+        }
+
+        if (plantToRemove != null) {
+            targetTile.removeOwner(plantToRemove);
+            System.out.printf("%s berhasil digali dari tile (%d,%d).\n", plantToRemove.getName(), x, y);
+        }
+        else {
+            throw new InvalidTileException("Penggalian gagal. Tidak ada plant di tile ("+ x + "," + y + ").");
+        }        
     }
 
-    public void increaseSun(int amount) {
-        Sun.increaseSun(amount);
-    }
 
-
-
-
-
-    public void startSpawningZombies() {
+   
+    public void startSpawningZombies(boolean isFlagActive) {
         ZombieFactory landFactory = new LandZombieFactory();
         ZombieFactory waterFactory = new WaterZombieFactory();
-        zombieThread = new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(5000); 
-                } catch (InterruptedException e) {
-                    // Handle exception
+        new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                synchronized (Game.this) {
+                    while (isPaused) {
+                        try {
+                            Game.this.wait();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                    if (map == null) { // end game
+                        return;
+                    }
                 }
-    
-                for (int i = 0; i < 6; i++) {
-                    if (random.nextFloat() < 0.3) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
 
+                for (int i = 0; i < 6; i++) {
+                    float spawnRate = isFlagActive ? 0.5f : 0.3f;
+                    if (random.nextFloat() < spawnRate) {
                         Zombie z;
                         Tile tile = map.getTile(10, i);
                         if (tile != null) {
@@ -107,14 +233,11 @@ public class Game {
                     }
                 }
             }
-        });
-        zombieThread.start();
+        }).start();
     }
-    
 
 
 
-    
     public void startGame() {
         startTime = System.currentTimeMillis();
     }
@@ -127,12 +250,7 @@ public class Game {
     public synchronized void resumeGame() {
         isPaused = false;
         startTime = System.currentTimeMillis();
-        if (!sunThread.isAlive()) {
-            generateSun();
-        }
-        if (!zombieThread.isAlive()) {
-            startSpawningZombies();
-        }
+        notifyAll(); 
     }
 
     public long getElapsedTime() {
@@ -143,8 +261,15 @@ public class Game {
         }
     }
 
-    public boolean isPaused() {
+    public synchronized boolean isPaused() {
         return isPaused;
     }
 
+    public synchronized void setPaused(boolean isPaused){
+        this.isPaused = isPaused;
+    }
+    
+    public void endGame(Scanner scanner) {
+        new EndGameMenu(player, scanner).displayMenu();
+    }
 }

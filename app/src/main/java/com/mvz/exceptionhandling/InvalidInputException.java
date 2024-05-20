@@ -1,14 +1,12 @@
 package com.mvz.exceptionhandling;
 
 // Invalid input format
-public class InvalidInputException extends java.lang.Exception{
-    String message;
-
-    public InvalidInputException(String message) {
-        this.message = message;
+public class InvalidInputException extends Exception {
+    public InvalidInputException() {
+        super();
     }
 
-    public String getMessage() {
-        return String.format("INVALID INPUT", message);
+    public InvalidInputException(String message) {
+        super(message);
     }
 }

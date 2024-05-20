@@ -1,29 +1,30 @@
 package com.mvz.plants;
 
 import com.mvz.Plant;
-import com.mvz.Character;
-import com.mvz.Zombie;
 
 public class Jalapeno extends Plant {
+    public static long lastPlantedTime;
+
     public Jalapeno(Integer x, Integer y) {
-        super("Jalapeno", 125, 9999.0f,  1800.0f, 0.0f, -1, 35, false, x, y);
+        super("Jalapeno", 125, 9999.0f,  1800.0f, 0.0f, 9, 35, false, x, y);
     }
 
     public Jalapeno() {
-        super("Jalapeno", 125, 9999.0f,  1800.0f, 0.0f, -1, 35, false);
+        super("Jalapeno", 125, 9999.0f,  1800.0f, 0.0f, 9, 35, false);
     }
 
-    // attacks all zombie in the same y    
-    public void action(){
-        // Tile currentTile = this.getTile();
-        // int y = currentTile.getY();
+    public boolean isReadyToBePlanted() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastPlantedTime;
+        return elapsedTime >= getCD();
+    }
 
-        // for (Character owner : currentTile.getOwners()) {
-        //     if (owner instanceof Zombie && ((Zombie) owner).getTile().getY() == y) {
-        //         // Attacking the zombie
-        //         Float damage = this.getAD();
-        //         owner.decreaseHealth(damage);
-        //     }
-        // }
+    public void setLastPlantedTime(long time) {
+        if (time > lastPlantedTime) lastPlantedTime = time;
+    }
+    
+    public void action(){
+        decreaseHealth(health);
+        System.out.println("Dadah bang, aku jalapeno pamit undur diri");
     }
 }

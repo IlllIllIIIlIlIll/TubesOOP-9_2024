@@ -39,8 +39,7 @@ public class Inventory {
         return plants;
     }
     
-    public void swapPlants() {
-        Scanner sc = new Scanner(System.in);
+    public void swapPlants(Scanner sc) {
         boolean validInput = false;
     
         int x = 0;
@@ -64,11 +63,10 @@ public class Inventory {
             }
         }
     
-        sc.close(); // Tutup Scanner setelah penggunaan
-    
-        Plant temp = plants.get(y);
-        plants.set(y, plants.get(x));
-        plants.set(x, temp);
+        Plant temp = plants.get(y-1);
+        plants.set(y-1, plants.get(x-1));
+        plants.set(x-1, temp);
+        System.out.println("Tanaman berhasil di-swap");
     }
 
     public void printInventory() {
@@ -76,5 +74,6 @@ public class Inventory {
         for (int i=0; i<plants.size(); i++) {
             System.out.printf("%d. %s\n", i+1, plants.get(i).name);
         }
+        System.out.println();
     }
 }

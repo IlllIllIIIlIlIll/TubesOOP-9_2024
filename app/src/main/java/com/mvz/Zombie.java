@@ -1,23 +1,30 @@
 package com.mvz;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Zombie extends Character {
     private Float movement_speed;
     private boolean isChilled;
     private boolean canMove;
-    private boolean attackStarted;
-    private ScheduledExecutorService movementExecutorService;
-    private ScheduledExecutorService attackExecutorService;
+    private transient ScheduledExecutorService movementExecutorService; 
+
+    // waktu tersisa untuk zombie dapat bergerak
+    private long timeRemainingToMove;
 
     public Zombie(String name, Float health, Float attack_damage, Float attack_speed, Float movement_speed, boolean isAquatic, Integer x, Integer y) {
         super(name, health, isAquatic, attack_speed, attack_damage, x, y);
         this.movement_speed = movement_speed;
         isChilled = false;
         canMove = true;
-        attackStarted = false;
+        timeRemainingToMove = Math.round(movement_speed * 1000);
+        initScheduledExecutors();
+    }
+
+    // mulai timer dari awal
+    private void initScheduledExecutors() {
         movementExecutorService = Executors.newSingleThreadScheduledExecutor();
-        attackExecutorService = Executors.newSingleThreadScheduledExecutor();
         startMovementTimer();
     }
 
@@ -37,22 +44,45 @@ public abstract class Zombie extends Character {
         isChilled = !isChilled;
     }
 
+    // buat toggling aja
     public void setCM() {
         canMove = !canMove;
     }
 
+    // canMove yang lebih explisit
+    public void setCM(boolean canMove) {
+        this.canMove = canMove;
+    }
+    
     public void setMSD(Float movement_speed) {
         this.movement_speed = movement_speed;
     }
 
-    public void setATS(Float attack_speed) {
-        this.attack_speed = attack_speed;
+    public long getTimeRemainingToMove() {
+        return timeRemainingToMove;
     }
 
+    public void setTimeRemainingToMove(long timeRemainingToMove) {
+        this.timeRemainingToMove = timeRemainingToMove;
+    }
+
+    // akan di set true setiap mov.spd sec
     private void startMovementTimer() {
         movementExecutorService.scheduleAtFixedRate(() -> {
             canMove = true;
-        }, 0, Math.round(movement_speed * 1000), TimeUnit.MILLISECONDS);
+        }, timeRemainingToMove, Math.round(movement_speed * 1000), TimeUnit.MILLISECONDS);
+    }
+
+    // stop timer sekarang, buat timer baru (untuk event khusus)
+    public void resetMovementTimer() {
+        movementExecutorService.shutdownNow();
+        movementExecutorService = Executors.newSingleThreadScheduledExecutor();
+        startMovementTimer();
+    }
+
+    // mastiin mulai timer dari awal (akan dipanggil)
+    public void initZombieScheduledExecutors() {
+        initScheduledExecutors();
     }
 
     public void startAttackTimer() {

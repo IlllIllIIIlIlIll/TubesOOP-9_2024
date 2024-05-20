@@ -1,16 +1,43 @@
 package com.mvz.menu;
 
 import com.mvz.*;
-public class EndGameMenu {
-    private Menu currentMenu;
 
-    public void setCurrentMenu(StartMenu menu) {
-        this.currentMenu = menu;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class EndGameMenu implements Menu {
+    private Player player;
+    private Scanner scanner;
+
+    public EndGameMenu(Player player, Scanner scanner) {
+        this.player = player;
+        this.scanner = scanner;
     }
 
+    @Override
     public void displayMenu() {
-        if (currentMenu != null) {
-            currentMenu.displayMenu();
+        boolean running = true;
+
+        while (running) {
+            System.out.println("1. Back to Main Menu");
+            System.out.print("Choose an option: ");
+
+            try {
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline left-over
+                switch (choice) {
+                    case 1:
+                        StartMenu startMenu = new StartMenu(player);
+                        startMenu.displayMenu();
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Clear the invalid input
+            }
         }
     }
 }
