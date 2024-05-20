@@ -11,7 +11,7 @@ public class StartGameCommand implements Command {
     private Game game;
     private Scanner scanner;
     private ThreadManager threadManager;
-    private final int STARTING_SUN = 50;
+    private final int STARTING_SUN = 100000;
 
 
     public StartGameCommand(Player player, Scanner scanner) {

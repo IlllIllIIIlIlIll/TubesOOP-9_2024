@@ -17,6 +17,10 @@ public class Game {
     private long elapsedTime = 0;
     private long startTime = 0;
 
+    public Player getPlayer() {
+        return player;
+    }
+    
     public Map getMap() {
         return map;
     }
@@ -56,16 +60,26 @@ public class Game {
         }
     }
 
-    public void checkInput(String input) throws InvalidInputException, InvalidTileException {
-        String[] kata = input.toLowerCase().split(" ");
-        if (kata.length == 4 && kata[0].equals("tanam")) {
+    public void checkInput(String input) throws InvalidInputException, InvalidTileException, NumberFormatException {
+        String[] kata = input.split(" ");
+        if (kata.length >= 4 && kata[0].equals("tanam")) {
             try {
-                int x = Integer.parseInt(kata[2]);
-                int y = Integer.parseInt(kata[3]);
+                int x = Integer.parseInt(kata[kata.length-2]);
+                int y = Integer.parseInt(kata[kata.length-1]);
+
+                StringBuilder plantNameBuilder = new StringBuilder();
+                for (int i = 1; i < kata.length - 2; i++) {
+                    plantNameBuilder.append(kata[i]);
+                    if (i < kata.length - 3) {
+                        plantNameBuilder.append(" ");
+                    }
+                }
+                String plantName = plantNameBuilder.toString();
+                
                 if (x > 0 && x < 10 && y > 0 && y < 7) {
                     Tile tile = map.getTile(x, y-1);
-                    if (player.getDeck().createThePlant(kata[1], tile) != null) {
-                        Plant plant = player.getDeck().createThePlant(kata[1], tile);
+                    if (player.getDeck().createThePlant(plantName, tile) != null) {
+                        Plant plant = player.getDeck().createThePlant(plantName, tile);
                         if (plant.canBuyThePlant()) {
                             if (plant.isReadyToBePlanted()) {
                                 placePlant(plant, x, y-1);
@@ -74,10 +88,10 @@ public class Game {
                                 throw new InvalidInputException(plant.getName() + " is on cooldown!");
                             }
                         } else {
-                            throw new InvalidInputException("Sun yang kamu miliki tidak cukup untuk menanam " + kata[1] + ":(");
+                            throw new InvalidInputException("Sun yang kamu miliki tidak cukup untuk menanam " + plantName + ":(");
                         }
                     } else {
-                        throw new InvalidInputException("Tidak ada plant yang bernama "+ kata[1] + " di deck kamu!");
+                        throw new InvalidInputException("Tidak ada plant yang bernama "+ plantName + " di deck kamu!");
                     }
                 } else {
                     throw new InvalidInputException("Masukkan koordinat tile yang valid (1<x<11 dan 0<y<7)!");
@@ -100,7 +114,6 @@ public class Game {
         } else {
             throw new InvalidInputException("Masukkan input dengan format \"tanam <nama plant> x y\" atau \"gali x y\"\nx dan y adalah koordinat tile di map yang valid\n");
         }
-        
     }
 
     public void placePlant(Plant p, int x, int y) throws InvalidTileException {

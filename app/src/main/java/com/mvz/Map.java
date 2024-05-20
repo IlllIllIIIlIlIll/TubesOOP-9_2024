@@ -34,27 +34,27 @@ public class Map {
         }
 
         // tanaman testing aja
-        // Wallnut a = new Wallnut(5, 0);
-        // tile[5][0].addOwner(a);
-        // Wallnut b = new Wallnut(5, 1);
-        // tile[5][1].addOwner(b);
-        // Lilypad c = new Lilypad(5, 2);
-        // tile[5][2].addOwner(c);
-        // Lilypad d = new Lilypad(5, 3);
-        // tile[5][3].addOwner(d);
-        // Wallnut e = new Wallnut(5, 4);
-        // tile[5][4].addOwner(e);
-        // Wallnut f = new Wallnut(5, 5);
-        // tile[5][5].addOwner(f);
+        Wallnut a = new Wallnut(5, 0);
+        tile[5][0].addOwner(a);
+        Wallnut b = new Wallnut(5, 1);
+        tile[5][1].addOwner(b);
+        Lilypad c = new Lilypad(5, 2);
+        tile[5][2].addOwner(c);
+        Lilypad d = new Lilypad(5, 3);
+        tile[5][3].addOwner(d);
+        Wallnut e = new Wallnut(5, 4);
+        tile[5][4].addOwner(e);
+        Wallnut f = new Wallnut(5, 5);
+        tile[5][5].addOwner(f);
 
-        // Wallnut g = new Wallnut(3, 4);
-        // tile[3][4].addOwner(g);
-        // Wallnut h = new Wallnut(3, 5);
-        // tile[3][5].addOwner(h);
-        // Wallnut i = new Wallnut(3, 0);
-        // tile[3][0].addOwner(i);
-        // Wallnut j = new Wallnut(3, 1);
-        // tile[3][1].addOwner(j);
+        Wallnut g = new Wallnut(3, 4);
+        tile[3][4].addOwner(g);
+        Wallnut h = new Wallnut(3, 5);
+        tile[3][5].addOwner(h);
+        Wallnut i = new Wallnut(3, 0);
+        tile[3][0].addOwner(i);
+        Wallnut j = new Wallnut(3, 1);
+        tile[3][1].addOwner(j);
     }
 
     public Tile getTile(int x, int y) {
@@ -102,7 +102,6 @@ public class Map {
         String plantcolor = "\033[1;92m"; 
         String reset = "\033[0m";
     
-        System.out.println("Sun value: " + Sun.getSun());
         for (int j = getNumberOfRows() - 1; j >= 0; j--) {  // Start from y = 5 and go down to y = 0
             for (int i = 0; i < getNumberOfColumns(); i++) {
                 Tile currentTile = getTile(i, j);
@@ -152,6 +151,7 @@ public class Map {
         while (iterator.hasNext()) {
             Zombie z = iterator.next();
             if (z.getHealth() <= 0) {
+                iterator.remove();
                 zombiesToRemove.add(z);
                 continue;
             }
@@ -167,9 +167,7 @@ public class Map {
                 boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
         
                 // zombie belum paling ujung dan bisa gerak (mov.spd tidak cooldown)
-                if (x - 1 >= 0 && z.getCM()) {
-                    // System.out.println(z.getName() + " ada tanaman disekitarnya? " + hasAlivePlantInCurrentTile + " " + hasAlivePlantInNextTile);
-                    
+                if (x - 1 >= 0 && z.getCM()) {                    
                     // jika ada tidak ada tanaman (hidup) di tile x dan x-1 
                     if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
                         // zombie bergerak

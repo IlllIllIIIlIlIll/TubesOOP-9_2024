@@ -1,6 +1,7 @@
 package com.mvz.thread;
 
 import com.mvz.Game;
+import com.mvz.Sun;
 import com.mvz.menu.PauseMenu;
 
 import java.util.Scanner;
@@ -50,6 +51,9 @@ public class ThreadManager {
                 System.out.println("Game second: " + elapsedTimeSeconds + " seconds");
 
                 game.userInput(input);
+                System.out.println("Sun value: " + Sun.getSun());
+                game.getPlayer().getDeck().printDeck();
+                System.out.println();
                 game.getMap().printMap();
 
                 if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
@@ -79,7 +83,7 @@ public class ThreadManager {
         zombieSpawningThread = new Thread(() -> {
             boolean isSpawningActive = false;
             boolean isFlagActive = false;
-            long spawnStartTime = 20 * 1000;
+            long spawnStartTime = 0 * 1000;
             long spawnEndTime = 160 * 1000;
         
             while (!Thread.currentThread().isInterrupted()) {
@@ -88,7 +92,8 @@ public class ThreadManager {
                         long elapsedTime = game.getElapsedTime();
 
                         // Zombie spawning
-                        if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime && ((int) Math.ceil(elapsedTime/1000) % 3) == 0) {
+                        int pass = (int) Math.ceil(elapsedTime/1000);
+                        if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime && (pass % 3) == 0) {
                             if (!isSpawningActive) {
                                 System.out.println("The zombies are coming!");
                                 isSpawningActive = true;
