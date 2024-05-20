@@ -39,40 +39,47 @@ public class ThreadManager {
         game.startGame();
         mainThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                String input = scanner.nextLine();  
+                synchronized (scanner){
+                    if (scanner.hasNextLine()) {
+                        String input = scanner.nextLine();  
 
-                // // better user experience
-                // System.out.print("\033[H\033[2J");
-                // System.out.flush();
+                        // // better user experience
+                        // System.out.print("\033[H\033[2J");
+                        // System.out.flush();
 
-                // Calculate the elapsed time in seconds
-                long elapsedTimeMillis = game.getElapsedTime();
-                long elapsedTimeSeconds = elapsedTimeMillis / 1000;
-                System.out.println("Game second: " + elapsedTimeSeconds + " seconds");
+                        // Calculate the elapsed time in seconds
+                        long elapsedTimeMillis = game.getElapsedTime();
+                        long elapsedTimeSeconds = elapsedTimeMillis / 1000;
+                        System.out.println("Game second: " + elapsedTimeSeconds + " seconds");
 
-                game.userInput(input);
-                System.out.println("Sun value: " + Sun.getSun());
-                game.getPlayer().getDeck().printDeck();
-                System.out.println();
-                game.getMap().printMap();
+                        if (!input.equals("pause") && !input.equals("resume")){
+                            game.userInput(input);
+                        }
+                        System.out.println("Sun value: " + Sun.getSun());
+                        game.getPlayer().getDeck().printDeck();
+                        System.out.println();
+                        game.getMap().printMap();
 
-                if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
-                    if (game.getMap().getIsDefeated()) {
-                        System.out.println("\nYou have been defeated!");
-                    } else {
-                        System.out.println("\nYou have won the game!");
+                        if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
+                            if (game.getMap().getIsDefeated()) {
+                                System.out.println("\nYou have been defeated!");
+                            } else {
+                                System.out.println("\nYou have won the game!");
+                            }
+                            game.setPaused(false);
+                            stopThreads();
+                            game.endGame(scanner);
+                            break;
+                        }
+                        
+                        
+                        if (input.equalsIgnoreCase("pause")) {
+                            pauseThreads();
+                        } else if (input.equalsIgnoreCase("resume")) {
+                            resumeThreads();
+                            System.out.println("Game resumed!");
+                        }
                     }
-                    game.setPaused(false);
-                    game.endGame(scanner);
-                    break;
-                }
-                
-                
-                if (input.equalsIgnoreCase("pause")) {
-                    pauseThreads();
-                } else if (input.equalsIgnoreCase("resume")) {
-                    resumeThreads();
-                    System.out.println("Game resumed!");
                 }
             }
         });
@@ -172,7 +179,7 @@ public class ThreadManager {
 
     public void pauseThreads() {
         game.pauseGame();
-        new PauseMenu(game).displayMenu();
+        new PauseMenu(game, scanner).displayMenu();
     }
 
     public void resumeThreads() {
@@ -188,4 +195,5 @@ public class ThreadManager {
         if (sunGeneratingThread != null) sunGeneratingThread.interrupt();
         if (positionUpdatingThread != null) positionUpdatingThread.interrupt();
     }
+    
 }

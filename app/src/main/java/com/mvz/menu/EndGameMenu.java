@@ -27,7 +27,7 @@ public class EndGameMenu implements Menu {
                 scanner.nextLine(); // Consume newline left-over
                 switch (choice) {
                     case 1:
-                        StartMenu startMenu = new StartMenu(player);
+                        StartMenu startMenu = new StartMenu(player, scanner);
                         startMenu.displayMenu();
                         running = false;
                         break;

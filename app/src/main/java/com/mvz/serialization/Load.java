@@ -6,19 +6,19 @@ import java.util.Scanner;
 
 public class Load {
     private GameStateManager gameStateManager;
+    private Scanner scanner;
 
-    public Load() {
+    public Load(Scanner scanner) {
         this.gameStateManager = new GameStateManager();
+        this.scanner = scanner;
     }
 
     public Game performLoad() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the filename to load your game (do not include path):");
         String filename = scanner.nextLine().trim();
         
         if (!isValidFilename(filename)) {
             System.out.println("Invalid filename. Please try again.");
-            scanner.close();
             return null;
         }
 
@@ -27,7 +27,6 @@ public class Load {
 
         if (!file.exists()) {
             System.out.println("File does not exist. Please check the filename and try again.");
-            scanner.close();
             return null;
         }
 
@@ -38,7 +37,6 @@ public class Load {
             System.out.println("Failed to load the game.");
         }
         
-        scanner.close();
         return game;
     }
 

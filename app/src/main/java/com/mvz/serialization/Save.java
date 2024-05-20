@@ -8,19 +8,19 @@ import java.util.Scanner;
 public class Save {
     private GameStateManager gameStateManager;
     private Game game;
+    private Scanner scanner;
 
-    public Save(Game game) {
+    public Save(Game game, Scanner scanner) {
+        this.scanner = scanner;
         this.game = game;
         this.gameStateManager = new GameStateManager();
     }
 
     public void performSave() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the filename to save your game (do not include path):");
         String filename = scanner.nextLine().trim();
         if (!isValidFilename(filename)) {
             System.out.println("Invalid filename. Please try again.");
-            scanner.close();
             return;
         }
 
@@ -37,7 +37,7 @@ public class Save {
         } else {
             System.out.println("Failed to save the game.");
         }
-        scanner.close();
+        game.endGame(scanner);
     }
 
     private boolean isValidFilename(String filename) {

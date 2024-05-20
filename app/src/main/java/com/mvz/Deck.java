@@ -5,14 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.mvz.exceptionhandling.InvalidInputException;
-import com.mvz.plants.Jalapeno;
 import com.mvz.plants.LandPlantFactory;
-import com.mvz.plants.Lilypad;
-import com.mvz.plants.Repeater;
-import com.mvz.plants.Snowpea;
-import com.mvz.plants.Sunflower;
-import com.mvz.plants.Tanglekelp;
-import com.mvz.plants.Wallnut;
 import com.mvz.plants.WaterPlantFactory;
 
 public class Deck {
@@ -20,12 +13,6 @@ public class Deck {
 
     public Deck() {
         plants = new ArrayList<>();
-        plants.add(new Sunflower());
-        plants.add(new Jalapeno());
-        plants.add(new Lilypad());
-        plants.add(new Tanglekelp());
-        plants.add(new Snowpea());
-        plants.add(new Wallnut());
     }
 
     public void deckMenu(Scanner sc){
@@ -281,15 +268,4 @@ public class Deck {
         } else return null;
     }
 
-    // public static void main(String[] args) {
-    //     Deck deck = new Deck();
-    //     Scanner sc = new Scanner(System.in);
-    //     try {
-    //         deck.deckMenu(sc);
-    //     } catch (NumberFormatException e) {
-    //         System.out.println(e.getMessage());
-    //     } catch (InvalidInputException e) {
-    //         System.out.println(e.getMessage());
-    //     }
-    // }
 }

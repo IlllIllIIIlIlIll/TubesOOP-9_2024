@@ -7,9 +7,11 @@ import java.util.Scanner;
 
 public class ExitMenu implements Menu{
     private Game game;
+    private Scanner scanner;
 
-    public ExitMenu(Game game) {
+    public ExitMenu(Game game, Scanner scanner) {
         this.game = game;
+        this.scanner = scanner;
     }
 
     @Override
@@ -20,22 +22,21 @@ public class ExitMenu implements Menu{
         System.out.println("5. Return to Pause Menu");
         System.out.print("Choose an option: ");
 
-        Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
+        scanner.nextLine();
         switch (choice) {
             case 1:
-                new Save(game).performSave();
+                new Save(game, scanner).performSave();
                 break;
             case 2:
                 System.out.println("Exiting without saving...");
                 System.exit(0);
                 break;
             case 5:
-                new PauseMenu(game).displayMenu();
+                new PauseMenu(game, scanner).displayMenu();
                 break;
             default:
                 System.out.println("Invalid option. Please try again.");
         }
-        scanner.close();
     }
 }

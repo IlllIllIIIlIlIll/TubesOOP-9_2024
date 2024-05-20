@@ -31,7 +31,7 @@ public class StartGameCommand implements Command {
             String response = scanner.nextLine().trim().toLowerCase();
 
             if (response.equals("yes")) {
-                Load load = new Load();
+                Load load = new Load(scanner);
                 game = load.performLoad();
                 if (game == null) {
                     System.out.println("Failed to load the game. Please check the file path or ensure the file is correct.");

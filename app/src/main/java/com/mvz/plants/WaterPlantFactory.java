@@ -14,7 +14,7 @@ private static final String[] types = {"Lilypad", "Tanglekelp"};
         switch (type) {
             case "Lilypad":
                 return new Lilypad(x, y);
-            case "Tanglekelp":
+            case "Tangle kelp":
                 return new Tanglekelp(x, y);
             default:
                 throw new IllegalArgumentException("Invalid type: " + type);

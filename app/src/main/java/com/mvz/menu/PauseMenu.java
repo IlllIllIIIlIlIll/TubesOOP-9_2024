@@ -6,14 +6,15 @@ import java.util.Scanner;
 
 public class PauseMenu implements Menu {
     private Game game;
+    private Scanner scanner;
 
-    public PauseMenu(Game game) {
+    public PauseMenu(Game game, Scanner scanner) {
         this.game = game;
+        this.scanner = scanner;
     }
 
     @Override
     public void displayMenu() {
-        Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
         while (running) {
@@ -30,7 +31,7 @@ public class PauseMenu implements Menu {
                     running = false;
                     break;
                 case 2:
-                    new ExitMenu(game).displayMenu();
+                    new ExitMenu(game, scanner).displayMenu();
                     running = false;
                     break;
                 default:

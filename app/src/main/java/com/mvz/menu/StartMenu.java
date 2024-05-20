@@ -10,8 +10,8 @@ public class StartMenu implements Menu {
     private Command plantListCommand;
     private Command zombieListCommand;
 
-    public StartMenu(Player player) {
-        this.scanner = new Scanner(System.in);
+    public StartMenu(Player player, Scanner scanner) {
+        this.scanner = scanner;
         // Initialize commands
         this.startCommand = new StartGameCommand(player, scanner);
         this.helpCommand = new HelpCommand();
@@ -45,6 +45,10 @@ public class StartMenu implements Menu {
                         case 5:
                             System.out.println("Exiting game...");
                             running = false; 
+                            synchronized (scanner) {
+                                scanner.close();
+                            }
+                            System.exit(0);
                             break;
                         default:
                             System.out.println("Invalid option. Please try again.");
@@ -61,7 +65,7 @@ public class StartMenu implements Menu {
     }
 
     protected void printMenuOptions() {
-        System.out.println("\nWelcome to Plants vs Zombies!");
+        System.out.println("\nWelcome to Michael vs. Lalapan!");
         System.out.println("1. Start Game");
         System.out.println("2. Help");
         System.out.println("3. List Plants");
