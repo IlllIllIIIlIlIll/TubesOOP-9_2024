@@ -179,7 +179,7 @@ public class Game {
 
         if (plantToRemove != null) {
             targetTile.removeOwner(plantToRemove);
-            System.out.printf("%s berhasil digali dari tile (%d,%d).\n", plantToRemove.getName(), x, y);
+            System.out.printf("%s berhasil digali dari tile (%d,%d).\n", plantToRemove.getName(), x, y+1);
         }
         else {
             throw new InvalidTileException("Penggalian gagal. Tidak ada plant di tile ("+ x + "," + y + ").");
@@ -189,6 +189,7 @@ public class Game {
 
    
     public void startSpawningZombies(boolean isFlagActive) {
+        
         ZombieFactory landFactory = new LandZombieFactory();
         ZombieFactory waterFactory = new WaterZombieFactory();
         new Thread(() -> {

@@ -265,7 +265,7 @@ public class Deck {
     public Plant createThePlant(String input, Tile tile) {
         Plant plantToPlant = null;
         for (Plant tumbuhan : getPlants()) {
-            if (tumbuhan.getName().equals(input)) {
+            if (tumbuhan.getName().toLowerCase().equals(input.toLowerCase())) {
                 plantToPlant = tumbuhan;
                 break;
             }

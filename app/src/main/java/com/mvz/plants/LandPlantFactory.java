@@ -20,13 +20,13 @@ private static final String[] types = {"Cherrybomb", "Jalapeno", "Peashooter", "
                 return new Peashooter(x, y);
             case "Repeater":
                 return new Repeater(x, y);
-            case "Snowpea" :
+            case "Snow pea" :
                 return new Snowpea(x, y);
             case "Squash" :
                 return new Squash(x, y);
             case "Sunflower" :
                 return new Sunflower(x, y);
-            case "Wallnut" :
+            case "Wall nut" :
                 return new Wallnut(x, y);
             default:
                 throw new IllegalArgumentException("Invalid type: " + type);
