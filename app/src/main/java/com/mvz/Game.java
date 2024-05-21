@@ -6,7 +6,6 @@ import java.util.Scanner;
 import com.mvz.exceptionhandling.InvalidInputException;
 import com.mvz.exceptionhandling.InvalidTileException;
 import com.mvz.plants.*;
-import com.mvz.zombies.*;
 import com.mvz.menu.EndGameMenu;
 
 public class Game {
@@ -185,58 +184,6 @@ public class Game {
             throw new InvalidTileException("Penggalian gagal. Tidak ada plant di tile ("+ x + "," + y + ").");
         }        
     }
-
-
-   
-    public void startSpawningZombies(boolean isFlagActive) {
-        
-        ZombieFactory landFactory = new LandZombieFactory();
-        ZombieFactory waterFactory = new WaterZombieFactory();
-        new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                synchronized (Game.this) {
-                    while (isPaused) {
-                        try {
-                            Game.this.wait();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                    if (map == null) { // end game
-                        return;
-                    }
-                }
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-
-                for (int i = 0; i < 6; i++) {
-                    float spawnRate = isFlagActive ? 0.5f : 0.3f;
-                    if (random.nextFloat() < spawnRate) {
-                        Zombie z;
-                        Tile tile = map.getTile(10, i);
-                        if (tile != null) {
-                            ZombieFactory factory;
-                            String[] types;
-                            if (i == 2 || i == 3) {
-                                factory = waterFactory;
-                                types = waterFactory.getTypes();
-                            } else {
-                                factory = landFactory;
-                                types = landFactory.getTypes();
-                            }
-                            int typeIndex = random.nextInt(types.length);
-                            z = factory.createZombie(types[typeIndex], tile);
-                            map.placeZombie(z, i);
-                        }
-                    }
-                }
-            }
-        }).start();
-    }
-
 
 
     public void startGame() {

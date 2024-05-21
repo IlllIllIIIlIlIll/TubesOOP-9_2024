@@ -34,27 +34,27 @@ public class Map {
         }
 
         // tanaman testing aja
-        Wallnut a = new Wallnut(5, 0);
-        tile[5][0].addOwner(a);
-        Wallnut b = new Wallnut(5, 1);
-        tile[5][1].addOwner(b);
-        Lilypad c = new Lilypad(5, 2);
-        tile[5][2].addOwner(c);
-        Lilypad d = new Lilypad(5, 3);
-        tile[5][3].addOwner(d);
-        Wallnut e = new Wallnut(5, 4);
-        tile[5][4].addOwner(e);
-        Wallnut f = new Wallnut(5, 5);
-        tile[5][5].addOwner(f);
+        // Wallnut a = new Wallnut(5, 0);
+        // tile[5][0].addOwner(a);
+        // Wallnut b = new Wallnut(5, 1);
+        // tile[5][1].addOwner(b);
+        // Lilypad c = new Lilypad(5, 2);
+        // tile[5][2].addOwner(c);
+        // Lilypad d = new Lilypad(5, 3);
+        // tile[5][3].addOwner(d);
+        // Wallnut e = new Wallnut(5, 4);
+        // tile[5][4].addOwner(e);
+        // Wallnut f = new Wallnut(5, 5);
+        // tile[5][5].addOwner(f);
 
-        Wallnut g = new Wallnut(3, 4);
-        tile[3][4].addOwner(g);
-        Wallnut h = new Wallnut(3, 5);
-        tile[3][5].addOwner(h);
-        Wallnut i = new Wallnut(3, 0);
-        tile[3][0].addOwner(i);
-        Wallnut j = new Wallnut(3, 1);
-        tile[3][1].addOwner(j);
+        // Wallnut g = new Wallnut(3, 4);
+        // tile[3][4].addOwner(g);
+        // Wallnut h = new Wallnut(3, 5);
+        // tile[3][5].addOwner(h);
+        // Wallnut i = new Wallnut(3, 0);
+        // tile[3][0].addOwner(i);
+        // Wallnut j = new Wallnut(3, 1);
+        // tile[3][1].addOwner(j);
     }
 
     public Tile getTile(int x, int y) {
@@ -147,48 +147,50 @@ public class Map {
     public void setPosition() {
         List<Zombie> zombiesToRemove = new ArrayList<>();
 
-        Iterator<Zombie> iterator = zombieOnTile.iterator();
-        while (iterator.hasNext()) {
-            Zombie z = iterator.next();
-            if (z.getHealth() <= 0) {
-                iterator.remove();
-                zombiesToRemove.add(z);
-                continue;
-            }
+        synchronized (zombieOnTile){
+            Iterator<Zombie> iterator = zombieOnTile.iterator();
+            while (iterator.hasNext()) {
+                Zombie z = iterator.next();
+                if (z.getHealth() <= 0) {
+                    iterator.remove();
+                    zombiesToRemove.add(z);
+                    continue;
+                }
 
-            int x = z.getXChar();
-            int y = z.getYChar();
+                int x = z.getXChar();
+                int y = z.getYChar();
 
-            // mencegah akses di luar batasan
-            if (x > 0){
-                Tile currentTile = getTile(x, y);
-                Tile nextTile = getTile(x - 1, y);
-                boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
-                boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
-        
-                // zombie belum paling ujung dan bisa gerak (mov.spd tidak cooldown)
-                if (x - 1 >= 0 && z.getCM()) {                    
-                    // jika ada tidak ada tanaman (hidup) di tile x dan x-1 
-                    if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
-                        // zombie bergerak
-                        moveZombie(currentTile, nextTile, z);
-                        // cooldown atk.spd reset
-                        z.resetAttackTimer();
-                        z.setCM();
+                // mencegah akses di luar batasan
+                if (x > 0){
+                    Tile currentTile = getTile(x, y);
+                    Tile nextTile = getTile(x - 1, y);
+                    boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
+                    boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
+            
+                    // zombie belum paling ujung dan bisa gerak (mov.spd tidak cooldown)
+                    if (x - 1 >= 0 && z.getCM()) {                    
+                        // jika ada tidak ada tanaman (hidup) di tile x dan x-1 
+                        if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
+                            // zombie bergerak
+                            moveZombie(currentTile, nextTile, z);
+                            // cooldown atk.spd reset
+                            z.resetAttackTimer();
+                            z.setCM();
 
-                        if (nextTile.getX() == 0){
-                            setIsDefeated(true);
-                            return;
+                            if (nextTile.getX() == 0 && !isDefeated){
+                                setIsDefeated(true);
+                                return;
+                            }
+
+                        } else {
+                            // masuk ke method penyerangan tanaman
+                            z.initiateAttack();
+                            z.setCM(false);
                         }
 
                     } else {
-                        // masuk ke method penyerangan tanaman
-                        z.initiateAttack();
                         z.setCM(false);
                     }
-
-                } else {
-                    z.setCM(false);
                 }
             }
         }
@@ -213,7 +215,7 @@ public class Map {
             }
         }
     
-        if (!hasZombies) {
+        if (!hasZombies && !isVictory) {
             setIsVictory(true);
         }
     }

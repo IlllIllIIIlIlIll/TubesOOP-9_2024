@@ -2,7 +2,12 @@ package com.mvz.thread;
 
 import com.mvz.Game;
 import com.mvz.Sun;
+import com.mvz.Tile;
+import com.mvz.Zombie;
 import com.mvz.menu.PauseMenu;
+import com.mvz.zombies.LandZombieFactory;
+import com.mvz.zombies.WaterZombieFactory;
+import com.mvz.zombies.ZombieFactory;
 
 import java.util.Scanner;
 
@@ -86,59 +91,84 @@ public class ThreadManager {
         mainThread.start();
     }
 
-    private void startZombieSpawningThread() {
-        zombieSpawningThread = new Thread(() -> {
-            boolean isSpawningActive = false;
-            boolean isFlagActive = false;
-            long spawnStartTime = 0 * 1000;
-            long spawnEndTime = 160 * 1000;
-        
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    if (!game.isPaused()) {
-                        long elapsedTime = game.getElapsedTime();
+private void startZombieSpawningThread() {
+    zombieSpawningThread = new Thread(() -> {
+        boolean isSpawningActive = false;
+        boolean isFlagActive = false;
+        long spawnStartTime = 0 * 1000;
+        long spawnEndTime = 160 * 1000;
+        long raidStartTime = 80 * 1000;
+        long raidEndTime = 6 * 1000;
 
-                        // Zombie spawning
-                        int pass = (int) Math.ceil(elapsedTime/1000);
-                        if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime && (pass % 3) == 0) {
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                if (!game.isPaused()) {
+                    long elapsedTime = game.getElapsedTime();
+
+                    // Zombie spawning
+                    if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime) {
+                        if ((elapsedTime / 1000) % 3 == 0) {
                             if (!isSpawningActive) {
                                 System.out.println("The zombies are coming!");
                                 isSpawningActive = true;
                             }
-                            game.startSpawningZombies(isFlagActive);
-                        } else if (elapsedTime > spawnEndTime) {
-                            if (isSpawningActive) {
-                                System.out.println("The zombies are out of army!");
-                                isSpawningActive = false;
+
+                            for (int i = 0; i < 6; i++) {
+                                float spawnRate = isFlagActive ? 0.5f : 0.3f;
+                                if (game.getRandom().nextFloat() < spawnRate) {
+                                    Zombie z;
+                                    Tile tile = game.getMap().getTile(10, i);
+                                    if (tile != null) {
+                                        ZombieFactory factory;
+                                        String[] types;
+                                        if (i == 2 || i == 3) {
+                                            factory = new WaterZombieFactory();
+                                            types = factory.getTypes();
+                                        } else {
+                                            factory = new LandZombieFactory();
+                                            types = factory.getTypes();
+                                        }
+                                        int typeIndex = game.getRandom().nextInt(types.length);
+                                        z = factory.createZombie(types[typeIndex], tile);
+                                        game.getMap().placeZombie(z, i);
+                                    }
+                                }
                             }
                         }
-        
-                        // Zombie flag
-                        if (elapsedTime >= 80 * 1000) {
-                            long flagCycleTime = (elapsedTime - 80 * 1000) % 80000;
-                            if (flagCycleTime >= 0 && flagCycleTime < 6000) {
-                                if (!isFlagActive) {
-                                    System.out.println("A Huge Wave of Zombies is Approaching!");
-                                    game.getMap().setMaxZombies(27);
-                                    isFlagActive = true;
-                                }
-                            } else {
-                                if (isFlagActive) {
-                                    System.out.println("Flag wave ended!");
-                                    game.getMap().setMaxZombies(2);
-                                    isFlagActive = false;
-                                }
+                    } else if (elapsedTime > spawnEndTime) {
+                        if (isSpawningActive) {
+                            System.out.println("The zombies are out of army!");
+                            isSpawningActive = false;
+                        }
+                    }
+
+                    // Zombie flag
+                    if (elapsedTime >= raidStartTime) {
+                        long flagCycleTime = (elapsedTime - raidStartTime) % raidStartTime;
+                        if (flagCycleTime >= 0 && flagCycleTime < raidEndTime) {
+                            if (!isFlagActive) {
+                                System.out.println("A Huge Wave of Zombies is Approaching!");
+                                game.getMap().setMaxZombies(27);
+                                isFlagActive = true;
+                            }
+                        } else {
+                            if (isFlagActive) {
+                                System.out.println("Flag wave ended!");
+                                game.getMap().setMaxZombies(2);
+                                isFlagActive = false;
                             }
                         }
                     }
-                    Thread.sleep(1000); // Check every second
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
                 }
+                Thread.sleep(1000); // Check every second
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-        });
-        zombieSpawningThread.start();
-    }
+        }
+    });
+    zombieSpawningThread.start();
+}
+
     
     
 

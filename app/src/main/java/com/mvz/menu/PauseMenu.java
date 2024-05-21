@@ -2,6 +2,7 @@ package com.mvz.menu;
 
 import com.mvz.*;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class PauseMenu implements Menu {
@@ -23,19 +24,25 @@ public class PauseMenu implements Menu {
             System.out.println("2. Exit Game");
             System.out.print("Choose an option: ");
 
-            int choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    game.resumeGame();
-                    System.out.println("Game resumed.");
-                    running = false;
-                    break;
-                case 2:
-                    new ExitMenu(game, scanner).displayMenu();
-                    running = false;
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
+            try {
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Clear the buffer
+                switch (choice) {
+                    case 1:
+                        game.resumeGame();
+                        System.out.println("Game resumed.");
+                        running = false;
+                        break;
+                    case 2:
+                        new ExitMenu(game, scanner).displayMenu();
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Clear the invalid input from the buffer
             }
         }
     }
