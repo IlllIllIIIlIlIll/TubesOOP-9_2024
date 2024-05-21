@@ -11,12 +11,12 @@ public class Ra extends Zombie {
     private transient ScheduledExecutorService executorService;
 
     public Ra(Integer x, Integer y) {
-        super("Ra", 250.0f, 100.0f, 1.0f,10.0f, false, x, y);
+        super("Ra Zombie", 250.0f, 100.0f, 1.0f,10.0f, false, x, y);
         initScheduledExecutors();
     }
 
     public Ra() {
-        this(0, 0); // Default parameter for load
+        super("Ra Zombie", 250.0f, 100.0f, 1.0f,10.0f, false); // Default parameter for load
     }
 
     private void initScheduledExecutors() {

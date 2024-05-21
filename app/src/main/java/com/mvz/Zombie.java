@@ -22,6 +22,11 @@ public abstract class Zombie extends Character {
         initScheduledExecutors();
     }
 
+    public Zombie(String name, Float health, Float attack_damage, Float attack_speed, Float movement_speed, boolean isAquatic) {
+        super(name, health, isAquatic, attack_speed, attack_damage);
+        this.movement_speed = movement_speed;
+    }
+
     // mulai timer dari awal
     private void initScheduledExecutors() {
         movementExecutorService = Executors.newSingleThreadScheduledExecutor();

@@ -1,8 +1,10 @@
 package com.mvz.menu;
 
+import com.mvz.Inventory;
+
 public class ZombieListCommand implements Command {
     @Override
     public void execute() {
-        System.out.println("Here is a list of zombies:");
+        Inventory.getInstance().printZombie();
     }
 }

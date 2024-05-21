@@ -145,60 +145,51 @@ public class Map {
     
 
     public void setPosition() {
-        List<Zombie> zombiesToRemove = new ArrayList<>();
-
-        synchronized (zombieOnTile){
+        synchronized (zombieOnTile) {
             Iterator<Zombie> iterator = zombieOnTile.iterator();
             while (iterator.hasNext()) {
                 Zombie z = iterator.next();
                 if (z.getHealth() <= 0) {
-                    iterator.remove();
-                    zombiesToRemove.add(z);
+                    iterator.remove(); 
                     continue;
                 }
-
+    
                 int x = z.getXChar();
                 int y = z.getYChar();
-
+    
                 // mencegah akses di luar batasan
-                if (x > 0){
+                if (x > 0) {
                     Tile currentTile = getTile(x, y);
                     Tile nextTile = getTile(x - 1, y);
                     boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
                     boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
-            
-                    // zombie belum paling ujung dan bisa gerak (mov.spd tidak cooldown)
+    
                     if (x - 1 >= 0 && z.getCM()) {                    
-                        // jika ada tidak ada tanaman (hidup) di tile x dan x-1 
                         if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
-                            // zombie bergerak
                             moveZombie(currentTile, nextTile, z);
-                            // cooldown atk.spd reset
                             z.resetAttackTimer();
                             z.setCM();
-
+    
                             if (nextTile.getX() == 0 && !isDefeated){
                                 setIsDefeated(true);
                                 return;
                             }
-
+    
                         } else {
-                            // masuk ke method penyerangan tanaman
                             z.initiateAttack();
                             z.setCM(false);
                         }
-
+    
                     } else {
                         z.setCM(false);
                     }
                 }
             }
         }
-
-        // Remove the deads!
-        zombieOnTile.removeAll(zombiesToRemove);
-        removeDeadOwners();
+        // remove the deads!
+        removeDeadOwners(); 
     }
+    
 
     private void removeDeadOwners() {
         boolean hasZombies = false;

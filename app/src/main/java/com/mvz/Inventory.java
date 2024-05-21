@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.mvz.plants.*;
+import com.mvz.zombies.*;
 
 public class Inventory {
     private static Inventory instance;
     private List<Plant> plants;
+    private List<Zombie> zombies;
 
     private Inventory() {
         plants = new ArrayList<>();
@@ -22,6 +24,17 @@ public class Inventory {
         plants.add(new Sunflower());
         plants.add(new Tanglekelp());
         plants.add(new Wallnut());
+        zombies = new ArrayList<>();
+        zombies.add(new Buckethead());
+        zombies.add(new Conehead());
+        zombies.add(new Dolphinrider());
+        zombies.add(new Duckytube());
+        zombies.add(new Football());
+        zombies.add(new Jackinthebox());
+        zombies.add(new Koran());
+        zombies.add(new Normal());
+        zombies.add(new Polevaulting());
+        zombies.add(new Ra());
     }
 
     public static Inventory getInstance() {
@@ -69,10 +82,18 @@ public class Inventory {
         System.out.println("Tanaman berhasil di-swap");
     }
 
-    public void printInventory() {
-        System.out.println("Inventory:");
+    public void printPlant() {
+        System.out.println("\nPlant list:");
         for (int i=0; i<plants.size(); i++) {
             System.out.printf("%d. %s\n", i+1, plants.get(i).name);
+        }
+        System.out.println();
+    }
+
+    public void printZombie() {
+        System.out.println("\nZombie list:");
+        for (int i=0; i<zombies.size(); i++) {
+            System.out.printf("%d. %s\n", i+1, zombies.get(i).name);
         }
         System.out.println();
     }

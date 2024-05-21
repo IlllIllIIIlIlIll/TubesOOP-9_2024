@@ -5,11 +5,11 @@ import com.mvz.Zombie;
 public class Koran extends Zombie {
 
     public Koran(Integer x, Integer y) {
-        super("Koran", 150.0f, 10.0f, 5.0f, 10.0f, false, x, y);
+        super("Koran Zombie", 150.0f, 10.0f, 5.0f, 10.0f, false, x, y);
     }
 
     public Koran() {
-        this(0, 0); // Parameter default untuk load
+        super("Koran Zombie", 150.0f, 10.0f, 5.0f, 10.0f, false); // Parameter default untuk load
     }
 
     public void action() {

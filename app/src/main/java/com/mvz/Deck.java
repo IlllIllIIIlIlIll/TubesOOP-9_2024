@@ -38,7 +38,7 @@ public class Deck {
                     int x = Integer.parseInt(input);
                     switch (x) {
                         case 1:
-                            inventory.printInventory();
+                            inventory.printPlant();
                             displayMenu();
                             break;
                         case 2:
@@ -161,7 +161,7 @@ public class Deck {
                 break;
             }
 
-            inventory.printInventory();
+            inventory.printPlant();
 
             if (!plants.isEmpty()) {
                 printDeck();

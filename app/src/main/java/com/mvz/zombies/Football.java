@@ -4,11 +4,11 @@ import com.mvz.Zombie;
 
 public class Football extends Zombie {
     public Football(Integer x, Integer y) {
-        super("Football", 150.0f, 100.0f, 1.0f, 10.0f, false, x, y);
+        super("Football Zombie", 150.0f, 100.0f, 1.0f, 10.0f, false, x, y);
     }
 
     public Football() {
-        this(0, 0); // Parameter default untuk load
+        super("Football Zombie", 150.0f, 100.0f, 1.0f, 10.0f, false); // Parameter default untuk load
     }
 
     public void action(){

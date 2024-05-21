@@ -7,11 +7,11 @@ public class Dolphinrider extends Zombie {
     private boolean isJumping = false;
 
     public Dolphinrider(Integer x, Integer y) {
-        super("Dolphin rider", 175.0f, 100.0f, 1.0f, 10.0f, true, x, y);
+        super("Dolphin Rider Zombie", 175.0f, 100.0f, 1.0f, 10.0f, true, x, y);
     }
 
     public Dolphinrider() {
-        this(0, 0); // Parameter default untuk load
+        super("Dolphin Rider Zombie", 175.0f, 100.0f, 1.0f, 10.0f, true); // Parameter default untuk load
     }
 
     public boolean isJumping(){
