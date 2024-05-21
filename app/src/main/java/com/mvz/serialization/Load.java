@@ -26,7 +26,6 @@ public class Load {
         File file = new File(directoryPath, filename + ".json");
 
         if (!file.exists()) {
-            System.out.println("File does not exist. Please check the filename and try again.");
             return null;
         }
 

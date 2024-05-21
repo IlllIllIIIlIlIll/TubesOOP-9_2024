@@ -83,9 +83,9 @@ private void startZombieSpawningThread() {
     zombieSpawningThread = new Thread(() -> {
         boolean isSpawningActive = false;
         boolean isFlagActive = false;
-        long spawnStartTime = 0 * 1000;
+        long spawnStartTime = 20 * 1000;
         long spawnEndTime = 160 * 1000;
-        long raidStartTime = 20 * 1000;
+        long raidStartTime = 80 * 1000;
         long raidEndTime = 6 * 1000;
 
         while (!Thread.currentThread().isInterrupted()) {
@@ -196,7 +196,7 @@ private void startZombieSpawningThread() {
                         } else {
                             System.out.println("\nYou have won the game!");
                         }
-                        game.setPaused(false);
+                        game.pauseGame();
                         stopThreads();
                         break;
                     }

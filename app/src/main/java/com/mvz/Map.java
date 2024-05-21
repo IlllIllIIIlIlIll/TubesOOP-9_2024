@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.mvz.plants.*;
 import com.mvz.zombies.Dolphinrider;
+import com.mvz.zombies.Duckytube;
 import com.mvz.zombies.Jackinthebox;
 import com.mvz.zombies.Polevaulting;
 
@@ -121,9 +122,19 @@ public class Map {
                         if (k < currentTile.getOwners().size()) {
                             Character owner = currentTile.getOwners().get(k);
                             if (owner instanceof Zombie) {
-                                System.out.print(zombiecolor + owner.getName().charAt(0) + reset + color);
+                                if (owner instanceof Duckytube) {
+                                    System.out.print(zombiecolor + 'T' + reset + color);
+                                } else {
+                                    System.out.print(zombiecolor + owner.getName().charAt(0) + reset + color);
+                                }
                             } else if (owner instanceof Plant) {
-                                System.out.print(plantcolor + owner.getName().charAt(0) + reset + color);
+                                if (owner instanceof Squash){
+                                    System.out.print(plantcolor + 'Q' + reset + color);
+                                } else if (owner instanceof Sunflower){
+                                    System.out.print(plantcolor + 'F' + reset + color);
+                                } else {
+                                    System.out.print(plantcolor + owner.getName().charAt(0) + reset + color);
+                                }
                             } else {
                                 System.out.print(" ");
                             }
@@ -376,7 +387,6 @@ public class Map {
                     zombie.setTimeRemainingToMove(newMoveTime);
                     zombie.setTimeRemainingToAttack(newAttackTime);
                     zombie.setCH();
-                    System.out.println("Aduhh " + zombie.getName() + " dingin bang");
 
                     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
                     executorService.schedule(() -> {
@@ -389,7 +399,6 @@ public class Map {
                             zombie.setTimeRemainingToMove(remainingMoveTime);
                             zombie.setTimeRemainingToAttack(remainingAttackTime);
                             zombie.setCH();
-                            System.out.println("Udah ga dingin bang, kata zombie " + zombie.getName());
                         }
                     }, 3, TimeUnit.SECONDS);
                 }
@@ -406,7 +415,6 @@ public class Map {
                 if (owner instanceof Zombie) {
                     Zombie zombie = (Zombie) owner;
                     zombie.decreaseHealth(damage);
-                    System.out.println("BOOM! " + zombie.getName() + " terkena damage " + damage + ", sisa darah " + zombie.getHealth() + "!");
                 }
             }
         }

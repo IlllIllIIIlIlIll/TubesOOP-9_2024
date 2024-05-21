@@ -30,6 +30,10 @@ public class StartMenu implements Menu {
                     scanner.nextLine(); 
                     switch (choice) {
                         case 1:
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
+
                             startCommand.execute();
                             running = false; 
                             break;
@@ -43,6 +47,10 @@ public class StartMenu implements Menu {
                             zombieListCommand.execute();
                             break;
                         case 5:
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
+
                             System.out.println("Exiting game...");
                             running = false; 
                             synchronized (scanner) {
@@ -65,7 +73,7 @@ public class StartMenu implements Menu {
     }
 
     protected void printMenuOptions() {
-        System.out.println("\nWelcome to Michael vs. Lalapan!");
+        System.out.println("Welcome to Michael vs. Lalapan!");
         System.out.println("1. Start Game");
         System.out.println("2. Help");
         System.out.println("3. List Plants");

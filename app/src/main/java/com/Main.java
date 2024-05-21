@@ -8,6 +8,10 @@ import com.mvz.Player;
 
 public class Main {
     public static void main(String[] args) {
+        // better user experience
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        
         Player favian = new Player("Favian");
         Scanner scanner = new Scanner(System.in);
         Menu startMenu = new StartMenu(favian, scanner); 

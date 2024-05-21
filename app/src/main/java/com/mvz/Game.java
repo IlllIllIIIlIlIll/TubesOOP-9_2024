@@ -16,6 +16,9 @@ public class Game {
     private long elapsedTime = 0;
     private long startTime = 0;
 
+    // untuk player yang ingin melakukan save
+    private int saveSun = 0;
+
     public Player getPlayer() {
         return player;
     }
@@ -60,7 +63,6 @@ public class Game {
     }
 
     public void checkInput(String input) throws InvalidInputException, InvalidTileException, NumberFormatException {
-
         String[] kata = input.split(" ");
         if (kata.length >= 4 && kata[0].equals("tanam")) {
             try {
@@ -78,8 +80,8 @@ public class Game {
                 
                 if (x > 0 && x < 10 && y > 0 && y < 7) {
                     Tile tile = map.getTile(x, y-1);
-                    if (player.getDeck().createThePlant(plantName, tile) != null) {
-                        Plant plant = player.getDeck().createThePlant(plantName, tile);
+                    if (createThePlant(plantName, tile) != null) {
+                        Plant plant = createThePlant(plantName, tile);
                         if (plant.canBuyThePlant()) {
                             if (plant.isReadyToBePlanted()) {
                                 placePlant(plant, x, y-1);
@@ -116,6 +118,25 @@ public class Game {
         }
     }
 
+    public Plant createThePlant(String input, Tile tile) {
+        Plant plantToPlant = null;
+        for (Plant tumbuhan : player.getDeck().getPlants()) {
+            if (tumbuhan.getName().toLowerCase().equals(input.toLowerCase())) {
+                plantToPlant = tumbuhan;
+                break;
+            }
+        }
+        if (plantToPlant != null) {
+            if (plantToPlant.isAquatic()) {
+                WaterPlantFactory waterPlantFact = new WaterPlantFactory();
+                return waterPlantFact.createPlant(plantToPlant.getName(), tile);
+            } else {
+                LandPlantFactory landPlantFactory = new LandPlantFactory();
+                return landPlantFactory.createPlant(plantToPlant.getName(), tile);
+            }
+        } else return null;
+    }
+    
     public void placePlant(Plant p, int x, int y) throws InvalidTileException {
         Tile targetTile = map.getTile(x, y);
 
@@ -185,8 +206,7 @@ public class Game {
             throw new InvalidTileException("Penggalian gagal. Tidak ada plant di tile ("+ x + "," + y + ").");
         }        
     }
-
-
+    
     public void startGame() {
         startTime = System.currentTimeMillis();
     }
@@ -194,6 +214,7 @@ public class Game {
     public synchronized void pauseGame() {
         isPaused = true;
         elapsedTime += System.currentTimeMillis() - startTime;
+        saveSun = Sun.getSun();
     }
 
     public synchronized void resumeGame() {
@@ -212,10 +233,6 @@ public class Game {
 
     public synchronized boolean isPaused() {
         return isPaused;
-    }
-
-    public synchronized void setPaused(boolean isPaused){
-        this.isPaused = isPaused;
     }
     
     public void endGame(Scanner scanner) {

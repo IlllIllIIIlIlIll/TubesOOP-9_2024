@@ -11,7 +11,7 @@ public class StartGameCommand implements Command {
     private Game game;
     private Scanner scanner;
     private ThreadManager threadManager;
-    private final int STARTING_SUN = 100000;
+    private final int STARTING_SUN = 50;
 
 
     public StartGameCommand(Player player, Scanner scanner) {
@@ -26,7 +26,6 @@ public class StartGameCommand implements Command {
         threadManager.stopThreads();
 
         while (!validChoice) {
-            System.out.println("");
             System.out.println("Do you want to load a saved game? (yes/no)");
             String response = scanner.nextLine().trim().toLowerCase();
 
@@ -34,26 +33,35 @@ public class StartGameCommand implements Command {
                 Load load = new Load(scanner);
                 game = load.performLoad();
                 if (game == null) {
-                    System.out.println("Failed to load the game. Please check the file path or ensure the file is correct.");
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+
+                    System.out.println("Failed to load the game. Please ensure the file name is correct.");
                     continue;
                 }
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+
                 System.out.println("Game loaded successfully.");
                 validChoice = true;
             } else if (response.equals("no")) {
                 game = new Game(player);
-                System.out.println("New game started.");
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+
+                System.out.println("New game created.");
                 validChoice = true;
             } else {
                 System.out.println("Invalid input. Please type 'yes' or 'no'.");
             }
-            // better user experience
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
         }
 
         // Start the game
         if (game != null) {
-            player.customizeDeck(scanner);
+            game.getPlayer().customizeDeck(scanner);
             // better user experience
             System.out.print("\033[H\033[2J");
             System.out.flush();
