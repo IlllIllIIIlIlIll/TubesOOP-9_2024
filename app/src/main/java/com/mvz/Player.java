@@ -1,5 +1,10 @@
 package com.mvz;
 
+import java.util.Scanner;
+
+import com.mvz.plants.LandPlantFactory;
+import com.mvz.plants.WaterPlantFactory;
+
 public class Player {
     private String name;
     private Deck deck;
@@ -7,10 +12,11 @@ public class Player {
     public Player(String name){
         this.name = name;
         this.deck = new Deck();
+        
     }
 
-    public void customizeDeck() {
-        deck.deckMenu();
+    public void customizeDeck(Scanner scanner) {
+        deck.deckMenu(scanner);
     }
 
     public Deck getDeck(){
@@ -25,4 +31,23 @@ public class Player {
         return name;
     }
 
+    // create a new instance of plant
+    public Plant createThePlant(String input, Tile tile) {
+        Plant plantToPlant = null;
+        for (Plant tumbuhan : deck.getPlants()) {
+            if (tumbuhan.getName().toLowerCase().equals(input.toLowerCase())) {
+                plantToPlant = tumbuhan;
+                break;
+            }
+        }
+        if (plantToPlant != null) {
+            if (plantToPlant.isAquatic()) {
+                WaterPlantFactory waterPlantFact = new WaterPlantFactory();
+                return waterPlantFact.createPlant(plantToPlant.getName(), tile);
+            } else {
+                LandPlantFactory landPlantFactory = new LandPlantFactory();
+                return landPlantFactory.createPlant(plantToPlant.getName(), tile);
+            }
+        } else return null;
+    }
 }

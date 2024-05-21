@@ -4,237 +4,268 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.mvz.exceptionhandling.InvalidInputException;
 import com.mvz.plants.LandPlantFactory;
 import com.mvz.plants.WaterPlantFactory;
 
 public class Deck {
-    private List<Plant> plants;
+    private List<Plant> plants; 
 
     public Deck() {
         plants = new ArrayList<>();
     }
 
-    public void deckMenu() {
-        Scanner sc = new Scanner(System.in);
+    // menu to customize inventory/deck before the game starts
+    public void deckMenu(Scanner sc){
         Inventory inventory = Inventory.getInstance();
         boolean validInput = false;
-    
+
+        displayMenu();
+
         while (!validInput) {
-            System.out.println("pilih salah satu menu di antara opsi berikut untuk memodifikasi inventory/deck.");
-            System.out.println("1. Tampilkan inventory");
-            System.out.println("2. Tukar posisi tanaman di inventory");    
-            System.out.println("3. Tampilkan deck");
-            System.out.println("4. Tambahkan tanaman ke deck");
-            System.out.println("5. Hapus tanaman dari deck");
-            System.out.println("6. Tukar posisi tanaman di deck");
-            System.out.println("0. Start the game");
-            
-            System.out.println("\n");
-            System.out.println("Masukkan nomor opsi yang dipilih");
+            System.out.printf("\nEnter your option: ");
+
             String input = sc.nextLine().trim();
-            
-            if (input.matches("\\d+")) {
-                int x = Integer.parseInt(input);
-                if (x==1) inventory.printInventory();
-                else if (x==2) inventory.swapPlants();
-                else if (x==3) printDeck();
-                else if (x==4) addPlant();
-                else if (x==5) deletePlant();
-                else if (x==6) swapPlants();
-                else if (x==0) validInput = continueToTheGame();
-            }   else {
-                System.out.println("Format input tidak valid. Harap masukkan hanya sebuah angka sesuai opsi yang tersedia.");
+            // better user experience
+            // System.out.print("\033[H\033[2J");
+            // System.out.flush();
+            try {
+                if (input.equals("0")) {
+                    validInput = continueToTheGame();
+                }
+                else if (input.equals("")) {
+                    displayMenu();
+                }
+                else if (input.matches("\\d+")) {
+                    int x = Integer.parseInt(input);
+                    switch (x) {
+                        case 1:
+                            inventory.printInventory();
+                            displayMenu();
+                            break;
+                        case 2:
+                            inventory.swapPlants(sc);
+                            break;
+                        case 3:
+                            printDeck();
+                            displayMenu();
+                            break;
+                        case 4:
+                            addPlant(sc);
+                            break;
+                        case 5:
+                            deletePlant(sc);
+                            break;
+                        case 6:
+                            swapPlants(sc);
+                            break;
+                        default:
+                            throw new NumberFormatException();
+                    }
+                }
+                else {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid option. Please enter a valid number according to the game menu.");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
+            
         }
     }
 
+    // to display game menu before the game starts
+    public static void displayMenu() {
+        System.out.println("\n===============GAME MENU===============");
+        System.out.println("0. Start the Game");
+        System.out.println("1. Display Inventory");
+        System.out.println("2. Swap Plants Position in Inventory");    
+        System.out.println("3. Display Deck");
+        System.out.println("4. Add a Plant to Deck");
+        System.out.println("5. Remove a Plant from Deck");
+        System.out.println("6. Swap Plants Position in Deck");
+    }
+
+    // getter plants
     public List<Plant> getPlants() {
         return plants;
     }
 
-// pastikan kl listnya blm penuh sblm pake methodnya
+    // setter plants
     public void setPlant(Plant plant) {
         plants.add(plants.size(), plant);
     }
     
-// cek plant nya udah ditambahin ato belum ke deck
+    // check if deck contains the plant
     public boolean hasAddedPlant(Plant plant) {
         boolean hasAdded = false;
         for (Plant tumbuhan : plants) {
-            if (tumbuhan.getName().equals(plant.getName())) hasAdded = true; 
+            if (tumbuhan.getClass().equals(plant.getClass())) {
+                hasAdded = true; 
+                break;
+            }
         }
         return hasAdded;
     }
 
-    // cek plant nya ada di deck ga
-    public boolean isPlantInDeck(String plant) {
-        boolean found = false;
-        for (Plant tumbuhan : plants) {
-            if (tumbuhan.getName().equals(plant)) found = true; 
-        }
-        return found;
-    }
-
-    // minimal ada 2 plant
-    public void swapPlants() {
-        Scanner sc = new Scanner(System.in);
-        boolean validInput = false;
-    
-        int x = 0;
-        int y = 0;
-    
-        while (!validInput) {
-            System.out.println("\n");
-            printDeck();
-            System.out.println("\nMasukkan dua indeks tanaman yang ingin di-swap dengan format 'x y'");
-            if (sc.hasNextInt()) {
-                x = sc.nextInt();
-                if (x <= plants.size() && x > 0) {
-                    if (sc.hasNextInt()) {
-                        y = sc.nextInt();
-                        if (y <= plants.size() && y > 0) {
-                            if (x != y) {
-                                validInput = true;
-                            } else {
-                                System.out.println("Nilai x dan y harus berbeda!");
-                            }
-                        } else {
-                            System.out.printf("Indeks kedua out of range deck. Masukkan nilai kedua indeks antara 1 dan %d (inklusif)\n", plants.size());
-                        }
-                    } else {
-                        System.out.println("Format input tidak valid. Harap masukkan dua angka yang dipisahkan oleh spasi.");
-                        sc.nextLine();
-                    }
-                } else {
-                    System.out.printf("Indeks pertama out of range deck. Masukkan nilai kedua indeks antara 1 dan %d (inklusif)\n", plants.size());
-                }
-            } else {
-                System.out.println("Format input tidak valid. Harap masukkan dua angka yang dipisahkan oleh spasi.");
-                sc.nextLine();
-            }
-        }   
-    
-        Plant temp = plants.get(y-1);
-        plants.set(y-1, plants.get(x-1));
-        plants.set(x-1, temp);
-
-        System.out.printf("Posisi dari tanaman %s dan %s berhasil ditukar!", plants.get(y-1).name, plants.get(x-1).name);
-    }
-
-    // pastiin deck belum full
-    public void addPlant() {
-        Inventory inventory = Inventory.getInstance();
-
-        Scanner sc = new Scanner(System.in);
-        boolean validInput = false;
-    
-        if (plants.size() == 6) {
-            System.out.println("Deck kamu sudah penuh");
-            validInput = true;}
-
-        else {
-            while (!validInput) {
-                System.out.println("\n");
-                inventory.printInventory();
-
-                System.out.println();
-                if (!plants.isEmpty()) {
-                    System.out.println("Your current deck");
-                    printDeck();
-                }
-
-                System.out.println("\nMasukkan indeks tanaman yang ingin ditambahkan");
-                String input = sc.nextLine().trim();
-        
-                int x;
-                
-                if (input.matches("\\d+")) {
-                    x = Integer.parseInt(input);
-                    if (x > 0 && x <= inventory.getPlants().size()){
-                        if (!hasAddedPlant(inventory.getPlants().get(x-1))) {
-                            setPlant(inventory.getPlants().get(x-1));
-                            System.out.printf("Tanaman %s berhasil ditambahkan!\n", inventory.getPlants().get(x-1).name);
-                            validInput = true;
-                        }   else {System.out.printf("Tanaman %s sudah ditambahkan ke dalam deck. Masukkan tanaman lainnya woi\n", inventory.getPlants().get(x-1).name);
-                        }
-                    }   else {System.out.println("Indeks out of range inventory. Harap masukkan angka antara 1 dan 10");
-                    }
-                }   else {
-                    System.out.println("Format input tidak valid. Harap masukkan hanya sebuah angka pada rentang indeks tanaman di inventory.");
-                }
-            }
-        }
-    }
-
-    // sebelum masuk ke method, pastikan dulu kl decknya ga kosong
-    public void deletePlant() {
-        Scanner sc = new Scanner(System.in);
-        boolean validInput = false;
-    
-        while (!validInput) {
-            System.out.println("\n");
-            printDeck();
-
-            System.out.println("Masukkan indeks tanaman yang ingin dihapus");
-            String input = sc.nextLine().trim();
-    
-            int x=0;
-            
-            if (input.matches("\\d+")) {
-                x = Integer.parseInt(input);
-                if (x <= plants.size() && x>0) {
-                    System.out.printf("Tanaman %s berhasil dihapus dari deck!", plants.get(x-1).name);
-                    plants.remove(x-1);
-                    validInput = true;
-                }   else System.out.printf("Indeks out of range deck. Harap masukkan indeks antara 1 dan %d.", plants.size());
-            } else {
-                System.out.println("Format input tidak valid. Harap masukkan hanya sebuah angka pada rentang indeks tanaman di deck.");
-            }
-        }
-    }
-
+    // display list of plant in deck
     public void printDeck() {
-        if (plants.size() == 0) System.out.println("Deck kamu masih kosong!");
+        if (plants.size() == 0) System.out.println("Your deck is still empty.");
         else {
-            System.out.println("Deck:");
+            System.out.println("\nYour current deck:");
             for (int i=0; i<plants.size(); i++) {
                 System.out.printf("%d. %s\n", i+1, plants.get(i).name);
-        }
+            }
         }
     }
 
+    // add a plant to deck
+    public void addPlant(Scanner sc) {
+        Inventory inventory = Inventory.getInstance();
+
+        if (plants.size() == 6) {
+            System.out.println("Your deck is super duper full! Can't add any plant anymore.");
+            displayMenu();
+        } else {
+            while (true) {
+                inventory.printInventory();
+                printDeck();
+                System.out.println("\nEnter the index of plant in inventory that you wanna add");
+
+                String input = sc.nextLine().trim();
+        
+                try {
+                    if (input.equals("0")) {
+                        displayMenu();
+                        break;
+                    } else if (input.matches("\\d+")) {
+                        int x = Integer.parseInt(input);
+                        if (x > 0 && x <= inventory.getPlants().size()){
+                            if (!hasAddedPlant(inventory.getPlants().get(x-1))) {
+                                setPlant(inventory.getPlants().get(x-1));
+                                System.out.printf("%s was successfully added to the deck!\n", inventory.getPlants().get(x-1).name);
+                                displayMenu();
+                                break;
+                            } else {
+                                throw new InvalidInputException(String.format("The plant failed to be added. %s is already in the deck! \nInput the number '0' if you wanna return to the game menu.\n", inventory.getPlants().get(x-1).name));
+                            }   
+                        } else {
+                            throw new InvalidInputException("The index is out of range inventory. Please enter a number between 1 and 10. \nInput the number '0' if you wanna return to the game menu.\n");
+                        }
+                    } else {
+                        throw new NumberFormatException();
+                    }
+                } catch (InvalidInputException e) {
+                    System.out.println("\nINVALID INPUT: " + e.getMessage());
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter an index based on the order of plants in inventory! \nInput the number '0' if you wanna return to the game menu.\n");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
+    // remove a plant from deck
+    public void deletePlant(Scanner sc) {    
+        if (plants.isEmpty()) {
+            System.out.println("Your deck is still empty.");
+            displayMenu();
+        } else {
+            while (true) {
+                printDeck();
+
+                System.out.println("\nEnter the index of plant in deck that you wanna remove");
+                String input = sc.nextLine().trim();
+
+                try {
+                    if (input.equals("0")) {
+                        displayMenu();
+                        break;
+                    } else if (input.matches("\\d+")) {
+                        int x = Integer.parseInt(input);
+                        if (x <= plants.size() && x>0) {
+                            System.out.printf("%s was successfully removed from the deck!\n", plants.get(x-1).name);
+                            plants.remove(x-1);
+                            printDeck();
+                            displayMenu();
+                            break;
+                        } else {
+                            throw new InvalidInputException(String.format("The index is out of range deck. Please enter a number between 1 and %d. \nInput the number '0' if you wanna return to the game menu.\n", plants.size()));
+                        }
+                    } else {
+                        throw new NumberFormatException();
+                    }
+                } catch (InvalidInputException e) {
+                    System.out.println(e.getMessage());
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter an index based on the order of plants in deck! \nInput the number '0' if you wanna return to the game menu.\n");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
+    // swap positions between two plants
+    public void swapPlants(Scanner sc) {    
+        int x = 0; int y = 0;
+
+        printDeck();
+
+        if (plants.size() < 2) {
+            System.out.printf("The number of plants in your deck is still not enough to do swap plants. Please add %d more plants before swapping.\n", 2-plants.size());
+            displayMenu();
+        } else {
+            while (true) {
+                System.out.println("\nEnter the indices of two plants you want to swap in the format 'x y'");
+
+                String input = sc.nextLine();
+                String[] words = input.split("\\s+");
+
+                try {
+                    if (input.equals("0")) {
+                        displayMenu();
+                        break;
+                    } else if (words.length == 2) {
+                        x = Integer.parseInt(words[0]);
+                        y = Integer.parseInt(words[1]);
+                        if (x > 0 && x <= plants.size() && y > 0 && y <= plants.size()) {
+                            if (x != y) {
+                                Plant temp = plants.get(y-1);
+                                plants.set(y-1, plants.get(x-1));
+                                plants.set(x-1, temp);
+                                System.out.printf("The positions of %s and %s in deck have been successfully swapped!\n", plants.get(y-1).name, plants.get(x-1).name);
+                                displayMenu();
+                                break;
+                            } else {
+                                throw new InvalidInputException("The value of x and y have to be different!");
+                            }
+                        } else {
+                            throw new InvalidInputException(String.format("Indices is out of range the deck! x and y must be an integer inclusively between 1 and %d.", plants.size()));
+                        }
+                    } else {
+                        throw new NumberFormatException();
+                    }
+                } catch (InvalidInputException e) {
+                    System.out.println("INVALID INPUT: " + e.getMessage());
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter two integers (x y) separated by a space!\nInput the number '0' if you wanna return to the game menu.");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
+    // check whether the deck is full
     public boolean continueToTheGame() {
         if (plants.size() == 6) {
             return true;
-        }
-        else {
-            System.out.println("Isi dulu decknya ampe full woy");
+        } else {
+            System.out.printf(String.format("Your deck currently contains %d plant(s). Add %d plant(s) to get started to the game.\n", plants.size(), 6-plants.size()));
             return false;
         }
-    }
-
-    public Plant createThePlant(String input, Tile tile) {
-        Plant plantToPlant = null;
-        for (Plant tumbuhan : getPlants()) {
-            if (tumbuhan.getName().equals(input)) {
-                plantToPlant = tumbuhan;
-                break;
-            }
-        }
-        if (plantToPlant != null) {
-            if (plantToPlant.isAquatic()) {
-                WaterPlantFactory waterPlantFact = new WaterPlantFactory();
-                return waterPlantFact.createPlant(plantToPlant.getName(), tile);
-            } else {
-                LandPlantFactory landPlantFactory = new LandPlantFactory();
-                return landPlantFactory.createPlant(plantToPlant.getName(), tile);
-            }
-        } else return null;
-    }
-        
-    // BUAT TESTING
-    public static void main(String[] args) {
-        Deck deck = new Deck();
-        deck.deckMenu();
     }
 }
