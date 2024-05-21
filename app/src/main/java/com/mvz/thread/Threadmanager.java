@@ -52,11 +52,6 @@ public class ThreadManager {
                         // System.out.print("\033[H\033[2J");
                         // System.out.flush();
 
-                        // Calculate the elapsed time in seconds
-                        long elapsedTimeMillis = game.getElapsedTime();
-                        long elapsedTimeSeconds = elapsedTimeMillis / 1000;
-                        System.out.println("Game second: " + elapsedTimeSeconds + " seconds");
-
                         if (!input.equals("pause") && !input.equals("resume")){
                             game.userInput(input);
                         }
@@ -65,14 +60,7 @@ public class ThreadManager {
                         System.out.println();
                         game.getMap().printMap();
 
-                        if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
-                            if (game.getMap().getIsDefeated()) {
-                                System.out.println("\nYou have been defeated!");
-                            } else {
-                                System.out.println("\nYou have won the game!");
-                            }
-                            game.setPaused(false);
-                            stopThreads();
+                        if (Thread.currentThread().isInterrupted()) {
                             game.endGame(scanner);
                             break;
                         }
@@ -97,7 +85,7 @@ private void startZombieSpawningThread() {
         boolean isFlagActive = false;
         long spawnStartTime = 0 * 1000;
         long spawnEndTime = 160 * 1000;
-        long raidStartTime = 80 * 1000;
+        long raidStartTime = 20 * 1000;
         long raidEndTime = 6 * 1000;
 
         while (!Thread.currentThread().isInterrupted()) {
@@ -118,7 +106,7 @@ private void startZombieSpawningThread() {
                                 if (game.getRandom().nextFloat() < spawnRate) {
                                     Zombie z;
                                     Tile tile = game.getMap().getTile(10, i);
-                                    if (tile != null) {
+                                    if (tile != null && tile.getOwners().isEmpty()) {
                                         ZombieFactory factory;
                                         String[] types;
                                         if (i == 2 || i == 3) {
@@ -198,6 +186,19 @@ private void startZombieSpawningThread() {
                     if (!game.isPaused() && game.getMap() != null) { 
                         game.getMap().attackZombies();
                         game.getMap().setPosition();
+                    }
+
+                    long elapsedTimeMillis = game.getElapsedTime();
+                    long elapsedTimeSeconds = elapsedTimeMillis / 1000;
+                    if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
+                        if (game.getMap().getIsDefeated()) {
+                            System.out.println("\nYou have been defeated!");
+                        } else {
+                            System.out.println("\nYou have won the game!");
+                        }
+                        game.setPaused(false);
+                        stopThreads();
+                        break;
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

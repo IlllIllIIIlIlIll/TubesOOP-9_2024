@@ -164,7 +164,7 @@ public class Map {
                     boolean hasAlivePlantInCurrentTile = processTileForZombie(currentTile, z);
                     boolean hasAlivePlantInNextTile = processTileForZombie(nextTile, z);
     
-                    if (x - 1 >= 0 && z.getCM()) {                    
+                    if (x - 1 >= 0 && z.getCM() || x == 10) {                    
                         if (!hasAlivePlantInCurrentTile && !hasAlivePlantInNextTile) {
                             moveZombie(currentTile, nextTile, z);
                             z.resetAttackTimer();

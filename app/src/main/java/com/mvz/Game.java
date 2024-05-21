@@ -60,6 +60,7 @@ public class Game {
     }
 
     public void checkInput(String input) throws InvalidInputException, InvalidTileException, NumberFormatException {
+
         String[] kata = input.split(" ");
         if (kata.length >= 4 && kata[0].equals("tanam")) {
             try {
