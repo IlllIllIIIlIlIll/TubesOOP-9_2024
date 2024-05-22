@@ -55,8 +55,9 @@ public class ThreadManager {
                         if (!input.equals("pause") && !input.equals("resume")){
                             game.userInput(input);
                         }
-                        System.out.println("Sun value: " + Sun.getSun());
                         game.getPlayer().getDeck().printDeck();
+                        System.out.println("Elapsed time: " + game.getElapsedTime()/1000);
+                        System.out.println("Sun value: " + Sun.getSun());
                         System.out.println();
                         game.getMap().printMap();
 
@@ -79,94 +80,105 @@ public class ThreadManager {
         mainThread.start();
     }
 
-private void startZombieSpawningThread() {
-    zombieSpawningThread = new Thread(() -> {
-        boolean isSpawningActive = false;
-        boolean isFlagActive = false;
-        long spawnStartTime = 20 * 1000;
-        long spawnEndTime = 160 * 1000;
-        long raidStartTime = 80 * 1000;
-        long raidEndTime = 6 * 1000;
+    private void startZombieSpawningThread() {
+        zombieSpawningThread = new Thread(() -> {
+            boolean isSpawningActive = false;
+            boolean isFlagActive = false;
+            long spawnStartTime = 20 * 1000;
+            long spawnEndTime = 160 * 1000;
+            long raidStartTime = 80 * 1000;
+            long raidEndTime = 6 * 1000;
 
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                if (!game.isPaused()) {
-                    long elapsedTime = game.getElapsedTime();
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    if (!game.isPaused()) {
+                        long elapsedTime = game.getElapsedTime();
 
-                    // Zombie spawning
-                    if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime) {
-                        if ((elapsedTime / 1000) % 3 == 0) {
-                            if (!isSpawningActive) {
-                                System.out.println("The zombies are coming!");
-                                isSpawningActive = true;
-                            }
+                        // Zombie spawning
+                        if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime) {
+                            if ((elapsedTime / 1000) % 3 == 0) {
+                                if (!isSpawningActive) {
+                                    System.out.println("The zombies are coming!");
+                                    isSpawningActive = true;
+                                }
 
-                            for (int i = 0; i < 6; i++) {
-                                float spawnRate = isFlagActive ? 0.5f : 0.3f;
-                                if (game.getRandom().nextFloat() < spawnRate) {
-                                    Zombie z;
-                                    Tile tile = game.getMap().getTile(10, i);
-                                    if (tile != null && tile.getOwners().isEmpty()) {
-                                        ZombieFactory factory;
-                                        String[] types;
-                                        if (i == 2 || i == 3) {
-                                            factory = new WaterZombieFactory();
-                                            types = factory.getTypes();
-                                        } else {
-                                            factory = new LandZombieFactory();
-                                            types = factory.getTypes();
+                                for (int i = 0; i < 6; i++) {
+                                    float spawnRate = isFlagActive ? 0.5f : 0.3f;
+                                    if (game.getRandom().nextFloat() < spawnRate) {
+                                        Zombie z;
+                                        Tile tile = game.getMap().getTile(10, i);
+                                        if (tile != null && tile.getOwners().isEmpty()) {
+                                            ZombieFactory factory;
+                                            String[] types;
+                                            if (i == 2 || i == 3) {
+                                                factory = new WaterZombieFactory();
+                                                types = factory.getTypes();
+                                            } else {
+                                                factory = new LandZombieFactory();
+                                                types = factory.getTypes();
+                                            }
+                                            int typeIndex = game.getRandom().nextInt(types.length);
+                                            z = factory.createZombie(types[typeIndex], tile);
+                                            game.getMap().placeZombie(z, i);
                                         }
-                                        int typeIndex = game.getRandom().nextInt(types.length);
-                                        z = factory.createZombie(types[typeIndex], tile);
-                                        game.getMap().placeZombie(z, i);
                                     }
                                 }
                             }
+                        } else if (elapsedTime > spawnEndTime) {
+                            if (isSpawningActive) {
+                                System.out.println("The zombies are out of army!");
+                                isSpawningActive = false;
+                            }
                         }
-                    } else if (elapsedTime > spawnEndTime) {
-                        if (isSpawningActive) {
-                            System.out.println("The zombies are out of army!");
-                            isSpawningActive = false;
-                        }
-                    }
 
-                    // Zombie flag
-                    if (elapsedTime >= raidStartTime) {
-                        long flagCycleTime = (elapsedTime - raidStartTime) % raidStartTime;
-                        if (flagCycleTime >= 0 && flagCycleTime < raidEndTime) {
-                            if (!isFlagActive) {
-                                System.out.println("A Huge Wave of Zombies is Approaching!");
-                                game.getMap().setMaxZombies(27);
-                                isFlagActive = true;
-                            }
-                        } else {
-                            if (isFlagActive) {
-                                System.out.println("Flag wave ended!");
-                                game.getMap().setMaxZombies(2);
-                                isFlagActive = false;
+                        // Zombie flag
+                        if (elapsedTime >= raidStartTime) {
+                            long flagCycleTime = (elapsedTime - raidStartTime) % raidStartTime;
+                            if (flagCycleTime >= 0 && flagCycleTime < raidEndTime) {
+                                if (!isFlagActive) {
+                                    System.out.println("A Huge Wave of Zombies is Approaching!");
+                                    game.getMap().setMaxZombies(27);
+                                    isFlagActive = true;
+                                }
+                            } else {
+                                if (isFlagActive) {
+                                    System.out.println("Flag wave ended!");
+                                    game.getMap().setMaxZombies(2);
+                                    isFlagActive = false;
+                                }
                             }
                         }
                     }
+                    Thread.sleep(1000); 
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-                Thread.sleep(1000); // Check every second
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
             }
-        }
-    });
-    zombieSpawningThread.start();
-}
+        });
+        zombieSpawningThread.start();
+    }
 
     
-    
-
     private void startSunGeneratingThread() {
         sunGeneratingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Thread.sleep(5000 + game.getRandom().nextInt(5000));
-                    if (!game.isPaused() && game.getMap() != null) {
-                        game.generateSun();
+                    long elapsedSeconds = game.getElapsedTime() / 1000;
+                    long interval = elapsedSeconds % 200;
+                    
+                    if (interval < 100) {
+                        long sleepDuration = 5000 + game.getRandom().nextInt(5000);
+                        Thread.sleep(sleepDuration);
+
+                        elapsedSeconds = game.getElapsedTime() / 1000;
+                        interval = elapsedSeconds % 200;
+                        if (interval < 100 && !game.isPaused() && game.getMap() != null) {
+                            game.generateSun();
+                        }
+                    } else {
+                        // Sleep period
+                        long sleepTime = (200 - interval) * 1000;
+                        Thread.sleep(sleepTime);
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -176,7 +188,7 @@ private void startZombieSpawningThread() {
         sunGeneratingThread.start();
     }
 
-    
+
 
     private void startPositionUpdatingThread() {
         positionUpdatingThread = new Thread(() -> {
@@ -188,8 +200,7 @@ private void startZombieSpawningThread() {
                         game.getMap().setPosition();
                     }
 
-                    long elapsedTimeMillis = game.getElapsedTime();
-                    long elapsedTimeSeconds = elapsedTimeMillis / 1000;
+                    long elapsedTimeSeconds = game.getElapsedTime() / 1000;
                     if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
                         if (game.getMap().getIsDefeated()) {
                             System.out.println("\nYou have been defeated!");

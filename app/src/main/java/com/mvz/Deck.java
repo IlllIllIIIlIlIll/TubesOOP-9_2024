@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.google.common.util.concurrent.ExecutionError;
 import com.mvz.exceptionhandling.InvalidInputException;
-import com.mvz.plants.LandPlantFactory;
-import com.mvz.plants.WaterPlantFactory;
 
 public class Deck {
     private List<Plant> plants; 

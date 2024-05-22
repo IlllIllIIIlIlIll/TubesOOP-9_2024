@@ -16,7 +16,7 @@ public class Game {
     private long elapsedTime = 0;
     private long startTime = 0;
 
-    // untuk player yang ingin melakukan save
+    // untuk player yang ingin melakukan save, tidak untuk diakses yang lain
     private int saveSun = 0;
 
     public Player getPlayer() {
@@ -34,6 +34,10 @@ public class Game {
     public Random getRandom() {
         return random;
     }    
+
+    public Integer getSavesun(){
+        return saveSun;
+    }
 
     public Game(Player player) {
         this.player = player;
