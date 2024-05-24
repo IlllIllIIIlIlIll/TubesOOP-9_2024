@@ -6,12 +6,15 @@ import java.util.Scanner;
 
 import com.mvz.plants.*;
 
+// Represents the inventory of plants available for selection in the game
 public class Inventory {
-    private static Inventory instance;
-    private List<Plant> plants;
+    private static Inventory instance;  // Singleton instance of the inventory
+    private List<Plant> plants;         // List of plants in the inventory
 
+    // Private constructor to prevent instantiation from outside
     private Inventory() {
         plants = new ArrayList<>();
+        // Initialize the inventory with default plants
         plants.add(new Cherrybomb());
         plants.add(new Jalapeno());
         plants.add(new Lilypad());
@@ -24,6 +27,7 @@ public class Inventory {
         plants.add(new Wallnut());
     }
 
+    // Singleton pattern to ensure only one instance of the inventory exists
     public static Inventory getInstance() {
         if (instance == null) {
             instance = new Inventory();
@@ -31,14 +35,17 @@ public class Inventory {
         return instance;
     }
 
+    // Setter for the list of plants in the inventory
     public void setPlants(List<Plant> plants) {
         this.plants = plants;
     }
     
+    // Getter for the list of plants in the inventory
     public List<Plant> getPlants() {
         return plants;
     }
     
+    // Allows swapping positions of plants in the inventory
     public void swapPlants(Scanner sc) {
         boolean validInput = false;
     
@@ -69,6 +76,7 @@ public class Inventory {
         System.out.println("Tanaman berhasil di-swap");
     }
 
+    // Prints the current inventory of plants
     public void printInventory() {
         System.out.println("Inventory:");
         for (int i=0; i<plants.size(); i++) {

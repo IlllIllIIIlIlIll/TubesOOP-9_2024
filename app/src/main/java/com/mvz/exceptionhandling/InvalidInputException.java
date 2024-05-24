@@ -1,6 +1,6 @@
 package com.mvz.exceptionhandling;
 
-// Invalid input format
+// Exception for handling invalid inputs
 public class InvalidInputException extends Exception {
     public InvalidInputException() {
         super();

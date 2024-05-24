@@ -14,6 +14,7 @@ import com.mvz.zombies.Dolphinrider;
 import com.mvz.zombies.Jackinthebox;
 import com.mvz.zombies.Polevaulting;
 
+// Represents the game map where plants, zombies, and their interactions take place
 public class Map {
     private List<Zombie> zombieOnTile;
     private Tile[][] tile;
@@ -21,11 +22,12 @@ public class Map {
     private boolean isVictory = false;
     private int MAX_ZOMBIES = 10;
 
-
+    // Constructor to initialize the map and place default plants for testing
     public Map() {
         tile = new Tile[11][6];
         zombieOnTile = new ArrayList<>();
 
+        // Initialize tiles
         for (int i = 0; i < 11; i++) {
             for (int j = 0; j < 6; j++) {
                 boolean isAquatic = (j == 2 || j == 3);
@@ -33,7 +35,7 @@ public class Map {
             }
         }
 
-        // tanaman testing aja
+        // Place test plants
         Wallnut a = new Wallnut(5, 0);
         tile[5][0].addOwner(a);
         Wallnut b = new Wallnut(5, 1);
@@ -57,42 +59,52 @@ public class Map {
         tile[3][1].addOwner(j);
     }
 
+    // Getter for retrieving a specific tile on the map
     public Tile getTile(int x, int y) {
         return this.tile[x][y];
     }
 
+    // Getter for retrieving the number of rows on the map
     public int getNumberOfRows() {
         return this.tile[0].length;
     }
 
+    // Getter for retrieving the number of columns on the map
     public int getNumberOfColumns() {
         return this.tile.length;
     }
 
+    // Getter for retrieving the defeat status of the player
     public boolean getIsDefeated() {
         return isDefeated;
     }
 
+    // Setter for updating the defeat status of the player
     public void setIsDefeated(boolean isDefeated){
         this.isDefeated = isDefeated;
     }
 
+    // Getter for retrieving the victory status of the player
     public boolean getIsVictory() {
         return isVictory;
     }
 
+    // Setter for updating the victory status of the player
     public void setIsVictory(boolean isVictory){
         this.isVictory = isVictory;
     }
 
+    // Getter for retrieving the maximum number of zombies allowed on the map
     public int getMaxZombies(){
         return MAX_ZOMBIES;
     }
 
+    // Setter for updating the maximum number of zombies allowed on the map
     public void setMaxZombies(int maxZombies) {
         this.MAX_ZOMBIES = maxZombies;
     }    
 
+    // Method to print the map layout, including plants and zombies
     public void printMap() {
         String darkWatercolor = "\033[0;34m"; 
         String darkLandcolor = "\033[0;32m";
@@ -143,7 +155,7 @@ public class Map {
     }
     
     
-
+    // Method to update the positions of zombies on the map
     public void setPosition() {
         List<Zombie> zombiesToRemove = new ArrayList<>();
 
@@ -257,6 +269,7 @@ public class Map {
         }
     }
 
+    // Method to place a zombie on the map
     public void placeZombie(Zombie z, int y) {
         if (zombieOnTile.size() < MAX_ZOMBIES) {
             this.zombieOnTile.add(z);
@@ -266,11 +279,7 @@ public class Map {
     }
 
 
-
-
-
-
-
+    // Method to execute attacks from plants to zombies
     public void attackZombies() {
         HashMap<Tile, Float> damageMap = new HashMap<>();
 
@@ -419,6 +428,7 @@ public class Map {
         }
     }
 
+    // Method to initialize scheduled executors for various game elements
     public void initExecutors() {
         for (Tile[] row : tile) {
             for (Tile t : row) {

@@ -4,6 +4,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+// Abstract class representing a game character with common properties and behaviors
 public abstract class Character implements Action {
     protected String name;
     protected Float health;
@@ -14,15 +15,16 @@ public abstract class Character implements Action {
     protected int x;
     protected int y;
 
-    // untuk eksekusi "task" dengan scheduling
+    // Executor service for scheduling tasks
     private transient ScheduledExecutorService attackExecutorService; 
 
-    // waktu tersisa untuk melakukan attack
+    // Time remaining for the next attack
     private long timeRemainingToAttack;
 
-    // menandakan timer attack dimulai
+    // Indicates if the attack timer has started
     private boolean attackStarted;
 
+    // Constructor initializing character properties and starting the attack timer if applicable
     public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage, Integer x, Integer y) {
         this.x = x;
         this.y = y;
@@ -35,13 +37,14 @@ public abstract class Character implements Action {
         this.timeRemainingToAttack = Math.round(attack_speed * 1000);
         this.attackStarted = false;
 
-        // memastikan hanya plant dengan atk spd > 0 dapat menyerang
+        // Start attack timer if attack speed is greater than 0
         if (attack_speed > 0) {
             this.attackExecutorService = Executors.newSingleThreadScheduledExecutor();
             startAttackTimer();
         }
     }
 
+    // Constructor for character without specified position
     public Character(String name, Float health, boolean isAquatic, Float attack_speed, Float attack_damage) {
         this.health = health;
         this.name = name;
@@ -51,8 +54,9 @@ public abstract class Character implements Action {
         this.canAttack = true;
     }
 
+    // Default constructor for deserialization
     public Character() {
-        // Default constructor for deserialization
+       
     }
 
     public Integer getXChar() {
@@ -132,21 +136,21 @@ public abstract class Character implements Action {
         this.timeRemainingToAttack = timeRemainingToAttack;
     }
 
-    // canAttack = true setiap interval atk spd.
+    // Sets canAttack to true at intervals based on attack speed
     public void startAttackTimer() {
         attackExecutorService.scheduleAtFixedRate(() -> {
             canAttack = true;
         }, timeRemainingToAttack, Math.round(attack_speed * 1000), TimeUnit.MILLISECONDS);
     }
     
-    // stop timer sekarang, buat timer baru (saat zombie bergerak)
+    // Stops the current timer and creates a new one (e.g., when the character moves)
     public void resetAttackTimer() {
         attackExecutorService.shutdownNow();
         attackExecutorService = Executors.newSingleThreadScheduledExecutor();
         attackStarted = false;
     }
 
-    // memastikan attack timer dimulai jika belum
+    // Ensures the attack timer starts if it hasn't already
     public void initiateAttack() {
         if (!attackStarted) {
             startAttackTimer();
@@ -154,13 +158,14 @@ public abstract class Character implements Action {
         }
     }
 
-    // memulai schedule executor
+    // Initializes the scheduled executor service for the character
     public void initScheduledExecutorService() {
         if (attack_speed > 0) {
             this.attackExecutorService = Executors.newSingleThreadScheduledExecutor();
             startAttackTimer();
         }
     }
-
+    
+    // Abstract method to define character-specific actions
     public abstract void action();
 }

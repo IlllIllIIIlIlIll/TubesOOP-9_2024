@@ -15,9 +15,11 @@ import com.mvz.plants.Tanglekelp;
 import com.mvz.plants.Wallnut;
 import com.mvz.plants.WaterPlantFactory;
 
+// Represents a deck of plants available for selection in the game
 public class Deck {
-    private List<Plant> plants; 
+    private List<Plant> plants;     // List of plants in the deck
 
+    // Constructor initializes the deck with default plants
     public Deck() {
         plants = new ArrayList<>();
         plants.add(new Sunflower());
@@ -28,9 +30,10 @@ public class Deck {
         plants.add(new Wallnut());
     }
 
+    // Displays the deck menu options and handles user input
     public void deckMenu(Scanner sc){
         Inventory inventory = Inventory.getInstance();
-
+        // Display menu and handle user input
         displayMenu();
     
         boolean validInput = false;
@@ -89,7 +92,7 @@ public class Deck {
         System.out.flush();
     }
 
-    // to display game menu before the game starts
+    // Displays the game menu before the game starts
     public static void displayMenu() {
         System.out.println("\n===============GAME MENU===============");
         System.out.println("0. Start the Game");
@@ -101,17 +104,17 @@ public class Deck {
         System.out.println("6. Swap Plants Position in Deck");
     }
 
-    // getter plants
+    // Gets the list of plants in the deck
     public List<Plant> getPlants() {
         return plants;
     }
 
-    // setter plants
+    // Adds a plant to the deck
     public void setPlant(Plant plant) {
         plants.add(plants.size(), plant);
     }
     
-    // check if deck contains the plant
+    // Checks if a specific plant has been added to the deck
     public boolean hasAddedPlant(Plant plant) {
         boolean hasAdded = false;
         for (Plant tumbuhan : plants) {
@@ -123,7 +126,7 @@ public class Deck {
         return hasAdded;
     }
 
-    // swap positions between two plants
+    // Swaps positions between two plants in the deck
     public void swapPlants(Scanner sc) throws InvalidInputException {    
         int x = 0; int y = 0;
 
@@ -164,6 +167,7 @@ public class Deck {
         }
     }
 
+    // Adds a plant selected from the inventory to the deck
     public void addPlant(Scanner sc) {
         Inventory inventory = Inventory.getInstance();
 
@@ -216,7 +220,7 @@ public class Deck {
         }
     }
 
-    // sebelum masuk ke method, pastikan dulu kl decknya ga kosong
+    // Deletes a plant from the deck
     public void deletePlant(Scanner sc) {
         boolean validInput = false;
     
@@ -242,6 +246,7 @@ public class Deck {
         }
     }
 
+    // Prints the current deck of plants
     public void printDeck() {
         if (plants.size() == 0) System.out.println("Deck kamu masih kosong!");
         else {
@@ -252,6 +257,7 @@ public class Deck {
         }
     }
 
+    // Checks if the deck is ready to start the game
     public boolean continueToTheGame() {
         if (plants.size() == 6) {
             return true;
@@ -262,6 +268,7 @@ public class Deck {
         }
     }
 
+    // Creates a specific plant based on user input
     public Plant createThePlant(String input, Tile tile) {
         Plant plantToPlant = null;
         for (Plant tumbuhan : getPlants()) {
@@ -280,16 +287,4 @@ public class Deck {
             }
         } else return null;
     }
-
-    // public static void main(String[] args) {
-    //     Deck deck = new Deck();
-    //     Scanner sc = new Scanner(System.in);
-    //     try {
-    //         deck.deckMenu(sc);
-    //     } catch (NumberFormatException e) {
-    //         System.out.println(e.getMessage());
-    //     } catch (InvalidInputException e) {
-    //         System.out.println(e.getMessage());
-    //     }
-    // }
 }

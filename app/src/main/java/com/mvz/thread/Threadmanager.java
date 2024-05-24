@@ -6,6 +6,7 @@ import com.mvz.menu.PauseMenu;
 
 import java.util.Scanner;
 
+// Class for managing game threads
 public class ThreadManager {
     private static ThreadManager instance;
     private Game game;
@@ -15,10 +16,12 @@ public class ThreadManager {
     private Thread sunGeneratingThread;
     private Thread positionUpdatingThread;
 
+    // Private constructor for singleton pattern
     private ThreadManager() {
 
     }
 
+    // Method to get the single instance of ThreadManager
     public static synchronized ThreadManager getInstance() {
         if (instance == null) {
             instance = new ThreadManager();
@@ -26,6 +29,7 @@ public class ThreadManager {
         return instance;
     }
 
+    // Method to start all the game-related threads
     public void startThreads(Game game, Scanner scanner) {
         this.game = game;
         this.scanner = scanner;
@@ -35,15 +39,12 @@ public class ThreadManager {
         startPositionUpdatingThread();
     }
 
+    // Method to start the main game thread
     private void startMainThread() {
         game.startGame();
         mainThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 String input = scanner.nextLine();  
-
-                // // better user experience
-                // System.out.print("\033[H\033[2J");
-                // System.out.flush();
 
                 // Calculate the elapsed time in seconds
                 long elapsedTimeMillis = game.getElapsedTime();
@@ -56,6 +57,7 @@ public class ThreadManager {
                 System.out.println();
                 game.getMap().printMap();
 
+                // Check game victory or defeat conditions
                 if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
                     if (game.getMap().getIsDefeated()) {
                         System.out.println("\nYou have been defeated!");
@@ -67,7 +69,7 @@ public class ThreadManager {
                     break;
                 }
                 
-                
+                // Handle pause and resume commands
                 if (input.equalsIgnoreCase("pause")) {
                     pauseThreads();
                 } else if (input.equalsIgnoreCase("resume")) {
@@ -79,6 +81,7 @@ public class ThreadManager {
         mainThread.start();
     }
 
+    // Method to start the zombie spawning thread
     private void startZombieSpawningThread() {
         zombieSpawningThread = new Thread(() -> {
             boolean isSpawningActive = false;
@@ -106,7 +109,7 @@ public class ThreadManager {
                             }
                         }
         
-                        // Zombie flag
+                        // Zombie flag wave logic
                         if (elapsedTime >= 80 * 1000) {
                             long flagCycleTime = (elapsedTime - 80 * 1000) % 80000;
                             if (flagCycleTime >= 0 && flagCycleTime < 6000) {
@@ -132,9 +135,9 @@ public class ThreadManager {
         });
         zombieSpawningThread.start();
     }
-    
-    
 
+    
+    // Method to start the sun generating thread
     private void startSunGeneratingThread() {
         sunGeneratingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -152,7 +155,7 @@ public class ThreadManager {
     }
 
     
-
+    // Method to start the position updating thread
     private void startPositionUpdatingThread() {
         positionUpdatingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -170,18 +173,21 @@ public class ThreadManager {
         positionUpdatingThread.start();
     }    
 
+    // Method to pause all threads
     public void pauseThreads() {
         game.pauseGame();
         new PauseMenu(game).displayMenu();
     }
 
+    // Method to resume all threads
     public void resumeThreads() {
         game.resumeGame();
         synchronized (game) {
-            game.notifyAll(); // stop game biar ga nunggu lagi (wait)
+            game.notifyAll();   // Notify all waiting threads
         }
     }
 
+    // Method to stop all threads
     public void stopThreads() {
         if (mainThread != null) mainThread.interrupt();
         if (zombieSpawningThread != null) zombieSpawningThread.interrupt();

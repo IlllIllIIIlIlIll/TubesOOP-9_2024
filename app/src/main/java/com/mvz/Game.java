@@ -9,6 +9,7 @@ import com.mvz.plants.*;
 import com.mvz.zombies.*;
 import com.mvz.menu.EndGameMenu;
 
+// Represents the game logic and management
 public class Game {
     private Player player; 
     private Map map;
@@ -17,39 +18,46 @@ public class Game {
     private long elapsedTime = 0;
     private long startTime = 0;
 
+    // Getter for the player
     public Player getPlayer() {
         return player;
     }
     
+    // Getter for the map
     public Map getMap() {
         return map;
     }
 
+    // Setter for the map
     public void setMap(Map map) {
         this.map = map;
     }
 
+    // Getter for the random number generator
     public Random getRandom() {
         return random;
     }    
 
+    // Constructor with player parameter
     public Game(Player player) {
         this.player = player;
         this.map = new Map();
         this.random = new Random(); 
     }
 
-    
+    // Default constructor
     public Game() {
         this.random = new Random();
     }
 
+    // Generates sun points
     public void generateSun() {
         if (!isPaused) {
             Sun.increaseSun(25);
         }
     }    
 
+    // Handles user input
     public void userInput(String input) {
         try {
             checkInput(input);
@@ -60,6 +68,7 @@ public class Game {
         }
     }
 
+    // Checks the validity of the user input
     public void checkInput(String input) throws InvalidInputException, InvalidTileException, NumberFormatException {
         String[] kata = input.split(" ");
         if (kata.length >= 4 && kata[0].equals("tanam")) {
@@ -116,6 +125,7 @@ public class Game {
         }
     }
 
+    // Places a plant on the map
     public void placePlant(Plant p, int x, int y) throws InvalidTileException {
         Tile targetTile = map.getTile(x, y);
 
@@ -135,7 +145,6 @@ public class Game {
             }            
         }
 
-        // kalo udah berhasil ditesting, bakal digabungin semua conditional enih
         if (targetTile.getIsA()) {  
             if ((!containsPlant && (p.isAquatic()))) {
                 targetTile.addOwner(p);
@@ -154,7 +163,7 @@ public class Game {
                 throw new InvalidTileException("Plant ga bisa ditanam di tile ini 2");
             }
         }
-        else { // kalo tile daratan
+        else { 
             if (!p.isAquatic() && !containsPlant) {
                 targetTile.addOwner(p);
                 Sun.decreaseSun(p.getCost());
@@ -166,6 +175,7 @@ public class Game {
         }
     }    
 
+    // Removes a plant from the map
     public void removePlant(int x, int y) throws InvalidTileException {
         Tile targetTile = map.getTile(x, y);
 
@@ -187,7 +197,7 @@ public class Game {
     }
 
 
-   
+   // Starts spawning zombies
     public void startSpawningZombies(boolean isFlagActive) {
         ZombieFactory landFactory = new LandZombieFactory();
         ZombieFactory waterFactory = new WaterZombieFactory();
@@ -237,22 +247,25 @@ public class Game {
     }
 
 
-
+    // Starts the game
     public void startGame() {
         startTime = System.currentTimeMillis();
     }
 
+    // Pauses the game
     public synchronized void pauseGame() {
         isPaused = true;
         elapsedTime += System.currentTimeMillis() - startTime;
     }
 
+    // Resumes the game
     public synchronized void resumeGame() {
         isPaused = false;
         startTime = System.currentTimeMillis();
         notifyAll(); 
     }
 
+    // Gets the total elapsed time
     public long getElapsedTime() {
         if (isPaused) {
             return elapsedTime;
@@ -261,14 +274,17 @@ public class Game {
         }
     }
 
+    // Checks if the game is paused
     public synchronized boolean isPaused() {
         return isPaused;
     }
 
+    // Sets the game pause state
     public synchronized void setPaused(boolean isPaused){
         this.isPaused = isPaused;
     }
     
+    // Ends the game
     public void endGame(Scanner scanner) {
         new EndGameMenu(player, scanner).displayMenu();
     }
