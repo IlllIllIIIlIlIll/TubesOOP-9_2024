@@ -15,7 +15,7 @@ public class Peashooter extends Plant {
     
     public boolean isReadyToBePlanted() {
         long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastPlantedTime;
+        long elapsedTime = (currentTime - lastPlantedTime)/1000;
         return elapsedTime >= getCD();
     }
 

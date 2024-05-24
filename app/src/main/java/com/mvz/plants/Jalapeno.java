@@ -15,7 +15,7 @@ public class Jalapeno extends Plant {
 
     public boolean isReadyToBePlanted() {
         long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastPlantedTime;
+        long elapsedTime = (currentTime - lastPlantedTime)/1000;
         return elapsedTime >= getCD();
     }
 
@@ -25,6 +25,5 @@ public class Jalapeno extends Plant {
     
     public void action(){
         decreaseHealth(health);
-        System.out.println("Dadah bang, aku jalapeno pamit undur diri");
     }
 }

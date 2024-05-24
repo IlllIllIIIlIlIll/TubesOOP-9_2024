@@ -16,6 +16,10 @@ public class Game {
     private long elapsedTime = 0;
     private long startTime = 0;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_RED = "\u001B[31m";
+
     // untuk player yang ingin melakukan save, tidak untuk diakses yang lain
     private int saveSun = 0;
 
@@ -60,9 +64,9 @@ public class Game {
         try {
             checkInput(input);
         } catch (InvalidTileException e) {
-            System.out.println("INVALID TILE: " + e.getMessage());
+            System.out.println(ANSI_RED + "INVALID TILE: " + e.getMessage() + ANSI_RESET);
         } catch (InvalidInputException e) {
-            System.out.println("INVALID INPUT: " + e.getMessage());
+            System.out.println(ANSI_RED + "INVALID INPUT: " + e.getMessage() + ANSI_RESET);
         }
     }
 
@@ -91,19 +95,19 @@ public class Game {
                                 placePlant(plant, x, y-1);
                                 plant.setLastPlantedTime(System.currentTimeMillis());
                             } else {
-                                throw new InvalidInputException(plant.getName() + " is on cooldown!");
+                                throw new InvalidInputException(ANSI_RED + plant.getName() + " is on cooldown!" + ANSI_RESET);
                             }
                         } else {
-                            throw new InvalidInputException("Sun yang kamu miliki tidak cukup untuk menanam " + plantName + ":(");
+                            throw new InvalidInputException(ANSI_RED + "Sun yang kamu miliki tidak cukup untuk menanam " + plantName + ":(" + ANSI_RESET);
                         }
                     } else {
-                        throw new InvalidInputException("Tidak ada plant yang bernama "+ plantName + " di deck kamu!");
+                        throw new InvalidInputException(ANSI_RED + "Tidak ada plant yang bernama "+ plantName + " di deck kamu!" + ANSI_RESET);
                     }
                 } else {
-                    throw new InvalidInputException("Masukkan koordinat tile yang valid (1<x<11 dan 0<y<7)!");
+                    throw new InvalidInputException(ANSI_RED + "Masukkan koordinat tile yang valid (1<x<11 dan 0<y<7)!" + ANSI_RESET);
                 }
             } catch (NumberFormatException e) {
-                throw new InvalidInputException("Masukkan input dengan format \"tanam <nama plant> x y\"\nx dan y adalah koordinat tile di map yang valid (integer)");
+                throw new InvalidInputException(ANSI_RED + "Masukkan input dengan format \"tanam <nama plant> x y\"\nx dan y adalah koordinat tile di map yang valid (integer)" + ANSI_RESET);
             }
         } else if (kata.length == 3 && kata[0].equals("gali")) {
             try {
@@ -113,12 +117,12 @@ public class Game {
                     removePlant(x, y-1);
                 }
             } catch (NumberFormatException e) {
-                throw new InvalidInputException("Masukkan input dengan format \"gali x y\"\nx dan y adalah koordinat tile di map yang valid (integer)");
+                throw new InvalidInputException(ANSI_RED + "Masukkan input dengan format \"gali x y\"\nx dan y adalah koordinat tile di map yang valid (integer)" + ANSI_RESET);
             }
         } else if (kata[0] == "") {
             // do nothing
         } else {
-            throw new InvalidInputException("Masukkan input dengan format \"tanam <nama plant> x y\" atau \"gali x y\"\nx dan y adalah koordinat tile di map yang valid\n");
+            throw new InvalidInputException(ANSI_RED + "Masukkan input dengan format \"tanam <nama plant> x y\" atau \"gali x y\"\nx dan y adalah koordinat tile di map yang valid\n" + ANSI_RESET);
         }
     }
 
@@ -165,28 +169,28 @@ public class Game {
             if ((!containsPlant && (p.isAquatic()))) {
                 targetTile.addOwner(p);
                 Sun.decreaseSun(p.getCost());
-                System.out.println("Tanaman berhasil ditanam 1");
+                System.out.println(ANSI_CYAN + "Tanaman berhasil ditanam 1" + ANSI_RESET);
             }
             else if (!p.isAquatic() && containsLilypad) {
                 if (lilypad.addOnLilypad(p)) {
                     Sun.decreaseSun(p.getCost());
-                    System.out.println("Tanaman berhasil ditanam 2");
+                    System.out.println(ANSI_CYAN + "Tanaman berhasil ditanam 2" + ANSI_RESET);
                 } else {
-                    throw new InvalidTileException("Plant ga bisa ditanam di tile ini 1");
+                    throw new InvalidTileException(ANSI_RED + "Plant ga bisa ditanam di tile ini 1" + ANSI_RESET);
                 }
             }
             else {
-                throw new InvalidTileException("Plant ga bisa ditanam di tile ini 2");
+                throw new InvalidTileException(ANSI_RED + "Plant ga bisa ditanam di tile ini 2" + ANSI_RESET);
             }
         }
         else { // kalo tile daratan
             if (!p.isAquatic() && !containsPlant) {
                 targetTile.addOwner(p);
                 Sun.decreaseSun(p.getCost());
-                System.out.println("Tanaman berhasil ditanam 3");
+                System.out.println(ANSI_CYAN + "Tanaman berhasil ditanam 3" + ANSI_RESET);
             }
             else {  
-                throw new InvalidTileException("Plant ga bisa ditanam di tile ini 3");
+                throw new InvalidTileException(ANSI_RED + "Plant ga bisa ditanam di tile ini 3" + ANSI_RESET);
             }
         }
     }    
@@ -204,10 +208,10 @@ public class Game {
 
         if (plantToRemove != null) {
             targetTile.removeOwner(plantToRemove);
-            System.out.printf("%s berhasil digali dari tile (%d,%d).\n", plantToRemove.getName(), x, y+1);
+            System.out.printf(ANSI_CYAN + "%s berhasil digali dari tile (%d,%d).\n", plantToRemove.getName(), x, y+1 + ANSI_RESET);
         }
         else {
-            throw new InvalidTileException("Penggalian gagal. Tidak ada plant di tile ("+ x + "," + y + ").");
+            throw new InvalidTileException(ANSI_RED + "Penggalian gagal. Tidak ada plant di tile ("+ x + "," + y + ")." + ANSI_RESET);
         }        
     }
     

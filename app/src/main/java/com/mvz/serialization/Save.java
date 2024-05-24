@@ -9,6 +9,9 @@ public class Save {
     private GameStateManager gameStateManager;
     private Game game;
     private Scanner scanner;
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_RED = "\u001B[31m";
 
     public Save(Game game, Scanner scanner) {
         this.scanner = scanner;
@@ -17,10 +20,10 @@ public class Save {
     }
 
     public void performSave() {
-        System.out.println("Enter the filename to save your game (do not include path):");
+        System.out.println(ANSI_CYAN + "Enter the filename to save your game (do not include path):" + ANSI_RESET);
         String filename = scanner.nextLine().trim();
         if (!isValidFilename(filename)) {
-            System.out.println("Invalid filename. Please try again.");
+            System.out.println(ANSI_RED + "Invalid filename. Please try again." + ANSI_RESET);
             return;
         }
 
@@ -33,9 +36,9 @@ public class Save {
         File file = new File(directory, filename + ".json");
         
         if (gameStateManager.saveGameState(game, file.getPath())) {
-            System.out.println("Game saved successfully to " + file.getPath());
+            System.out.println(ANSI_CYAN + "Game saved successfully to " + file.getPath() + ANSI_RESET);
         } else {
-            System.out.println("Failed to save the game.");
+            System.out.println(ANSI_RED + "Failed to save the game." + ANSI_RESET);
         }
         game.endGame(scanner);
     }

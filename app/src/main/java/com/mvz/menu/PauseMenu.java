@@ -9,6 +9,10 @@ public class PauseMenu implements Menu {
     private Game game;
     private Scanner scanner;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_RED = "\u001B[31m";
+
     public PauseMenu(Game game, Scanner scanner) {
         this.game = game;
         this.scanner = scanner;
@@ -19,10 +23,8 @@ public class PauseMenu implements Menu {
         boolean running = true;
 
         while (running) {
-            System.out.println("\nGame is paused.");
-            System.out.println("1. Continue Game");
-            System.out.println("2. Exit Game");
-            System.out.print("Choose an option: ");
+            Ascii.pauseMenuPrint();
+            System.out.println(ANSI_CYAN + "Choose your option: " + ANSI_RESET);
 
             try {
                 int choice = scanner.nextInt();
@@ -30,18 +32,27 @@ public class PauseMenu implements Menu {
                 switch (choice) {
                     case 1:
                         game.resumeGame();
-                        System.out.println("Game resumed.");
+                        System.out.println(ANSI_CYAN + "Game resumed." + ANSI_RESET);
                         running = false;
                         break;
                     case 2:
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
                         new ExitMenu(game, scanner).displayMenu();
                         running = false;
                         break;
                     default:
-                        System.out.println("Invalid option. Please try again.");
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
+                        System.out.println(ANSI_RED + "Invalid option. Please try again." + ANSI_RESET);
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                System.out.println(ANSI_RED + "Invalid input. Please enter a number." + ANSI_RESET);
                 scanner.nextLine(); // Clear the invalid input from the buffer
             }
         }

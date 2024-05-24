@@ -12,6 +12,10 @@ public class Inventory {
     private List<Plant> plants;
     private List<Zombie> zombies;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_RED = "\u001B[31m";
+
     public Inventory() { // Change constructor to public
         plants = new ArrayList<>();
         plants.add(new Cherrybomb());
@@ -48,13 +52,16 @@ public class Inventory {
     public void swapPlants(Scanner sc) {
         int x = 0; int y = 0;
         while (true) {
-            System.out.println("\nEnter the indices of two plants you want to swap in the format 'x y'");
+            System.out.println(ANSI_CYAN + "\nEnter the indices of two plants you want to swap in the format 'x y'" + ANSI_RESET);
 
             String input = sc.nextLine();
             String[] words = input.split("\\s+");
 
             try {
                 if (input.equals("0")) {
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
                     Deck.displayMenu();
                     break;
                 } else if (words.length == 2) {
@@ -65,48 +72,75 @@ public class Inventory {
                             Plant temp = plants.get(y-1);
                             plants.set(y-1, plants.get(x-1));
                             plants.set(x-1, temp);
-                            System.out.printf("The positions of %s and %s in inventory have been successfully swapped!\n", plants.get(y-1).name, plants.get(x-1).name);
+                            System.out.printf(ANSI_CYAN + "The positions of %s and %s in inventory have been successfully swapped!\n", plants.get(y-1).name, plants.get(x-1).name + ANSI_RESET);
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
                             Deck.displayMenu();
                             break;
                         } else {
-                            throw new InvalidInputException("The value of x and y have to be different!");
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
+                            printPlant();
+                            System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
+                            throw new InvalidInputException(ANSI_RED + "The value of x and y have to be different!" + ANSI_RESET);
                         }
                     } else {
-                        throw new InvalidInputException(String.format("Indices is out of range the deck! x and y must be an integer inclusively between 1 and %d.", plants.size()));
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
+                        printPlant();
+                        System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
+                        throw new InvalidInputException(String.format(ANSI_RED + "Indices is out of range the deck! x and y must be an integer inclusively between 1 and %d.", plants.size() + ANSI_RESET));
                     }
                 } else {
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    printPlant();
+                    System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
                     throw new NumberFormatException();
                 }
             } catch (InvalidInputException e) {
-                System.out.println("INVALID INPUT: " + e.getMessage());
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                printPlant();
+                System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
+                System.out.println(ANSI_RED + "INVALID INPUT: " + e.getMessage() + ANSI_RESET);
             } catch (NumberFormatException e) {
-                System.out.println("Please enter two integers (x y) separated by a space!\nInput the number '0' if you wanna return to the game menu.");
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                printPlant();
+                System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
+                System.out.println(ANSI_RED + "Please enter two integers (x y) separated by a space!\n" + ANSI_RESET);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                printPlant();
+                System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
+                System.out.println(ANSI_CYAN + e.getMessage() + ANSI_RESET);
             }
         }
     }
 
     public void printPlant() {
-        // better user experience
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
 
-        System.out.println("Plant list:");
+        System.out.println(ANSI_CYAN + "Plant list:" + ANSI_RESET);
         for (int i=0; i<plants.size(); i++) {
-            System.out.printf("%d. %s\n", i+1, plants.get(i).name);
+            System.out.printf(ANSI_CYAN + "%d. %s\n", i+1, plants.get(i).name + ANSI_RESET);
         }
         System.out.println();
     }
 
     public void printZombie() {
-        // better user experience
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
         
-        System.out.println("Zombie list:");
+        System.out.println(ANSI_CYAN + "Zombie list:" + ANSI_RESET);
         for (int i=0; i<zombies.size(); i++) {
-            System.out.printf("%d. %s\n", i+1, zombies.get(i).name);
+            System.out.printf(ANSI_CYAN + "%d. %s\n", i+1, zombies.get(i).name + ANSI_RESET);
         }
         System.out.println();
     }

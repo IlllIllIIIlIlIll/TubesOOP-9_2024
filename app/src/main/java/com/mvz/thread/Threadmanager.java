@@ -20,6 +20,10 @@ public class ThreadManager {
     private Thread sunGeneratingThread;
     private Thread positionUpdatingThread;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_RED = "\u001B[31m";
+
     private ThreadManager() {
 
     }
@@ -48,16 +52,16 @@ public class ThreadManager {
                     if (scanner.hasNextLine()) {
                         String input = scanner.nextLine();  
 
-                        // // better user experience
-                        // System.out.print("\033[H\033[2J");
-                        // System.out.flush();
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
 
                         if (!input.equals("pause") && !input.equals("resume")){
                             game.userInput(input);
                         }
                         game.getPlayer().getDeck().printDeck();
-                        System.out.println("Elapsed time: " + game.getElapsedTime()/1000);
-                        System.out.println("Sun value: " + Sun.getSun());
+                        System.out.println(ANSI_CYAN + "Elapsed time: " + game.getElapsedTime()/1000 + ANSI_RESET);
+                        System.out.println(ANSI_CYAN + "Sun value: " + Sun.getSun() + ANSI_RESET);
                         System.out.println();
                         game.getMap().printMap();
 
@@ -71,7 +75,7 @@ public class ThreadManager {
                             pauseThreads();
                         } else if (input.equalsIgnoreCase("resume")) {
                             resumeThreads();
-                            System.out.println("Game resumed!");
+                            System.out.println(ANSI_CYAN + "Game resumed!" + ANSI_RESET);
                         }
                     }
                 }
@@ -98,7 +102,7 @@ public class ThreadManager {
                         if (elapsedTime >= spawnStartTime && elapsedTime <= spawnEndTime) {
                             if ((elapsedTime / 1000) % 3 == 0) {
                                 if (!isSpawningActive) {
-                                    System.out.println("The zombies are coming!");
+                                    System.out.println(ANSI_CYAN + "The zombies are coming!" + ANSI_RESET);
                                     isSpawningActive = true;
                                 }
 
@@ -126,7 +130,7 @@ public class ThreadManager {
                             }
                         } else if (elapsedTime > spawnEndTime) {
                             if (isSpawningActive) {
-                                System.out.println("The zombies are out of army!");
+                                System.out.println(ANSI_CYAN + "The zombies are out of army!" + ANSI_RESET);
                                 isSpawningActive = false;
                             }
                         }
@@ -136,13 +140,13 @@ public class ThreadManager {
                             long flagCycleTime = (elapsedTime - raidStartTime) % raidStartTime;
                             if (flagCycleTime >= 0 && flagCycleTime < raidEndTime) {
                                 if (!isFlagActive) {
-                                    System.out.println("A Huge Wave of Zombies is Approaching!");
+                                    System.out.println(ANSI_CYAN + "A Huge Wave of Zombies is Approaching!" + ANSI_RESET);
                                     game.getMap().setMaxZombies(27);
                                     isFlagActive = true;
                                 }
                             } else {
                                 if (isFlagActive) {
-                                    System.out.println("Flag wave ended!");
+                                    System.out.println(ANSI_CYAN + "Flag wave ended!" + ANSI_RESET);
                                     game.getMap().setMaxZombies(2);
                                     isFlagActive = false;
                                 }
@@ -203,9 +207,9 @@ public class ThreadManager {
                     long elapsedTimeSeconds = game.getElapsedTime() / 1000;
                     if (game.getMap().getIsDefeated() || (game.getMap().getIsVictory() && elapsedTimeSeconds >= 160)) {
                         if (game.getMap().getIsDefeated()) {
-                            System.out.println("\nYou have been defeated!");
+                            System.out.println(ANSI_CYAN + "\nYou have been defeated!" + ANSI_RESET);
                         } else {
-                            System.out.println("\nYou have won the game!");
+                            System.out.println(ANSI_CYAN + "\nYou have won the game!" + ANSI_RESET);
                         }
                         game.pauseGame();
                         stopThreads();
@@ -221,6 +225,9 @@ public class ThreadManager {
 
     public void pauseThreads() {
         game.pauseGame();
+        // better user experience
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
         new PauseMenu(game, scanner).displayMenu();
     }
 

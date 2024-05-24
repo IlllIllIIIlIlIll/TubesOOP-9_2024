@@ -33,29 +33,6 @@ public class Map {
                 tile[i][j] = new Tile(i, j, isAquatic);
             }
         }
-
-        // tanaman testing aja
-        // Wallnut a = new Wallnut(5, 0);
-        // tile[5][0].addOwner(a);
-        // Wallnut b = new Wallnut(5, 1);
-        // tile[5][1].addOwner(b);
-        // Lilypad c = new Lilypad(5, 2);
-        // tile[5][2].addOwner(c);
-        // Lilypad d = new Lilypad(5, 3);
-        // tile[5][3].addOwner(d);
-        // Wallnut e = new Wallnut(5, 4);
-        // tile[5][4].addOwner(e);
-        // Wallnut f = new Wallnut(5, 5);
-        // tile[5][5].addOwner(f);
-
-        // Wallnut g = new Wallnut(3, 4);
-        // tile[3][4].addOwner(g);
-        // Wallnut h = new Wallnut(3, 5);
-        // tile[3][5].addOwner(h);
-        // Wallnut i = new Wallnut(3, 0);
-        // tile[3][0].addOwner(i);
-        // Wallnut j = new Wallnut(3, 1);
-        // tile[3][1].addOwner(j);
     }
 
     public Tile getTile(int x, int y) {
@@ -298,13 +275,14 @@ public class Map {
                                 break;
                             case 1:
                                 boolean actionPerformed = false;
-                                if (attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName())) {
-                                    actionPerformed = true;
-                                } else if (attackTile(damageMap, plantX, plantY, attackDamage, plant.getName())) {
+                                if (attackTile(damageMap, plantX, plantY, attackDamage, plant.getName())) {
                                     actionPerformed = true;
                                 } else if (attackTile(damageMap, plantX + 1, plantY, attackDamage, plant.getName())) {
                                     actionPerformed = true;
-                                }
+                                } 
+                                // else if (attackTile(damageMap, plantX - 1, plantY, attackDamage, plant.getName())) {
+                                //     actionPerformed = true;
+                                // }
                                 if (actionPerformed) {
                                     owner.action();
                                     System.out.println(owner.getHealth());

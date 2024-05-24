@@ -14,6 +14,5 @@ public class Jackinthebox extends Zombie {
     public void action(){
         //decrease health until 0
         decreaseHealth(health);
-        System.out.println("aku mati");
     }
 }

@@ -24,6 +24,5 @@ public class Polevaulting extends Zombie {
         } else {
             isJumping = true;
         }
-        System.out.println("Dikolongin tongkat awoawkwk");
     }
 }

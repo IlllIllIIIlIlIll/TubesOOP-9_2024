@@ -10,6 +10,10 @@ public class StartMenu implements Menu {
     private Command plantListCommand;
     private Command zombieListCommand;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_RED = "\u001B[31m";
+
     public StartMenu(Player player, Scanner scanner) {
         this.scanner = scanner;
         // Initialize commands
@@ -38,12 +42,21 @@ public class StartMenu implements Menu {
                             running = false; 
                             break;
                         case 2:
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
                             helpCommand.execute();
                             break;
                         case 3:
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
                             plantListCommand.execute();
                             break;
                         case 4:
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
                             zombieListCommand.execute();
                             break;
                         case 5:
@@ -51,7 +64,7 @@ public class StartMenu implements Menu {
                             System.out.print("\033[H\033[2J");
                             System.out.flush();
 
-                            System.out.println("Exiting game...");
+                            System.out.println(ANSI_CYAN + "Exiting game..." + ANSI_RESET);
                             running = false; 
                             synchronized (scanner) {
                                 scanner.close();
@@ -59,26 +72,30 @@ public class StartMenu implements Menu {
                             System.exit(0);
                             break;
                         default:
-                            System.out.println("Invalid option. Please try again.");
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
+                            System.out.println(ANSI_RED + "Invalid option. Please try again." + ANSI_RESET);
                     }
                 } else {
-                    System.out.println("Please enter a valid number.");
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println(ANSI_RED + "Please enter a valid number." + ANSI_RESET);
                     scanner.next(); 
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                System.out.println(ANSI_RED + "Error: " + e.getMessage() + ANSI_RESET);
                 scanner.nextLine(); 
             }
         }
     }
 
     protected void printMenuOptions() {
-        System.out.println("Welcome to Michael vs. Lalapan!");
-        System.out.println("1. Start Game");
-        System.out.println("2. Help");
-        System.out.println("3. List Plants");
-        System.out.println("4. List Zombies");
-        System.out.println("5. Close Game");
-        System.out.print("Choose an option: ");
+        Ascii.startmenuPrint();
+        System.out.println(ANSI_CYAN + "Choose your option: " + ANSI_RESET);
     }
 }

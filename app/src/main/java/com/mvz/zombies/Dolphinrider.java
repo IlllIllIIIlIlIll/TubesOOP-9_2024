@@ -24,6 +24,5 @@ public class Dolphinrider extends Zombie {
         } else {
             isJumping = true;
         }
-        System.out.println("Dikolongin lumba lumba awoawkwk");
     }
 }

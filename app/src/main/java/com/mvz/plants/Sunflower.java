@@ -10,6 +10,9 @@ import com.mvz.Sun;
 public class Sunflower extends Plant {
     public static long lastPlantedTime;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+
     private transient ScheduledExecutorService executorService;
     private boolean readyToGenerateSun = true;
 
@@ -37,7 +40,8 @@ public class Sunflower extends Plant {
 
     public boolean isReadyToBePlanted() {
         long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastPlantedTime;
+        long elapsedTime = (currentTime - lastPlantedTime)/1000;
+        System.out.println(ANSI_CYAN + "Remaining cooldown time: " + (getCD()-elapsedTime) + ANSI_RESET);
         return elapsedTime >= getCD();
     }
 

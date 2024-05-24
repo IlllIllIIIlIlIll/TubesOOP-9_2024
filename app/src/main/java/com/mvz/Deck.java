@@ -10,6 +10,10 @@ public class Deck {
     private List<Plant> plants; 
     private Inventory inventory;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_RED = "\u001B[31m";
+
     public Deck() {
         plants = new ArrayList<>();
         inventory = new Inventory();
@@ -21,7 +25,7 @@ public class Deck {
         boolean validInput = false;
         
         while (!validInput) {
-            System.out.printf("\nEnter your option: ");
+            //System.out.printf(ANSI_CYAN + "\nEnter your option: " + ANSI_RESET);
 
             String input = sc.nextLine().trim();
 
@@ -36,23 +40,34 @@ public class Deck {
                     int x = Integer.parseInt(input);
                     switch (x) {
                         case 1:
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
                             inventory.printPlant();
                             displayMenu();
                             break;
                         case 2:
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
                             inventory.printPlant();
+                            System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
                             inventory.swapPlants(sc);
                             break;
                         case 3:
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
                             printDeck();
                             displayMenu();
                             break;
                         case 4:
-                            inventory.printPlant();
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
                             addPlant(sc);
                             break;
                         case 5:
-                            printDeck();
                             deletePlant(sc);
                             break;
                         case 6:
@@ -67,9 +82,15 @@ public class Deck {
                     throw new NumberFormatException();
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid option. Please enter a valid number according to the game menu.");
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                System.out.println(ANSI_RED + "Invalid option. Please enter a valid number according to the game menu." + ANSI_RESET);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                System.out.println(ANSI_CYAN + e.getMessage() + ANSI_RESET);
             }
             
         }
@@ -80,14 +101,9 @@ public class Deck {
 
     // to display game menu before the game starts
     public static void displayMenu() {
-        System.out.println("\n===============GAME MENU===============");
-        System.out.println("0. Start the Game");
-        System.out.println("1. Display Inventory");
-        System.out.println("2. Swap Plants Position in Inventory");    
-        System.out.println("3. Display Deck");
-        System.out.println("4. Add a Plant to Deck");
-        System.out.println("5. Remove a Plant from Deck");
-        System.out.println("6. Swap Plants Position in Deck");
+        Ascii.gameMenuPrint();
+        System.out.println(ANSI_CYAN + "Choose your option: " + ANSI_RESET);
+        
     }
 
     // getter plants
@@ -125,10 +141,13 @@ public class Deck {
     
         try {
             if (plants.size() < 2) {
-                throw new InvalidInputException(String.format("The number of plants in your deck is still not enough to do swap plants. Please add %d more plants before swapping.", 2-plants.size()));
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                throw new InvalidInputException(String.format(ANSI_RED + "The number of plants in your deck is still not enough to do swap plants. Please add %d more plants before swapping.", 2-plants.size()) + ANSI_RESET);
             } else {
                 while (true) {
-                    System.out.println("\nEnter the indices of two plants you want to swap in the format 'x y'");
+                    System.out.println(ANSI_RED + "\nEnter the indices of two plants you want to swap in the format 'x y'" + ANSI_RESET);
     
                     String input = sc.nextLine();
                     String[] words = input.split("\\s+");
@@ -144,22 +163,43 @@ public class Deck {
                                 Plant temp = plants.get(y - 1);
                                 plants.set(y - 1, plants.get(x - 1));
                                 plants.set(x - 1, temp);
-                                System.out.printf("The positions of %s and %s have been successfully swapped!\n", plants.get(y - 1).name, plants.get(x - 1).name);
+                                System.out.printf(ANSI_RED + "The positions of %s and %s have been successfully swapped!\n", plants.get(y - 1).name, plants.get(x - 1).name + ANSI_RESET);
+                                // better user experience
+                                System.out.print("\033[H\033[2J");
+                                System.out.flush();
                                 displayMenu();
                                 break;
                             } else {
-                                throw new InvalidInputException("The value of x and y have to be different!");
+                                // better user experience
+                                System.out.print("\033[H\033[2J");
+                                System.out.flush();
+                                inventory.printPlant();
+                                System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
+                                throw new InvalidInputException(ANSI_RED + "The value of x and y have to be different!" + ANSI_RESET);
                             }
                         } else {
-                            throw new InvalidInputException(String.format("Indices is out of range the deck! x and y must be an integer inclusively between 1 and %d.", plants.size()));
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
+                            inventory.printPlant();
+                            System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
+                            throw new InvalidInputException(String.format(ANSI_RED + "Indices is out of range the deck! x and y must be an integer inclusively between 1 and %d.", plants.size() + ANSI_RESET));
                         }
                     } else {
-                        throw new InvalidInputException("Please enter two integers (x y) separated by a space!\nInput the number '0' if you wanna return to the game menu.");
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
+                        inventory.printPlant();
+                        System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
+                        throw new InvalidInputException(ANSI_RED + "Please enter two integers (x y) separated by a space!" + ANSI_RESET);
                     }
                 }
             }
         } catch (InvalidInputException e) {
-            System.out.println(e.getMessage());
+            // better user experience
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.println(ANSI_CYAN + e.getMessage() + ANSI_RESET);
             displayMenu();
         }
     }
@@ -167,18 +207,25 @@ public class Deck {
 
     public void addPlant(Scanner sc) {
         if (plants.size() == 6) {
-            System.out.println("Your deck is super duper full! Can't add any plant anymore.");
+            // better user experience
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.println(ANSI_RED + "Your deck is super duper full! Can't add any plant anymore." + ANSI_RESET);
             displayMenu();
         } else {
             while (true) {
                 inventory.printPlant();
+                System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
                 printDeck();
-                System.out.println("\nEnter the index of plant in inventory that you wanna add");
+                System.out.println(ANSI_CYAN + "\nEnter the index of plant in inventory that you wanna add" + ANSI_RESET);
 
                 String input = sc.nextLine().trim();
         
                 try {
                     if (input.equals("0")) {
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
                         displayMenu();
                         break;
                     } else if (input.matches("\\d+")) {
@@ -190,24 +237,42 @@ public class Deck {
                                 System.out.flush();
 
                                 setPlant(inventory.getPlants().get(x-1));
-                                System.out.printf("%s was successfully added to the deck!\n", inventory.getPlants().get(x-1).name);
+                                System.out.printf(ANSI_CYAN + "%s was successfully added to the deck!\n", inventory.getPlants().get(x-1).name + ANSI_RESET);
                                 displayMenu();
                                 break;
                             } else {
-                                throw new InvalidInputException(String.format("The plant failed to be added. %s is already in the deck! \nInput the number '0' if you wanna return to the game menu.\n", inventory.getPlants().get(x-1).name));
+                                // better user experience
+                                System.out.print("\033[H\033[2J");
+                                System.out.flush();
+                                throw new InvalidInputException(String.format(ANSI_RED + "The plant failed to be added. %s is already in the deck!\n", inventory.getPlants().get(x-1).name + ANSI_RESET));
                             }   
                         } else {
-                            throw new InvalidInputException("The index is out of range inventory. Please enter a number between 1 and 10. \nInput the number '0' if you wanna return to the game menu.\n");
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
+                            throw new InvalidInputException(ANSI_RED + "The index is out of range inventory. Please enter a number between 1 and 10. \n" + ANSI_RESET);
                         }
                     } else {
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
                         throw new NumberFormatException();
                     }
                 } catch (InvalidInputException e) {
-                    System.out.println("\nINVALID INPUT: " + e.getMessage());
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println(ANSI_RED + "\nINVALID INPUT: " + e.getMessage() + ANSI_RESET);
                 } catch (NumberFormatException e) {
-                    System.out.println("Please enter an index based on the order of plants in inventory! \nInput the number '0' if you wanna return to the game menu.\n");
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println(ANSI_RED + "Please enter the index based on the order of plants in inventory! \n" + ANSI_RESET);
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println(ANSI_CYAN + e.getMessage() + ANSI_RESET);
                 }
             }
         }
@@ -219,56 +284,83 @@ public class Deck {
             displayMenu();
         } else {
             while (true) {
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
                 printDeck();
 
-                System.out.println("\nEnter the index of plant in deck that you wanna remove");
+                System.out.println(ANSI_CYAN + "\nEnter the index of plant in deck that you wanna remove" + ANSI_RESET);
                 String input = sc.nextLine().trim();
 
                 try {
                     if (input.equals("0")) {
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
                         displayMenu();
                         break;
                     } else if (input.matches("\\d+")) {
                         int x = Integer.parseInt(input);
                         if (x <= plants.size() && x>0) {
-                            System.out.printf("%s was successfully removed from the deck!\n", plants.get(x-1).name);
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
+                            System.out.printf(ANSI_CYAN + "%s was successfully removed from the deck!\n", plants.get(x-1).name + ANSI_RESET);
                             plants.remove(x-1);
                             printDeck();
                             displayMenu();
                             break;
                         } else {
-                            throw new InvalidInputException(String.format("The index is out of range deck. Please enter a number between 1 and %d. \nInput the number '0' if you wanna return to the game menu.\n", plants.size()));
+                            // better user experience
+                            System.out.print("\033[H\033[2J");
+                            System.out.flush();
+                            throw new InvalidInputException(String.format(ANSI_RED + "The index is out of range deck. Please enter a number between 1 and %d. \n", plants.size() + ANSI_RESET));
                         }
                     } else {
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
                         throw new NumberFormatException();
                     }
                 } catch (InvalidInputException e) {
-                    System.out.println(e.getMessage());
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println(ANSI_CYAN + e.getMessage() + ANSI_RESET);
                 } catch (NumberFormatException e) {
-                    System.out.println("Please enter an index based on the order of plants in deck! \nInput the number '0' if you wanna return to the game menu.\n");
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println(ANSI_RED + "Please enter the index based on the order of plants in deck! \n" + ANSI_RESET);
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    // better user experience
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println(ANSI_CYAN + e.getMessage() + ANSI_RESET);
                 }
             }
         }
     }
 
     public void printDeck() {
-        // better user experience
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
 
-        if (plants.size() == 0) System.out.println("Your deck is still empty.");
+        if (plants.size() == 0) {
+            System.out.println(ANSI_RED + "Your deck is still empty." + ANSI_RESET);
+        }
         else {
-            System.out.println("Your current deck:");
+            System.out.println(ANSI_CYAN + "Your current deck:" + ANSI_RESET);
             for (int i=0; i<plants.size(); i++) {
-                System.out.printf("%d. %s\n", i+1, plants.get(i).name);
+                System.out.printf(ANSI_CYAN + "%d. %s\n", i+1, plants.get(i).name + ANSI_RESET);
             }
+            System.out.println(ANSI_CYAN + "0. Back" + ANSI_RESET);
         }
     }
 
     public boolean continueToTheGame() {
         if (plants.size() == 6) {
+            // better user experience
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             return true;
         }
         else {
@@ -276,7 +368,7 @@ public class Deck {
             System.out.print("\033[H\033[2J");
             System.out.flush();
 
-            System.out.printf(String.format("Your deck currently contains %d plants. Add %d more plant(s) to get started to the game.\n", plants.size(), 6-plants.size()));
+            System.out.printf(String.format(ANSI_RED + "Your deck currently contains %d plants. Add %d more plant(s) to get started to the game.\n", plants.size(), 6-plants.size() + ANSI_RESET));
             displayMenu();
             return false;
         }

@@ -9,6 +9,10 @@ public class EndGameMenu implements Menu {
     private Player player;
     private Scanner scanner;
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_RED = "\u001B[31m";
+
     public EndGameMenu(Player player, Scanner scanner) {
         this.player = player;
         this.scanner = scanner;
@@ -19,23 +23,32 @@ public class EndGameMenu implements Menu {
         boolean running = true;
 
         while (running) {
-            System.out.println("1. Back to Main Menu");
-            System.out.print("Choose an option: ");
+            Ascii.endGameMenuPrint();
+            System.out.println(ANSI_CYAN + "Choose your option: " + ANSI_RESET);
 
             try {
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline left-over
                 switch (choice) {
                     case 1:
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
                         StartMenu startMenu = new StartMenu(player, scanner);
                         startMenu.displayMenu();
                         running = false;
                         break;
                     default:
-                        System.out.println("Invalid option. Please try again.");
+                        // better user experience
+                        System.out.print("\033[H\033[2J");
+                        System.out.flush();
+                        System.out.println(ANSI_RED + "Invalid option. Please try again." + ANSI_RESET);
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
+                // better user experience
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+                System.out.println(ANSI_RED + "Invalid input. Please enter a number." + ANSI_RESET);
                 scanner.nextLine(); // Clear the invalid input
             }
         }
